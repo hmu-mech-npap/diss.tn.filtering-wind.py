@@ -19,6 +19,7 @@ def plot_response(fs, w, h, title):
     plt.ylabel('Gain (dB)')
     plt.title(title)
 
+#%%
 #Generate a signal for filtering
 def generate_random_signal():
     t= np.linspace(0, 1, 44000, False) # 1 sec
@@ -27,6 +28,7 @@ def generate_random_signal():
     return (t, sig)
 t, sig = generate_random_signal()
 
+#%%
 # IIR Low-pass Butterworth filter response on the signal
 sos = signal.butter(N = 10, Wn = 3250, btype = 'lp', fs = 44000, output = 'sos')
 filtered = signal.sosfilt(sos, sig)
@@ -40,7 +42,7 @@ ax2.axis([0, 1, -5, 5])
 ax2.set_xlabel('Time [seconds]')
 plt.tight_layout()
 plt.show()
-
+#%%
 # Seperate of 10 Hz and 20 Hz signals using IIR Butterworth LP and HP for seperation
 sos_lp_2=signal.butter(N = 10, Wn = 15, btype = 'lowpass', fs = 44000, output = 'sos')
 sos_hp_2=signal.butter(N = 10, Wn = 15, btype = 'highpass', fs = 44000, output = 'sos')
@@ -58,17 +60,19 @@ plt.tight_layout()
 plt.legend(bbox_to_anchor =(0.70, 1.15), ncol = 2 )
 plt.show()
 
-
+#%%
 # FIR Low-pass filter 
 fs = 44000        #sampling freq
 cutoff = 3250     #Cutoff freq for gain drop
 trans_width = 250 # width of transition from passband to stopband in Hz
 numtaps = 200     #Size of the FIR filter
 
+#%%
 #Construct a Low-pass FIR filter 
 taps = signal.remez(numtaps, [0, cutoff, cutoff+trans_width, 0.5*fs], [1,0], Hz= fs)
 w, h = signal.freqz(taps, [1], worN=2000)
 
+#%%
 #Applying the FIR LP filter to the signal 
 y = signal.lfilter(taps, 1.0, sig)
 fig, (ax1, ax2) = plt.subplots( 2, 1, sharex=True)
@@ -82,9 +86,11 @@ ax2.set_xlabel('Time [seconds]')
 plt.tight_layout()
 plt.show()
 
+#%%
 #Plot the frequency response of the FIR Low-pass (Filter signal.remez)
 plot_response(fs, w, h, "FIR Low-pass (Filter signal.remez)")
 
+#%%
 #Construct a Low-pass FIR LP filter with Kaiser Window method
 nyq_rate = fs/2.0
 width = 8/nyq_rate
@@ -110,7 +116,7 @@ plt.show()
 
 plot_response(fs, w_2, h_2, "FIR Low-pass filter (signal.firwin (kaiser))")
 
-
+#%%
 #Construct a FIR BP filter with kaiser window method
 f1, f2= 1/nyq_rate, 15/nyq_rate
 
@@ -131,24 +137,29 @@ plt.show()
 plot_response(fs, w_2_bp_kaiser, h_2_bp_kaiser, "FIR Band-pass filter (signal.firwin (kaiser))")
 
 
+#%%
 #Seperate of 10 Hz and 20 Hz signals using FIR LP and HP for seperation
 cutoff_2 = 10
 cutoff_2_hp = 44
 trans_width_2 = 1
 numtaps_2 = 8000
 
+#%%
 #Construct a Low-pass FIR filter 
 taps_2_lp = signal.remez(numtaps_2, [0, cutoff_2, cutoff_2+trans_width_2, 0.5*fs], [1,0], Hz= fs)
 w_2_lp, h_2_lp = signal.freqz(taps_2_lp, [1], worN=2000)
 
+#%%
 #Construct a High-pass FIR filter 
 taps_2_hp = signal.remez(numtaps_2, [0, cutoff_2_hp-trans_width_2, cutoff_2_hp, 0.5*fs], [0,1], Hz= fs)
 w_2_hp, h_2_hp = signal.freqz(taps_2_hp, [1], worN=2000)
 
+#%%
 #Apply the FIR HP and LP filters
 y_2_lp = signal.lfilter(taps_2_lp, 1.0, y)
 y_2_hp = signal.lfilter(taps_2_hp, 1.0, y)
 
+#%%
 #Plot the 2 signals seperate
 fig, (ax1, ax2)= plt.subplots(2, 1, sharex=True)
 ax1.plot(t, y_2_hp)
@@ -160,7 +171,7 @@ ax2.axis([0, 1, -6, 6])
 plt.tight_layout()
 plt.show()
 
-
+#%%
 """
 #Construct a Bandpass filter to seperate 10 and 20 Hz
 #Band pass filter from 1 to 16 Hz
@@ -192,6 +203,7 @@ plt.show()
 
 """
 
+#%%
 #Plot the Frequency response of the filter
 
 plot_response(fs, w_2_hp, h_2_hp, "FIR High-pass Filter")
@@ -287,6 +299,7 @@ plt.legend()
 
 plt.show()
 
+#%%
 #Plot the signal in frequency domain after using FIR LP (signal.remez) 
 fig, (ax1, ax2) = plt.subplots(2,1, sharex=True)
 fig.suptitle('FIR Low-pass Filter (signal.remez)')
@@ -310,6 +323,7 @@ plt.legend()
 
 plt.show()
 
+#%%
 #Plot the signal in frequency domain after using FIR LP kaiser window method 
 fig, (ax1, ax2) = plt.subplots(2,1, sharex=True)
 fig.suptitle('FIR Low-pass Kaiser Window method')
