@@ -4,7 +4,9 @@ from turtle import shape
 import numpy as np
 import pandas as pd
 from scipy import signal
+import h5py
 
+#%%
 #Read and store the .h5 file with pandas
 f_1 = pd.HDFStore(path='/home/goodvibrations/Documents/Git_clones_dissertation/DSP_Filters_Python-/src/data_folder/noise_reference_raw.h5', mode='r')
 
@@ -106,7 +108,8 @@ filt_discon_on_WS_5 = blank_lp_fir_discon_on_WS_5[warmup:]
 
 
 #%%
-import h5py
+
+
 hf = h5py.File('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise.h5', 'w')
 Group1 = hf.create_group('df')
 Group1.create_dataset('filtered_connected_and_off', data=filt_con_off)
@@ -120,16 +123,20 @@ hf.close()
 
 
 # %%
+
 with h5py.File('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise.h5', mode='r') as hdf:
     
     ls = list(hdf.keys())
     data = hdf['df']
     l= list (data.keys())
-    x= data.get('filtered_disconnected_on_and_WS')
+    x= data.get('filtered_connected_and_off')
     filt_con_off_file_extract_ = np.array(x)
     
-    
+    print(hdf.items)
+    print(hdf)
     print(filt_con_off_file_extract_)
    
     print ('Group name: \n', ls)
     print ('List of keys from datasets in this file: \n', l)
+
+# %%
