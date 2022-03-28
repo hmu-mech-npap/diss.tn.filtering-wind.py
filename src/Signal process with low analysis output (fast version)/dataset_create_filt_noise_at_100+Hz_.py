@@ -1,10 +1,8 @@
 #%%
 
-from turtle import shape
 import numpy as np
 import pandas as pd
 from scipy import signal
-import h5py
 
 #%%
 #Read and store the .h5 file with pandas
@@ -107,36 +105,32 @@ filt_discon_on_WS_5 = blank_lp_fir_discon_on_WS_5[warmup:]
 #%%
 
 
+
 #%%
+#Construct data frame better 
+#using pandas library
+
+hf_st_pd_ = pd.HDFStore('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise_pandas_core_format_.h5', mode='w')
+
+df2 = pd.DataFrame({
+    "time_sec": time_no_shift,
+    "filtered_con_off": filt_con_off,
+    "filtered_con_on": filt_con_on,
+    "filtered_con_on_ws": filt_con_on_WS_5,
+    "filt_discon_off": filt_discon_off,
+    "filt_discon_on": filt_discon_on,
+    "filt_discon_on_ws": filt_discon_on_WS_5
+    }
+,index=None
+)
+hf_st_pd_.put('df_filt', df2, format='table', data_columns=True)
+hf_st_pd_.close()
 
 
-hf = h5py.File('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise.h5', 'w')
-Group1 = hf.create_group('df')
-Group1.create_dataset('filtered_connected_and_off', data=filt_con_off)
-Group1.create_dataset('filtered_connected_and_on', data=filt_con_on)
-Group1.create_dataset('filtered_connected_on_and_WS', data=filt_con_on_WS_5)
-Group1.create_dataset('filtered_disconnected_and_off', data=filt_discon_off)
-Group1.create_dataset('filtered_disconnected_and_on', data=filt_discon_on)
-Group1.create_dataset('filtered_disconnected_on_and_WS', data=filt_discon_on_WS_5)
+#%%
+f_3 = pd.HDFStore(path='/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise_pandas_core_format_.h5',mode='r')
 
-hf.close()
+data_filt = f_3['df_filt']
 
-
-# %%
-
-with h5py.File('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_with_noise.h5', mode='r') as hdf:
-    
-    ls = list(hdf.keys())
-    data = hdf['df']
-    l= list (data.keys())
-    x= data.get('filtered_connected_and_off')
-    filt_con_off_file_extract_ = np.array(x)
-    
-    print(hdf.items)
-    print(hdf)
-    print(filt_con_off_file_extract_)
-   
-    print ('Group name: \n', ls)
-    print ('List of keys from datasets in this file: \n', l)
 
 # %%
