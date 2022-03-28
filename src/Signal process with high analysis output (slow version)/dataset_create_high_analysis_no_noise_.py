@@ -121,3 +121,5 @@ with h5py.File('/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.f
    
     print ('Group name: \n', ls)
     print ('List of keys from datasets in this file: \n', l)
+
+# %%
