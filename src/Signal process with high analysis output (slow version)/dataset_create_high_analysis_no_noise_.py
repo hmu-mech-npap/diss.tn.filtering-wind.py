@@ -111,12 +111,14 @@ df2_hd_ = pd.DataFrame({
     }
 ,index=None
 )
-hf_st_pd_hd_.put('df_filt_clean', df2_hd_, format='table', data_columns=True)
+hf_st_pd_hd_.put('df_clean', df2_hd_, format='table', data_columns=True)
 hf_st_pd_hd_.close()
 
 
 #%%
 f_3 = pd.HDFStore(path='/home/goodvibrations/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/data_folder/filt_data_no_noise_.h5',mode='r')
 
-data_filt_hd = f_3['df_filt_clean']
+data_filt_hd = f_3['df_clean']
+# %%
+f_3.close()
 # %%
