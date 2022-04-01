@@ -3,13 +3,11 @@
 import numpy as np
 import pandas as pd
 from scipy import signal
-import matplotlib.pyplot as plt
 
-
+#%%
 file_path = input('The full path of raw data file to process: ' )
 file_name_of_raw =input('Enter the name of the raw signal file :') 
-
-
+#%%
 #Read and store the .h5 file with pandas
 f_1 = pd.HDFStore(path=f'{file_path}{file_name_of_raw}', mode='r')
 
@@ -18,39 +16,28 @@ print('The data frame key is: ',f_1.keys())
 data_fr_key = input('Input the data frame key of raw signal file:' )
 
 data_raw = f_1[data_fr_key]
-print(data_raw.info())
-
 L = list(data_raw.keys())
 
-print (L)
+print(data_raw.info())
+#%%
+#Extract the raw data from the folder for processing
+raw_sig_df =[]
 
+for element1 in L:
+    raw_sig_df.append(data_raw.get(element1))
 
-i=0
-raw_file = []
-for i in range (0,len(L)):
-    raw_file.append(data_raw.get(L[i]))
-    i+=1
-i=0
-first_sig_raw_col_ = raw_file[0]
+sig_array= []
+for element2 in raw_sig_df:
+    sig_array.append(np.array(element2))
 
-sig_in_numpy_format = []
-for i in range (0, len(L) ):
-    sig_in_numpy_format.append(np.array(raw_file[i]))
-    i+=1
-i=0
-
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
+#%%
 #The only filter with les standard deviation on output from input
-#Somehow should test more of these kind of filters with no window functions 
 
 #FIR Low-pass filter on the signal with the inverter connected and off
 
 #The length of the filter(number of coefficients, the filter order + 1)
-numtaps_2 = 100000
-fs = 500000
+numtaps_2 = 100_000
+fs = 500_000
 cutoff_hz = 0.00001
 nyq_rate = fs/2 
 
@@ -58,25 +45,20 @@ nyq_rate = fs/2
 fir_co = signal.firwin(numtaps_2, cutoff_hz)
 w_fir_co, h_fir_co = signal.freqz(fir_co, [1])
 
-#Apply the filter to the signal column by column from the data set
+#%%
+# LET'S MAKE IT BETTER
+blank_output =[]
+experiment = []
+for element3 in sig_array:
+    blank_output = signal.lfilter(fir_co, 1.0, element3)
+    experiment.append(blank_output)
 
-blank_lp_fir_con_off = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[0])
-
-
-blank_lp_fir_con_on = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[1])
-
-blank_lp_fir_con_on_WS_5 = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[2])
-
-blank_lp_fir_discon_off = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[3])
-
-blank_lp_fir_discon_on = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[4])
-
-blank_lp_fir_discon_on_WS_5 = signal.lfilter(fir_co, 1.0, sig_in_numpy_format[5])
+#%%
 
 #=====================================================
 #++++++++ Plot original and filtered signal+++++++++++ 
 #=====================================================
-
+#%%
 #Time interval of the samples
 time = np.linspace(0, 7.599998, len(data_raw))
 
@@ -89,22 +71,17 @@ delay= (warmup / 2) / fs
 time_no_shift = time[warmup:]-delay
 
 
+#%%
 # signal shift for rejecting the corrupted signal from the 
 #blank output of the filter
 
-filt_con_off  = blank_lp_fir_con_off[warmup:]
 
-filt_con_on = blank_lp_fir_con_on[warmup:]
-
-filt_con_on_WS_5 = blank_lp_fir_con_on_WS_5[warmup:]
-
-filt_discon_off = blank_lp_fir_discon_off[warmup:]
-
-filt_discon_on = blank_lp_fir_discon_on[warmup:]
-
-filt_discon_on_WS_5 = blank_lp_fir_discon_on_WS_5[warmup:]
+filt_data = []
+for element4 in experiment:
+    filt_data.append(element4[warmup:])
 
 
+#%%
 #Construct data frame better 
 #using pandas library
 
@@ -116,18 +93,25 @@ for i in range(0,len(L)):
     F.append(L[i].replace("raw","HD"))
 i=0
 
+#%%
+#Create a dictionary from the lists of modified keys and filtered output 
+a = dict(zip(F, filt_data))
+#Create a pandas dataframe for the generated file 
+df=pd.DataFrame(data=a, index=None)
+df.insert(loc=0, column="Time", value=time_no_shift)
+
+#%%
 #Create the new file
 #Choose the desired directory to create the new file 
 #and add the __NAME__.h5 at the end of the screen 
 # WARNING : If file already exists in the dir and it is closed via :
 #hf_st_pd_.close() it will be overwritten
-final_data = [filt_con_off, filt_con_on, filt_con_on_WS_5, filt_discon_off,filt_discon_on,filt_discon_on_WS_5]
 
-
-new_file_name = input("""Enter the name of the new folder : 
-the file will be created in the same path with the raw data file
+#%%
+new_file_name = input("""Enter the name of the new file : 
+the file will be created in the same path folder with the raw data 
 if 0 is passed for a new name the old name is used with replacing
-the "raw" at the end of the name with "HD"
+the "raw" at the start of the name with "HD"
 """)
 
 if new_file_name == '0' :
@@ -135,34 +119,16 @@ if new_file_name == '0' :
 else:
     file_name = new_file_name
 
+#HDF5 file in same path with raw signal folder diff name
 hf_st_pd_ = pd.HDFStore(f'{file_path}{file_name}', mode='w')
-
-df2 = pd.DataFrame({
-        
-    F[0]:final_data[0],
-    F[1]:final_data[1],
-    F[2]:final_data[2],
-    F[3]:final_data[3],
-    F[4]:final_data[4],
-    F[5]:final_data[5]
-    }
-,index=(time_no_shift)
-)
-
-hf_st_pd_.put('df_HD', df2, format='table', data_columns=True)
-    
+hf_st_pd_.put('df', df, format='table', data_columns=True)
 hf_st_pd_.close()
-
-
 #%%
 #Read the file that was just created
 
 f_3 = pd.HDFStore(path=f'{file_path}{file_name}',mode='r')
 
-data_filt = f_3['df_HD']
+data_filt = f_3['df']
 # %%
 #This is added in order to avoid manual close of the filtered data file
 f_3.close()
-
-
-# %%

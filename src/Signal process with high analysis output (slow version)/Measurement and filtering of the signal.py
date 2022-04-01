@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import signal
-from pylab import plot, grid, show, ylim, title
 
 #%%
 # Define function for Filter freq response
@@ -21,6 +20,13 @@ def plot_response(fs, w, h, title):
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Gain (dB)')
     plt.title(title)
+
+#%%
+#Define a function for Welch's method power spectrum for a signal
+
+def spect (x):
+    x,y = signal.welch(x,FS,window='flattop', nperseg=1024, scaling='spectrum')
+    return x, y
 
 #%%
 #Define a function for plotting the Power spectrums
@@ -66,7 +72,8 @@ def plot_sep_sig(x_1, y_1, x_2, y_2, TITLE, TITLE_2, color):
     plt.show()
 
 #%%
-#Define function for FFT
+#Define function for FFT of two signals to be able of plotting 
+#the corrupted and uncorrupted signals in frequency domain
 def fft_sig (y1, y2):
     f0 = 2000
     fs = 500000
@@ -102,477 +109,115 @@ def plot_FFT (x1, y1, y2, title):
 
 #%%
 #Read and store the .h5 file with pandas
-f_1 = pd.HDFStore(path='/run/media/goodvibrations/KINGSTON/_noiseReference_2021/20210831/noise_reference_raw.h5', mode='r')
+f_1 = pd.HDFStore(path='/run/media/goodvibrations32/KINGSTON/_noiseReference_2021/20210831/noise_reference_raw.h5', mode='r')
 
 data_raw = f_1['/df']
 
-#%%
-#Store the measurment in one dimentional array and transform it in numpy ndarray for processing 
-
-first_column =data_raw.get('raw-2021.08.31-12:26:54')
-sig_inverter_con_off = np.array(first_column)
-
-first_column.info()
 
 #%%
-second_column = data_raw.get('raw-2021.08.31-12:28:24')
-sig_inverter_con_on = np.array(second_column)
+#Make a list for the keys present in the data frame
+L = list(data_raw.keys())
+
+#Manage data with lists 
+MATRIX_RAW = []
+for element0 in L:
+    MATRIX_RAW.append(np.array(data_raw.get(element0)))
+
 
 #%%
-third_column = data_raw.get('raw-2021.08.31-12:32:08')
-sig_inverter_con_on_WS_5 = np.array(third_column)
-
-#%%
-fourth_column = data_raw.get('raw-2021.08.31-12:34:29')
-sig_inverter_discon_off = np.array(fourth_column)
-
-#%%
-fifth_column = data_raw.get('raw-2021.08.31-12:35:42')
-sig_inverter_discon_on = np.array(fifth_column)
-
-#%%
-sixth_column = data_raw.get('raw-2021.08.31-12:37:45')
-sig_inverter_discon_on_WS_5 = np.array(sixth_column)
-
-#%%
-print (first_column.head())
-
-#%%
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
 #The only filter with les standard deviation on output from input
 #Somehow should test more of these kind of filters with no window functions 
 
 #FIR Low-pass filter on the signal with the inverter connected and off
 
 #The length of the filter(number of coefficients, the filter order + 1)
-numtaps_2 = 100000
-fs = 500000
+numtaps_2 = 100_000
+FS = 500_000
 cutoff_hz = 0.00001
-nyq_rate = fs/2 
-
 
 #Use of firwin to create low-pass FIR filter
 fir_co = signal.firwin(numtaps_2, cutoff_hz)
 w_fir_co, h_fir_co = signal.freqz(fir_co, [1])
 
-
 #%%
 #Plot the freq response of the filter
-plot_response(fs, w_fir_co, h_fir_co, 'Blank FIR filter')
+plot_response(FS, w_fir_co, h_fir_co, 'Blank FIR filter')
+
+#%%
+#Filtering the raw signal with the above FIR filter 
+MATRIX_FILT = [] 
+x=[]
+for item in MATRIX_RAW:
+    x=signal.lfilter(fir_co, 1.0, item)
+    MATRIX_FILT.append(x)
 
 
 #%%
-#Apply the filter to the signal column by column from the data set
-
-blank_lp_fir_con_off = signal.lfilter(fir_co, 1.0, sig_inverter_con_off)
-
-#%%
-blank_lp_fir_con_on = signal.lfilter(fir_co, 1.0, sig_inverter_con_on)
-
-#%%
-blank_lp_fir_con_on_WS_5 = signal.lfilter(fir_co, 1.0, sig_inverter_con_on_WS_5)
-
-#%%
-blank_lp_fir_discon_off = signal.lfilter(fir_co, 1.0, sig_inverter_discon_off)
-
-#%%
-blank_lp_fir_discon_on = signal.lfilter(fir_co, 1.0, sig_inverter_discon_on)
-
-#%%
-blank_lp_fir_discon_on_WS_5 = signal.lfilter(fir_co, 1.0, sig_inverter_discon_on_WS_5)
-
-
-#%%
-#This raises an error for incompatible shapes of the arrays 
-#but all H1, H2, H3, H4 have same shape (3800000,)
-
-# Transfer function of the FIR filter (z-Transform)
-# H(z) = Y(z) / X(z)
-time = np.linspace(0, 7.599998, 3800000)
-
-H1 = blank_lp_fir_con_off/ sig_inverter_con_off
-
-sys = signal.TransferFunction(w_fir_co, h_fir_co)
- 
-H2 = blank_lp_fir_con_on/ sig_inverter_con_on
-H3 = blank_lp_fir_con_on_WS_5/ sig_inverter_con_on_WS_5
-H4 = blank_lp_fir_discon_off/ sig_inverter_discon_off
-
-# sys= signal.lti(H1, H2, H3, H4)
-
-w, mag, phase = signal.bode(sys)
-plt.show()
-#%%
-#=====================================================
-#++++++++ Plot original and filtered signal+++++++++++ 
-#=====================================================
 
 #Time interval of the samples
-time = np.linspace(0, 7.599998, 3800000)
+TIME = np.linspace(0, 7.599998, 3_800_000)
 
 #The first N-1 samples are corrupted by the initial conditions
 warmup = numtaps_2 - 1
 
 #The phase delay of the filtered signal
-delay= (warmup / 2) / fs
+delay= (warmup / 2) / FS
 
-time_no_shift = time[warmup:]-delay
-
-
-filt_con_off  = blank_lp_fir_con_off[warmup:]
-
-filt_con_on = blank_lp_fir_con_on[warmup:]
-
-filt_con_on_WS_5 = blank_lp_fir_con_on_WS_5[warmup:]
-
-filt_discon_off = blank_lp_fir_discon_off[warmup:]
-
-filt_discon_on = blank_lp_fir_discon_on[warmup:]
-
-filt_discon_on_WS_5 = blank_lp_fir_discon_on_WS_5[warmup:]
-
+TIME_NO_SHIFT = TIME[warmup:]-delay
 
 #%%
-#This plot is for the blank signal with shift and amplitute gain
-
-title('Filtered signal with phase shift with Inverter connected and off')
-
-plot(time-delay, blank_lp_fir_con_off, 'g-')
-
-grid(True)
-
-ylim((1.585,1.595))
-
-show()
-
+#Uncorrupted signal
+UNCORR = []
+for item in MATRIX_FILT:
+    UNCORR.append(item[warmup:])
 
 #%%
+
 #Plot of the raw and filtered signals in one graph with different colors for 
-#better understanding the response of the system in time domain
+#better understanding the response of the filter at the system in time domain
 
-#===============================================
-#Inverter connected and off
-#===============================================
-#figure(1)
+Titles = ['Inverter connected and off','Inverter connected and on','Inverter connected, on and wind speed 5 [m/s]','Inverter disconnected and off','Inverter disconnected and on','Inverter disconnected, on and Wind speed 5 [m/s]']
+# for simultaneously looping through lists
+for i,j,k in zip(MATRIX_RAW, UNCORR, Titles):
 
-plot_signals(time,time_no_shift,sig_inverter_con_off,filt_con_off,'Inverter connected and off')
-
-#===============================================
-#Inverter connected and on
-#===============================================
-#figure(2)
-
-plot_signals(time,time_no_shift,sig_inverter_con_on,filt_con_on,'Inverter connected and on')
-
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-#figure(3)
-
-plot_signals(time,time_no_shift,sig_inverter_con_on_WS_5,filt_con_on_WS_5,'Inverter connected, on and wind speed 5 [m/s]')
-
-#===============================================
-#Inverter disconnected and off
-#===============================================
-#figure(4)
-
-plot_signals(time,time_no_shift,sig_inverter_discon_off,filt_discon_off,'Inverter disconnected and off')
-
-#===============================================
-#Inverter disconnected and on
-#===============================================
-#figure (5)
-
-plot_signals(time,time_no_shift,sig_inverter_discon_on,filt_discon_on,'Inverter disconnected and on')
-
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-#figure(6)
-
-plot_signals(time,time_no_shift,sig_inverter_discon_on_WS_5,filt_discon_on_WS_5,'Inverter disconnected, on and Wind speed 5 [m/s]')
-
+    plot_signals(TIME,TIME_NO_SHIFT,i,j,k)
 
 #%%
+#List the titles and colores that are to be plotted
+raw_titles = ['Raw signal Inverter connected and off','Raw signal Inverter connected and on','Raw signal Inverter connected, on and wind speed 5 [m/s]','Raw signal with Inverter disconnected and off','Raw signal with Inverter disconnected and on','Raw signal with Inverter disconnected, on and Wind speed 5 [m/s]']
+filt_titles = ['Filtered signal Inverter connected and off','Filtered signal Inverter connected and on','Filtered signal Inverter connected, on and wind speed 5 [m/s]','Filtered signal with Inverter disconnected and off','Filtered signal with Inverter disconnected and on','Filtered signal with Inverter disconnected, on and Wind speed 5 [m/s]']
+colors_filt = ['r','y','black','r','y','black']
 
-#Plot the original and filtered signal (no corruption) in different plots for Amplitute and 
-
-#===============================================
-#Inverter connected and off
-#===============================================
-
-plot_sep_sig(time, sig_inverter_con_off, time_no_shift, filt_con_off, 'Raw signal Inverter connected and off', 'Filtered signal Inverter connected and off', 'r')
-
-#===============================================
-#Inverter connected and on
-#===============================================
-
-plot_sep_sig(time, sig_inverter_con_on, time_no_shift, filt_con_on, 'Raw signal Inverter connected and on', 'Filtered signal Inverter connected and on', 'y')
-
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-
-plot_sep_sig(time, sig_inverter_con_on_WS_5, time_no_shift, filt_con_on_WS_5, 'Raw signal Inverter connected, on and wind speed 5 [m/s]', 'Filtered signal Inverter connected, on and wind speed 5 [m/s]', 'black')
-
-#===============================================
-#Inverter disconnected and off
-#===============================================
-
-plot_sep_sig(time, sig_inverter_discon_off, time_no_shift, filt_discon_off, 'Raw signal with Inverter disconnected and off', 'Filtered signal with Inverter disconnected and off', 'r-')
-
-#===============================================
-#Inverter disconnected and on
-#===============================================
-
-plot_sep_sig(time, sig_inverter_discon_on, time_no_shift, filt_discon_on, 'Raw signal with Inverter disconnected and on', 'Filtered signal with Inverter disconnected and on', 'y')
-
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-
-plot_sep_sig(time, sig_inverter_discon_on_WS_5, time_no_shift, filt_discon_on_WS_5, 'Raw signal with Inverter disconnected, on and Wind speed 5 [m/s]', 'Filtered signal with Inverter disconnected, on and Wind speed 5 [m/s]', 'black')
-
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
-#////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Plot the original and filtered signal (uncorrupted) in different plots for graphical comparison
+# of the two methods of filtering (lazy approach branch and High res). 
+for i,j,t,f,c in zip(MATRIX_RAW, UNCORR, raw_titles, filt_titles, colors_filt):
+    plot_sep_sig(TIME, i, TIME_NO_SHIFT, j, t, f, c)
 
 # %%
+#List the titles to be plotted in Power spectrum
+raw_titles_spec = ['Raw signal Power spectrum (Inverter connected and off)','Raw signal Power spectrum (Inverter connected and on)','Raw signal Power spectrum (Inverter connected, on and WS=5m/s)','Raw signal Power spectrum (Inverter disconnected and off)','Raw signal Power spectrum (Inverter disconnected and on)','Raw signal Power Spectrum (Inverter disconnected, on and WS=5m/s)']
+filt_titles_spec = ['Filtered signal Power spectrum (Inverter connected and off)','Filtered signal Power spectrum (Inverter connected and on)','Filtered signal Power Spectrum (Inverter connected, on and WS=5m/s)','Filtered signal Power Spectrum (Inverter disconnected and off)','Filtered signal Power Spectrum (Inverter disconnected and on)','Filtered signal Power Spectrum (Inverter disconnected, on and WS=5m/s)']
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# Power spectrum plots of the signal before and after the filter is applyied
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#===============================================
-#Inverter connected and off
-#===============================================
-
-f, Pxx_spec = signal.welch(sig_inverter_con_off, fs, window ='flattop', nperseg = 1024, scaling = 'spectrum')
-plot_spectrum(f, Pxx_spec,'Raw signal Power spectrum (Inverter connected and off)')
-
-# %%
-#===============================================
-#Inverter connected and off
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_con_off, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power spectrum (Inverter connected and off)')
-
-#%%
-#===============================================
-#Inverter connected and on
-#===============================================
-
-f, Pxx_spec = signal.welch(sig_inverter_con_on, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Raw signal Power spectrum (Inverter connected and on)' )
-
-# %%
-#===============================================
-#Inverter connected and on
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_con_on, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power spectrum (Inverter connected and on)')
-
-#%%
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-
-f, Pxx_spec = signal.welch(sig_inverter_con_on_WS_5, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Raw signal Power spectrum (Inverter connected, on and WS=5m/s)')
-
-# %%
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_con_on_WS_5, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power Spectrum (Inverter connected, on and WS=5m/s)')
-
-# %%
-#===============================================
-#Inverter disconnected and off
-#===============================================
-
-f, Pxx_spec = signal.welch(sig_inverter_discon_off, fs, window ='flattop', nperseg = 1024, scaling = 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Raw signal Power spectrum (Inverter disconnected and off)')
-
-# %%
-#===============================================
-#Inverter disconnected and off
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_discon_off, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power Spectrum (Inverter disconnected and off)')
+#Plot the raw and filtered signals spectrums with titles 
+for i,j,t3,t4 in zip(MATRIX_RAW, UNCORR, raw_titles_spec, filt_titles_spec):
+    f_r, Prr_spec = spect(i)
+    plot_spectrum(f_r, Prr_spec,t3)
+    f_f, Pff_spec = spect(j)
+    plot_spectrum(f_f, Pff_spec, t4)
 
 
 #%%
-#===============================================
-#Inverter disconnected and on
-#===============================================
+#List the titles for the Frequency domain plots of the corrupted and uncorrupted samples
+blank_freq_dom_titles = ['Blank filter output with Inverter connected, off','Blank filter output with Inverter connected, on','Blank filter output with Inverter connected, on and WS=5[m/s]','Blank filter output with Inverter disconnected, off','Blank filter output with Inverter disconnected, on','Blank filter output with Inverter disconnected, on and WS=5[m/s]']
+shifted_freq_dom_titles = ['Not shifted filter output with Inverter connected, off','Not shifted filter output with Inverter connected, on', 'Not shifted filter output with Inverter connected, on and WS=5[m/s]','Not shifted filter output with Inverter disconnected, off','Not shifted filter output with Inverter disconnected, on','Not shifted filter output with Inverter disconnected, on and WS=5[m/s]']
 
-f, Pxx_spec = signal.welch(sig_inverter_discon_on, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Raw signal Power spectrum (Inverter disconnected and on)')
+#Compute the FFT of raw, corrupted and uncorrupted signals and plot them combined for comparison 
+for i,j,k,t1,t2 in zip(MATRIX_RAW,MATRIX_FILT,UNCORR,blank_freq_dom_titles,shifted_freq_dom_titles):
+    f,yin,yout= fft_sig(i,j)
+    plot_FFT(f,yin,yout,t1)
+    
+    f_sh,yin_sh,yout_sh =fft_sig(i,k)
+    plot_FFT(f_sh,yin_sh,yout_sh,t2)
 
-#%%
-#===============================================
-#Inverter disconnected and on
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_discon_on, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power Spectrum (Inverter disconnected and on)')
-
-
-#%%
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-
-f, Pxx_spec = signal.welch(sig_inverter_discon_on_WS_5, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Raw signal Power Spectrum (Inverter disconnected, on and WS=5m/s)')
-
-#%%
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-
-f, Pxx_spec = signal.welch(filt_discon_on_WS_5, fs, window ='flattop', nperseg = 1024, scaling= 'spectrum')
-plot_spectrum(f, Pxx_spec, 'Filtered signal Power Spectrum (Inverter disconnected, on and WS=5m/s)')
-
-
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# %%
-#Fourier transform for plotting the signals original and filtered in the frequency domain
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#FOR_CONNECTED_INVERTER>>>>>
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#===============================================
-#Inverter connected, off 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_off, blank_lp_fir_con_off)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter connected, off')
-
-#%%
-#===============================================
-#Inverter connected, off 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_off, filt_con_off)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter connected, off')
-
-
-# %%
-#===============================================
-#Inverter connected, on 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_on, blank_lp_fir_con_on)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter connected, on')
-
-
-#%%
-#===============================================
-#Inverter connected, on 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_on, filt_con_on)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter connected, on')
-
-
-#%%
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_on_WS_5, blank_lp_fir_con_on_WS_5)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter connected, on and WS=5[m/s]')
-
-
-#%%
-#===============================================
-#Inverter connected, on and WS=5[m/s]
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_con_on_WS_5, filt_con_on_WS_5) 
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter connected, on and WS=5[m/s]')
-
-
-# %%
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#FOR_DISCONNECTED_INVERTER>> 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#===============================================
-#Inverter disconnected, off 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_off, blank_lp_fir_discon_off)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter disconnected, off')
-
-
-#%%
-#===============================================
-#Inverter disconnected, off 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_off, filt_discon_off)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter disconnected, off')
-
-
-# %%
-#===============================================
-#Inverter disconnected, on 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_on, blank_lp_fir_discon_on)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter disconnected, on')
-
-
-#%%
-#===============================================
-#Inverter disconnected, on 
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_on, filt_discon_on)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter disconnected, on')
-
-
-#%%
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_on_WS_5, blank_lp_fir_discon_on_WS_5)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Blank filter output with Inverter disconnected, on and WS=5[m/s]')
-
-
-#%%
-#===============================================
-#Inverter disconnected, on and WS=5[m/s]
-#===============================================
-
-f_plot, y_input_mag_plot, y_output_mag_plot= fft_sig(sig_inverter_discon_on_WS_5, filt_discon_on_WS_5)
-plot_FFT(f_plot, y_input_mag_plot, y_output_mag_plot, 'Not shifted filter output with Inverter disconnected, on and WS=5[m/s]')
-
-
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-# %%
 
 # %%
