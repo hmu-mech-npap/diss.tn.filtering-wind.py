@@ -7,7 +7,15 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 # Define function for Filter freq response
-def plot_response(fs, w, h, title):
+def plot_response(fs:float, w:np.ndarray, h:np.ndarray, title:str):
+    """ Plots the gain frequency response of the filter based on the coefficients
+
+    Args:
+        fs (float): Sampling frequency of the data data signal
+        w (np.ndarray): set of filter coefficients
+        h (np.ndarray): set of filter coefficients
+        title (str): Title plot
+    """    
     plt.figure()
     plt.plot(0.5*fs*w/np.pi, 20*np.log10(np.abs(h)))
     plt.ylim(-40, 5)
