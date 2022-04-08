@@ -39,8 +39,8 @@ def plot_spectrum(x, y, title):
 
 def plot_signals(x_1,x_2,y_1,y_2,Title):
     plt.title(Title)
-    plt.plot(x_1, y_1, label= 'Raw signal')
-    plt.plot(x_2, y_2, label='Filtered signal')
+    plt.scatter(x_1, y_1, label= 'Raw signal', alpha=0.02)
+    plt.plot(x_2, y_2, label='Filtered signal', color= 'r')
     plt.grid(True)
     plt.xlabel('Time [s]')
     plt.ylabel('Amplitute')
@@ -87,10 +87,10 @@ def fft_sig (y1, y2):
 def plot_FFT (x1, y1, y2, title):
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True)
     fig.suptitle(title)
-    ax1.semilogx(x1, y1)
+    ax1.loglog(x1, y1)
     ax1.grid(True, which = 'both')
     ax1.set_ylabel('Amplitute [dB]')
-    ax2.semilogx(x1, y2, 'orange', label = 'output')
+    ax2.loglog(x1, y2, 'orange', label = 'output')
     ax2.grid(True, which='both')
     ax2.set_xlabel('Frequency [Hz]')
     ax2.set_ylabel('Amplitute [dB]')
