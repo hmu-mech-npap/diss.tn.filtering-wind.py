@@ -10,12 +10,12 @@ This folder contains
 -  Bessel  filters. 
 
 
-## sample GUI
+## 1.2. sample GUI
 
 This is a folder that contains an attempt for qt. 
 
 This is not complete this is just a "hello world" application for now. 
 
 
-## 1.2. **signal_process_plots_datasets**: 
+## 1.3. **signal_process_plots_datasets**: 
 
