@@ -1,20 +1,16 @@
 #%%
-
-import numpy as np
 import pandas as pd
-from scipy import signal
-from Plots_time_freq_domain_ import UNCORR, TIME_NO_SHIFT, L, file_name_of_raw, file_path
-
-#Construct data frame better 
-#using pandas library
+from plots_time_freq_domain_ import file_name_of_raw,file_path, Filt , TIME_NO_SHIFT, raw_keys
 
 #Rename old attributes to match with filtered data signal
 F=[]
-for item in L:
-    F.append(item.replace("raw","filt")) 
+for item in raw_keys:
+    F.append(item.replace(old="raw", new="filt"))    
+
+#Construct data frame using pandas library
 
 #Create a dictionary from the lists of modified keys and filtered output 
-a = dict(zip(F, UNCORR))
+a = dict(zip(F, Filt))
 
 #Create a pandas dataframe for the generated file 
 df=pd.DataFrame(data=a, index=None)
@@ -25,15 +21,16 @@ df.insert(loc=0, column="Time", value=TIME_NO_SHIFT)
 #and add the __NAME__.h5 at the end of the screen 
 # WARNING : If file already exists in the dir and it is closed via :
 #hf_st_pd_.close() it will be overwritten
+#final_data = [filt_con_off, filt_con_on, filt_con_on_WS_5, filt_discon_off,filt_discon_on,filt_discon_on_WS_5]
 
-new_file_name = input("""Enter the name of the new file : 
-the file will be created in the same path folder with the raw data 
+new_file_name = input("""Enter the name of the new folder : 
+the file will be created in the same path with the raw data file
 if 0 is passed for a new name the old name is used with replacing
-the "raw" at the start of the name with "HD"
+the "raw" at the start of the name with "filt"
 """)
 
 if new_file_name == '0' :
-    file_name = file_name_of_raw.replace("raw", "HD")
+    file_name = file_name_of_raw.replace("raw", "filt")
 else:
     file_name = new_file_name
 
@@ -45,8 +42,9 @@ hf_st_pd_.close()
 #Read the file that was just created
 
 f_3 = pd.HDFStore(path=f'{file_path}{file_name}',mode='r')
-
 data_filt = f_3['df_filt']
+
 # %%
 #This is added in order to avoid manual close of the filtered data file
 f_3.close()
+
