@@ -1,16 +1,14 @@
 # %%
 #Use of pandas library for reading hdf5 file format
-
-
 from functions import plot_signals, plot_sep_sig, spect, plot_spectrum, fft_sig, plot_FFT, plot_response
 from lp_firwin_method_ import lp_firwin, filt_sig
 from file_import_ import data_import
 
 # Import the file for process
-MATRIX_RAW, raw_keys = data_import(file_path='/home/goodvibrations/Desktop/data_folder/', file_name_of_raw='noise_reference_raw.h5')
+MATRIX_RAW, raw_keys = data_import(file_path='/home/goodvibrations32/Desktop/data_folder/', file_name_of_raw='noise_reference_raw.h5')
 
 # Construct the desiered FIR filter
-filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=500_000, cutoff_Hz=0.001)
+filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=500_000, cutoff_Hz=0.0001)
 
 #filtering of the fignal with the above filter coefficients
 Filt, Blank, TIME, TIME_NO_SHIFT=filt_sig(coeff=filter_coeff, order=20, FS=500_000, Raw=MATRIX_RAW)
@@ -60,3 +58,5 @@ if __name__=='__main__':
         f_sh,yin_sh,yout_sh =fft_sig(i,k)
         plot_FFT(f_sh,yin_sh,yout_sh,t2)
 
+
+# %%

@@ -31,7 +31,11 @@ def lp_firwin(numtaps_2:int, FS:float, cutoff_Hz:float):
 def filt_sig (coeff:np.ndarray, order:int, FS:float, Raw:list):
     """
     In this function the signal is filtered and the time delay
-    of the FIR filter is rejected through the warmup process
+    of the FIR filter is rejected through the warmup process.
+    The warmup operation is used to eliminate the filters delay.
+    The delay of the FIR filter is producing corrupted samples 
+    and the number of those samples are 1/2*(order-1). 
+    {warmup}  
 
     Args:
         coeff (np.ndarray): the filter coefficients that will be used
