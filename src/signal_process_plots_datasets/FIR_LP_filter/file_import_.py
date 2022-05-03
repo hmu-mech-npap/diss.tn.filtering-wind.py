@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 def data_import(file_path:str, file_name_of_raw:str):
-    """file import script 
+    """file import script and data chunking for faster overall process time
 
     Args:
         file_path (str): the file path of the folder containing the HDF5 file
@@ -10,6 +10,8 @@ def data_import(file_path:str, file_name_of_raw:str):
     Returns:
         MATRIX_RAW (list): a list of np.ndarrays transformed columns from dataset
         L (list): a list of the dataframes keys in str format
+        List_of_chunked (list): Here we store the sampled raw
+        signal from the dataset with a constant rate 
 
     """
 
@@ -31,9 +33,18 @@ def data_import(file_path:str, file_name_of_raw:str):
 
     data_raw = f_1['df']
 
+    #Chunking of data with a constant sample rate
+    rate_of_sampling = 10
+
+    chunked_data = data_raw[::rate_of_sampling]
+    List_of_chunked = []
+
     #Make a list with present keys
     L = list(data_raw.keys())
 
+    #Store the chunked data in a list for the signal processing operations
+    for element1 in L:
+        List_of_chunked.append(np.array(chunked_data.get(element1)))
     print(data_raw.info())
 
     #Manage data with lists 
@@ -41,4 +52,4 @@ def data_import(file_path:str, file_name_of_raw:str):
     for element0 in L:
         MATRIX_RAW.append(np.array(data_raw.get(element0)))
     
-    return MATRIX_RAW, L
+    return MATRIX_RAW, L, List_of_chunked

@@ -1,3 +1,4 @@
+from more_itertools import chunked
 from scipy import signal
 import numpy as np
 
@@ -55,6 +56,8 @@ def filt_sig (coeff:np.ndarray, order:int, FS:float, Raw:list):
         no delay
     """
     #Filtering the raw signal with the above FIR filter 
+    chunked_time=[]
+
     Blank = [] 
     x=[]
     for item in Raw:
@@ -62,7 +65,9 @@ def filt_sig (coeff:np.ndarray, order:int, FS:float, Raw:list):
         Blank.append(x)
 
     #Time interval of the samples
+    
     TIME = np.linspace(0, 7.599998, 3_800_000)
+    chunked_time = TIME[::10]
 
     #The first N-1 samples are corrupted by the initial conditions
     warmup = order - 1
@@ -70,11 +75,11 @@ def filt_sig (coeff:np.ndarray, order:int, FS:float, Raw:list):
     #The phase delay of the filtered signal
     delay= (warmup / 2) / FS
 
-    TIME_NO_SHIFT = TIME[warmup:]-delay
+    TIME_NO_SHIFT = chunked_time[warmup:]-delay
 
 
     #Uncorrupted signal
     Filt = []
     for item in Blank:
         Filt.append(item[warmup:])
-    return Filt, Blank, TIME, TIME_NO_SHIFT
+    return Filt, Blank, chunked_time, TIME_NO_SHIFT
