@@ -72,7 +72,7 @@ def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray,
         Title (str): a list with titles discribing the system condition (connected inverter or not etc.).
     """
     plt.title(Title)
-    plt.scatter(x_1, y_1, label= 'Raw signal', alpha=0.02)
+    plt.scatter(x_1, y_1, label= 'Raw signal', alpha=0.2)
     plt.plot(x_2, y_2, label='Filtered signal', color= 'r')
     plt.grid(True)
     plt.xlabel('Time [s]')
