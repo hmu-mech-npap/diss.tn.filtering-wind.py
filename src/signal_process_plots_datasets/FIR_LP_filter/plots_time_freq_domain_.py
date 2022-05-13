@@ -5,7 +5,7 @@ from lp_firwin_method_ import lp_firwin, filt_sig
 from file_import_ import data_import
 
 # Import the file for process
-RAW_DATA_ALL, raw_keys, CHUNKED_DATA = data_import(file_path='/home/goodvibrations32/Desktop/data_folder/', file_name_of_raw='noise_reference_raw.h5')
+RAW_DATA_ALL, raw_keys, CHUNKED_DATA = data_import(file_path='/home/goodvibrations32/Documents/Git_clones_dissertation/diss.tn.filtering-wind.py/src/signal_process_plots_datasets/FIR_LP_filter/', file_name_of_raw='noise_reference_raw.h5')
 
 # Construct the desiered FIR filter
 filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=500_000, cutoff_Hz=0.0001)
