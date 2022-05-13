@@ -33,7 +33,7 @@ folder_path_for_data_now = Path.cwd()
 # dir_no_3 = '.....' 
 # dir_no_4 = '.....'
 #
-#folder_path_for_data_now = dir_no_1 / dir_no_2 / dir_no_3 / dir_no_4 / ..... / .....
+#folder_path_for_data_now = home_folder / dir_no_1 / dir_no_2 / dir_no_3 / dir_no_4 / ..... / .....
 
 #Constant directories and names for the .tdms file structure
 tdms_f_name = 'Data.tdms'
