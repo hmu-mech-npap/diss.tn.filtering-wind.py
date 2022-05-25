@@ -133,7 +133,7 @@ dec_at_50_kHz = '121419'
 dec_at_5_kHz = '121435'
 path_dec_meas_50_kHz = folder_path_for_data_now / data_folder_name / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
 
-path_dec_meas_5_kHz = folder_path_for_data_now / data_folder_name / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
+path_dec_meas_5_kHz = folder_path_for_data_now / data_folder_name / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
