@@ -1,4 +1,5 @@
 #%%
+from matplotlib import scale
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
@@ -28,8 +29,10 @@ def plot_response(fs:float, w:np.ndarray, h:np.ndarray, title:str):
 
 #Define a function for Welch's method power spectrum for a signal
 
-def spect (x:np.ndarray):
+def spect (x:np.ndarray, FS:int):
     """
+    # Welch's method for power spectrum
+    
     Estimate the Power spectrum of a signal using the Welch method
 
     Args:
@@ -48,17 +51,54 @@ def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
     """Plots the power spectrum from the results of spect() function
 
     Args:
-        x (np.ndarray): time interval (sec).
-        y (np.ndarray): raw input signal.
+        x (np.ndarray): frequencies calculated by Welch method (Hz).
+        y (np.ndarray): the signal's power spectral magnitute from Welch method ().
         title (str): title of plot.
     """
     plt.figure()
-    plt.semilogy(x, np.sqrt(y))
+    ax=plt.gca()
+    ax.scatter(x, np.sqrt(y), s=5)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
     plt.grid(True, which='both')
     plt.xlabel('Frequency [Hz]')
-    plt.ylabel('Linear spectrum [V RMS]')
+    plt.ylabel('Amplitute')
     plt.title(title)
 
+# Plot two spectrum diagrams of 2 different signals
+
+def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,x2:np.ndarray,y2:np.ndarray,x3:np.ndarray, y3:np.ndarray,title:str, slabel1:str,slabel2:str,slabel3:str):
+    """ ## Three signals power spectrums combined in one graph
+
+    This function plots the power spectrum diagram of two signals.
+    The amplitute and frequency of the signals are calculated with signal.welch() function.
+
+    Args:
+        x1 (np.ndarray): The frequencies of the first given signal to be plotted
+        y1 (np.ndarray): The amplitute of the first given signal to be plotted
+        x2 (np.ndarray): The frequencies of the second given signal to be plotted
+        y2 (np.ndarray): The amplitute of the second given signal to be plotted
+        x3 (np.ndarray): The frequencies of the third given signal to be plotted
+        y3 (np.ndarray): The amplitute of the third given signal to be plotted
+        title (str): The main title of the figure 
+        slabel1 (str): The label to be presented in the legend of the plot for the first signal
+        slabel2 (str): The label to be presented in the legend of the plot for the second signal
+        slabel2 (str): The label to be presented in the legend of the plot for the third signal
+    """
+    plt.figure()
+    ax = plt.gca()
+    ax.scatter(x1, np.sqrt(y1), label=f'{slabel1}', s=1)
+    ax.scatter(x2, np.sqrt(y2), label=f'{slabel2}', s=1)
+    ax.scatter(x3, np.sqrt(y3), label=f'{slabel3}', s=1)
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    plt.grid(True, which='both')
+    plt.xlabel('Frequency [Hz]')
+    plt.ylabel('Amplitute')
+    plt.legend(bbox_to_anchor=(1.04,0.5))
+    plt.title(title)
+#   add xlim for plotting 
 #Define function to plot the raw and filtered signals combined 
 
 def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray, Title:str):

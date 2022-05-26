@@ -1,6 +1,7 @@
 #The folder which I store the .h5 files on my computer for the data
 data_folder
-
+*.h5
+measurments_12_05_22
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
