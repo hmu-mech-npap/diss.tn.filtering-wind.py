@@ -22,7 +22,8 @@ from nptdms import TdmsFile
 #CONSTANTS
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path.cwd()
+FOLDER_FOR_DATA = Path.cwd()/'measurments_12_05_22'
+FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 # If you prefear another folder for storing the data use this
 # the last line will join the names like a path from the system
@@ -38,9 +39,8 @@ FOLDER_FOR_DATA = Path.cwd()
 #%%
 
 #Constant directories and names for the .tdms file structure
-tdms_f_name = 'Data.tdms'
 tdms_folder_id = 'WTmeas20220512-'
-data_folder_name = 'measurments_12_05_22'
+tdms_f_name = 'Data.tdms'
 
 # Dir names for the Compressed air measurment
 comp_air_dir = 'compressed air'
@@ -52,7 +52,9 @@ data_CA_inv_1_WS_0 = '113005'
 data_CA_inv_1_WS_5 = '113534'
 data_CA_inv_1_WS_10= '113614'
 
-path_comp = FOLDER_FOR_DATA / data_folder_name / comp_air_dir / tdms_folder_id
+path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+
+# CA stands for compressed air
 
 raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5, data_CA_inv_0_WS_11, data_CA_inv_1_WS_0, data_CA_inv_1_WS_5, data_CA_inv_1_WS_10 ]
 tdms_raw_CA = []
@@ -76,8 +78,8 @@ Px_x_tdms_CA=[]
 ## Power Spectrum for Comp. Air 0 ws and inv. state on/off
 
 #%%
-x2,y2 = spect(df_tdms_1_0.iloc[:, 1].values, 100_000)
-x,y = spect(df_tdms_0_0.iloc[:, 1].values, 100_000)
+x2,y2 = spect(df_tdms_1_0.iloc[:, 1].values, FS=100_000)
+x,y = spect(df_tdms_0_0.iloc[:, 1].values, FS=100_000)
 f_spect_tdms_CA.append(x)
 f_spect_tdms_CA.append(x2)
 Px_x_tdms_CA.append(y)
@@ -95,7 +97,11 @@ f_spect_tdms_CA.append(x_2)
 Px_x_tdms_CA.append(y_)
 Px_x_tdms_CA.append(y_2)
 
-plot_spect_comb(f_spect_tdms_CA[2], Px_x_tdms_CA[2], f_spect_tdms_CA[3], Px_x_tdms_CA[3],0,0,title='Wind speed CA=5 m/s',slabel1='Inverter:Off',slabel2='Inverter:On',slabel3='')
+plot_spect_comb(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
+                f_spect_tdms_CA[3], Px_x_tdms_CA[3],0,0,
+                title='Wind speed CA=5 m/s',
+                slabel1='Inverter:Off',slabel2='Inverter:On',slabel3='',
+                xlim=[1e1,1e5])
 #%% [markdown]
 ## Same for 10/11 WS Comp. Air
 #%%
@@ -106,6 +112,12 @@ f_spect_tdms_CA.append(x_3)
 Px_x_tdms_CA.append(y__)
 Px_x_tdms_CA.append(y_3)
 
-plot_spect_comb(f_spect_tdms_CA[4], Px_x_tdms_CA[4], f_spect_tdms_CA[5], Px_x_tdms_CA[5],0,0,title='Wind speed CA=10/11 m/s',slabel1='Inverter:Off, WS:10 m/s',slabel2='Inverter:On, WS:11 m/s', slabel3='')
+plot_spect_comb(f_spect_tdms_CA[4], Px_x_tdms_CA[4], 
+                f_spect_tdms_CA[5], Px_x_tdms_CA[5],
+                0,0,
+                title='Wind speed CA=10/11 m/s',
+                slabel1='Inverter:Off, WS:10 m/s',
+                slabel2='Inverter:On, WS:11 m/s', slabel3='',
+                xlim =[1e1,1e5])
 
 # %%

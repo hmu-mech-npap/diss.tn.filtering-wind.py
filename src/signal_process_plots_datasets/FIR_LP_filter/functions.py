@@ -67,7 +67,11 @@ def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
 
 # Plot two spectrum diagrams of 2 different signals
 
-def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,x2:np.ndarray,y2:np.ndarray,x3:np.ndarray, y3:np.ndarray,title:str, slabel1:str,slabel2:str,slabel3:str):
+def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,
+                    x2:np.ndarray,y2:np.ndarray,
+                    x3:np.ndarray, y3:np.ndarray,
+                    title:str, slabel1:str,slabel2:str,slabel3:str,
+                    xlim = None):
     """ ## Three signals power spectrums combined in one graph
 
     This function plots the power spectrum diagram of two signals.
@@ -98,6 +102,12 @@ def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,x2:np.ndarray,y2:np.ndarray,x3:n
     plt.ylabel('Amplitute')
     plt.legend(bbox_to_anchor=(1.04,0.5))
     plt.title(title)
+    
+    try:
+        plt.xlim(xlim)
+    except:
+        pass
+    
 #   add xlim for plotting 
 #Define function to plot the raw and filtered signals combined 
 
