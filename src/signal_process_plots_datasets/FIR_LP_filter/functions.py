@@ -29,7 +29,7 @@ def plot_response(fs:float, w:np.ndarray, h:np.ndarray, title:str):
 
 #Define a function for Welch's method power spectrum for a signal
 
-def spect (x:np.ndarray):
+def spect (x:np.ndarray, FS:int):
     """
     # Welch's method for power spectrum
     
@@ -98,7 +98,7 @@ def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,x2:np.ndarray,y2:np.ndarray,x3:n
     plt.ylabel('Amplitute')
     plt.legend(bbox_to_anchor=(1.04,0.5))
     plt.title(title)
-
+#   add xlim for plotting 
 #Define function to plot the raw and filtered signals combined 
 
 def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray, Title:str):

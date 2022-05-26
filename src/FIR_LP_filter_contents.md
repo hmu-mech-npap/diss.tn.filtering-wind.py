@@ -66,3 +66,11 @@ This file is creating an **HDF5** file with the filtered signal and the time int
   
   - **Optional feature**: 
     - Ask from the user if he wants to change the name of the new file or just replace the *raw* at the end of the file name that was imported to *filt*. 
+  
+## 1.3.6 **raw_signal_comp.py**
+This file is used for .................................
+- what it does
+  - operation1
+  - operation2
+  - ....
+  -  
