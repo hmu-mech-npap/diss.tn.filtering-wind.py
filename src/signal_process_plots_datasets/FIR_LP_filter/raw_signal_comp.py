@@ -1,8 +1,12 @@
 # %%
 
 from pathlib import Path
-from functions import spect, plot_spect_comb
+from matplotlib import pyplot as plt
 from nptdms import TdmsFile
+import numpy as np
+
+from functions import spect, plot_spect_comb, plot_spectrum, plot_spect_comb2, Graph_data_container
+
 
 # %% [markdown]
 # ## Here the new measurments from 12/05/22 are used
@@ -89,17 +93,51 @@ Px_x_tdms_CA.append(y)
 Px_x_tdms_CA.append(y2)
 
 # Hotwire speed 5 m/s
+
+
+plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[0], Px_x_tdms_CA[0],  label= 'Inverter:Off'),
+                 Graph_data_container( f_spect_tdms_CA[1], Px_x_tdms_CA[1], label= 'Inverter:On')   ],
+                title='Wind speed CA=0 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2)
+
+#%% [markdown]
+## Same for 5 m/s WS Comp. Air
+#%%
+x_2,y_2 = spect(df_tdms_1_5.iloc[:, 1].values,100_000)
+x_,y_ = spect(df_tdms_0_5.iloc[:, 1].values, 100_000)
 f_spect_tdms_CA.append(x_)
 f_spect_tdms_CA.append(x_2)
 Px_x_tdms_CA.append(y_)
 Px_x_tdms_CA.append(y_2)
 
 # Hotwire speed 10/11 m/s
+
+
+plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
+                                       label= 'Inverter:Off'),
+                 Graph_data_container( f_spect_tdms_CA[3], Px_x_tdms_CA[3],
+                                      label= 'Inverter:On')   ],
+                title='Wind speed CA=5 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2, figsize = (10,6))
+#%% [markdown]
+## Same for 10/11 WS Comp. Air
+#%%
+x_3,y_3 = spect(df_tdms_1_10.iloc[:, 1].values,100_000)
+x__,y__ = spect(df_tdms_0_11.iloc[:, 1].values,100_000)
 f_spect_tdms_CA.append(x__)
 f_spect_tdms_CA.append(x_3)
 Px_x_tdms_CA.append(y__)
 Px_x_tdms_CA.append(y_3)
 
+
+# %%
+plot_spect_comb2([Graph_data_container( f_spect_tdms_CA[4], Px_x_tdms_CA[4], label= 'Inverter:Off, WS:10 m/s'),
+                 Graph_data_container( f_spect_tdms_CA[5], Px_x_tdms_CA[5], label= 'Inverter:On, WS:11 m/s')   ],
+                title='Wind speed CA=10/11 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2, to_disk=True)
 
 
 def main():
@@ -133,9 +171,8 @@ def main():
 # Construct the desiered FIR filter
 
 
-# %%
-
 if __name__ == "__main__":
     main()
 
+# %%
 # %%
