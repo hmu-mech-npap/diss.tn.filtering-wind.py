@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
 
-FS=500_000  #Sampling frequency in Hz 
+#FS=500_000  #Sampling frequency in Hz 
 
 # Define function for Filter freq response
 
@@ -47,7 +47,8 @@ def spect (x:np.ndarray, FS:int):
 
 #Define a function for plotting the Power spectrums
 
-def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
+def plot_spectrum(x=np.ndarray,y=np.ndarray,
+                title=str,xlim=None):
     """Plots the power spectrum from the results of spect() function
 
     Args:
@@ -64,6 +65,11 @@ def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitute')
     plt.title(title)
+    
+    try:
+        plt.xlim(xlim)
+    except:
+        pass
 
 # Plot two spectrum diagrams of 2 different signals
 
@@ -111,7 +117,9 @@ def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,
 #   add xlim for plotting 
 #Define function to plot the raw and filtered signals combined 
 
-def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray, Title:str):
+def plot_signals(x_1:np.ndarray,x_2:np.ndarray,
+                y_1:np.ndarray,y_2:np.ndarray,
+                Title:str):
     """Plot the filtered signal in combined plots for comparison with the raw signal
 
     Args:
