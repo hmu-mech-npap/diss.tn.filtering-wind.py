@@ -95,11 +95,11 @@ Px_x_tdms_CA.append(y2)
 # Hotwire speed 5 m/s
 
 
-plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[0], Px_x_tdms_CA[0],  label= 'Inverter:Off'),
-                 Graph_data_container( f_spect_tdms_CA[1], Px_x_tdms_CA[1], label= 'Inverter:On')   ],
-                title='Wind speed CA=0 m/s',
-                xlim =[1e1,1e5],
-                Kolmogorov_offset=1e2)
+# plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[0], Px_x_tdms_CA[0],  label= 'Inverter:Off'),
+#                  Graph_data_container( f_spect_tdms_CA[1], Px_x_tdms_CA[1], label= 'Inverter:On')   ],
+#                 title='Wind speed CA=0 m/s',
+#                 xlim =[1e1,1e5],
+#                 Kolmogorov_offset=1e2)
 
 #%% [markdown]
 ## Same for 5 m/s WS Comp. Air
@@ -111,16 +111,9 @@ f_spect_tdms_CA.append(x_2)
 Px_x_tdms_CA.append(y_)
 Px_x_tdms_CA.append(y_2)
 
-# Hotwire speed 10/11 m/s
+# Hotwire speed 5 m/s
 
 
-plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
-                                       label= 'Inverter:Off'),
-                 Graph_data_container( f_spect_tdms_CA[3], Px_x_tdms_CA[3],
-                                      label= 'Inverter:On')   ],
-                title='Wind speed CA=5 m/s',
-                xlim =[1e1,1e5],
-                Kolmogorov_offset=1e2, figsize = (10,6))
 #%% [markdown]
 ## Same for 10/11 WS Comp. Air
 #%%
@@ -132,41 +125,62 @@ Px_x_tdms_CA.append(y__)
 Px_x_tdms_CA.append(y_3)
 
 
-# %%
-plot_spect_comb2([Graph_data_container( f_spect_tdms_CA[4], Px_x_tdms_CA[4], label= 'Inverter:Off, WS:10 m/s'),
-                 Graph_data_container( f_spect_tdms_CA[5], Px_x_tdms_CA[5], label= 'Inverter:On, WS:11 m/s')   ],
-                title='Wind speed CA=10/11 m/s',
-                xlim =[1e1,1e5],
-                Kolmogorov_offset=1e2, to_disk=True)
+
 
 
 def main():
 
-    plot_spect_comb(f_spect_tdms_CA[0], Px_x_tdms_CA[0],
-                    f_spect_tdms_CA[1], Px_x_tdms_CA[1],
-                    0,0,
-                    title='Wind speed CA=0 m/s',
-                    slabel1='Inverter:Off',
-                    slabel2='Inverter:On',slabel3='',
-                    xlim=[1e1,1e5])
+    # plot_spect_comb(f_spect_tdms_CA[0], Px_x_tdms_CA[0],
+    #                 f_spect_tdms_CA[1], Px_x_tdms_CA[1],
+    #                 0,0,
+    #                 title='Wind speed CA=0 m/s',
+    #                 slabel1='Inverter:Off',
+    #                 slabel2='Inverter:On',slabel3='',
+    #                 xlim=[1e1,1e5])
+
+    plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[0], Px_x_tdms_CA[0],  label= 'Inverter:Off'),
+                 Graph_data_container( f_spect_tdms_CA[1], Px_x_tdms_CA[1], label= 'Inverter:On')   ],
+                title='Wind speed CA=0 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize = (10,6),
+                to_disk=True)
 
 
-    plot_spect_comb(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
-                    f_spect_tdms_CA[3], Px_x_tdms_CA[3],
-                    0,0,
-                    title='Wind speed CA=5 m/s',
-                    slabel1='Inverter:Off',
-                    slabel2='Inverter:On',slabel3='',
-                    xlim=[1e1,1e5])
+    # Hotwire speed 5 m/s
 
-    plot_spect_comb(f_spect_tdms_CA[4], Px_x_tdms_CA[4], 
-                    f_spect_tdms_CA[5], Px_x_tdms_CA[5],
-                    0,0,
-                    title='Wind speed CA=10/11 m/s',
-                    slabel1='Inverter:Off, WS:10 m/s',
-                    slabel2='Inverter:On, WS:11 m/s', slabel3='',
-                    xlim =[1e1,1e5])
+    # plot_spect_comb(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
+    #                 f_spect_tdms_CA[3], Px_x_tdms_CA[3],
+    #                 0,0,
+    #                 title='Wind speed CA=5 m/s',
+    #                 slabel1='Inverter:Off',
+    #                 slabel2='Inverter:On',slabel3='',
+    #                 xlim=[1e1,1e5])
+    
 
+    plot_spect_comb2([Graph_data_container(f_spect_tdms_CA[2], Px_x_tdms_CA[2], 
+                                       label= 'Inverter:Off'),
+                 Graph_data_container( f_spect_tdms_CA[3], Px_x_tdms_CA[3],
+                                      label= 'Inverter:On')   ],
+                title='Wind speed CA=5 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2, figsize = (10,6)
+                , to_disk=True)
+
+
+    # plot_spect_comb(f_spect_tdms_CA[4], Px_x_tdms_CA[4], 
+    #                 f_spect_tdms_CA[5], Px_x_tdms_CA[5],
+    #                 0,0,
+    #                 title='Wind speed CA=10/11 m/s',
+    #                 slabel1='Inverter:Off, WS:10 m/s',
+    #                 slabel2='Inverter:On, WS:11 m/s', slabel3='',
+    #                 xlim =[1e1,1e5])
+
+    plot_spect_comb2([Graph_data_container( f_spect_tdms_CA[4], Px_x_tdms_CA[4], label= 'Inverter:Off, WS:10 m/s'),
+                 Graph_data_container( f_spect_tdms_CA[5], Px_x_tdms_CA[5], label= 'Inverter:On, WS:11 m/s')   ],
+                title='Wind speed CA=10/11 m/s',
+                xlim =[1e1,1e5],
+                Kolmogorov_offset=1e2, to_disk=True)
 
 # Construct the desiered FIR filter
 
