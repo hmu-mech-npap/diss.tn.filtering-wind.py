@@ -48,7 +48,8 @@ def spect (x:np.ndarray, FS:int, window='flattop', nperseg=1_024, scaling='spect
 
 #Define a function for plotting the Power spectrums
 
-def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
+def plot_spectrum(x=np.ndarray,y=np.ndarray,
+                title=str,xlim=None):
     """Plots the power spectrum from the results of spect() function
 
     Args:
@@ -65,6 +66,11 @@ def plot_spectrum(x=np.ndarray, y=np.ndarray, title=str):
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Amplitute')
     plt.title(title)
+    
+    try:
+        plt.xlim(xlim)
+    except:
+        pass
 
 # Plot two spectrum diagrams of 2 different signals
 
@@ -176,7 +182,9 @@ def plot_spect_comb2(graph_objlist ,
 #%%    
 #Define function to plot the raw and filtered signals combined 
 
-def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray, Title:str):
+def plot_signals(x_1:np.ndarray,x_2:np.ndarray,
+                y_1:np.ndarray,y_2:np.ndarray,
+                Title:str):
     """Plot the filtered signal in combined plots for comparison with the raw signal
 
     Args:
