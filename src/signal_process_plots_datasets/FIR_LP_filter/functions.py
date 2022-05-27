@@ -3,8 +3,9 @@ from matplotlib import scale
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+import pathlib
 
-FS=500_000  #Sampling frequency in Hz 
+# FS=500_000  #Sampling frequency in Hz 
 
 # Define function for Filter freq response
 
@@ -29,7 +30,7 @@ def plot_response(fs:float, w:np.ndarray, h:np.ndarray, title:str):
 
 #Define a function for Welch's method power spectrum for a signal
 
-def spect (x:np.ndarray, FS:int):
+def spect (x:np.ndarray, FS:int, window='flattop', nperseg=1_024, scaling='spectrum'):
     """
     # Welch's method for power spectrum
     
@@ -42,7 +43,7 @@ def spect (x:np.ndarray, FS:int):
        z(np.ndarray): Array of sample frequencies
        y(np.ndarray): Array of power spectrum of x
     """
-    z,y = signal.welch(x,FS,window='flattop', nperseg=1_024, scaling='spectrum')
+    z,y = signal.welch(x,FS,window=window, nperseg=nperseg, scaling=scaling)
     return z, y
 
 #Define a function for plotting the Power spectrums
@@ -107,8 +108,72 @@ def plot_spect_comb(x1:np.ndarray,y1:np.ndarray,
         plt.xlim(xlim)
     except:
         pass
+ 
+ 
+class Graph_data_container:
+    def __init__(self, x:np.ndarray, y:np.ndarray, label:str) -> None:
+        self.x = x
+        self.y = y
+        self.label = label
     
-#   add xlim for plotting 
+    @property 
+    def xs_lim(self):
+        x_l =  np.floor(np.log10 (max(1, min(self.x)) ))
+        x_u =  np.ceil(np.log10 (max(1, max(self.x)) ))
+        return [10**x_l, 10**x_u]
+    @property 
+    def ys_lim(self):
+        x_l =  np.floor(np.log10 ( min(self.y) ))-1
+        x_u =  np.ceil(np.log10 ( max(self.y) ))+1
+        return [10**x_l, 10**x_u]
+
+    
+def plot_spect_comb2(graph_objlist ,
+                    title:str, 
+                    xlim = None, Kolmogorov_offset = None,
+                    **kwargs,
+                    ):
+    """ ## plots different signal power spectrums combined in one graph
+
+    This function plots the power spectrum diagram of an arbitray  signals.
+    The amplitute and frequency of the signals are calculated with signal.welch() function.
+
+    Args:
+        graph_objlist(list): a list of Graph_data_container
+        title (str): The main title of the figure 
+        xlim (tuple): x limits of power spectrum graph
+    """
+    fig, ax = plt.subplots(1,1, figsize=kwargs.get('figsize',None))
+    for gdc_obj in graph_objlist:
+        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', s=1)
+    
+    try:
+        plt.xlim(xlim)
+    except:
+        pass
+    
+    if Kolmogorov_offset is not None:
+        KOLMOGORV_CONSTANT = - 5/3
+        xs = np.array(graph_objlist[0].xs_lim)
+        ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
+
+        ax.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
+        ax.set_ylim(np.sqrt(graph_objlist[0].ys_lim))
+    # final formating
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.grid(True, which='both')
+    ax.set_xlabel('Frequency [Hz]')
+    ax.set_ylabel('Amplitute')
+    # plt.legend(bbox_to_anchor=(1.04,0.5))
+    ax.legend()
+    ax.set_title(title)
+    if kwargs.get('to_disk', None) is True:
+        target_path = pathlib.Path('_temp_fig/{}.png'.format(title.translate({ord(c): None for c in ': /='} )))
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(target_path,facecolor='white', transparent=False)
+    
+#%%    
 #Define function to plot the raw and filtered signals combined 
 
 def plot_signals(x_1:np.ndarray, x_2:np.ndarray, y_1:np.ndarray, y_2:np.ndarray, Title:str):
@@ -162,7 +227,7 @@ def plot_sep_sig(x_1:np.ndarray, y_1:np.ndarray, x_2:np.ndarray, y_2:np.ndarray,
 
 #Define function for FFT of two signals to be able of plotting 
 #the corrupted and uncorrupted signals in frequency domain
-def fft_sig (y1:np.ndarray, y2:np.ndarray):
+def fft_sig (y1:np.ndarray, y2:np.ndarray,    f0 = 2_000,fs = 500_000):
     """
     Computes the fourier transform for two seperate signals and returns the results
     and the corresponding frequencies
@@ -178,9 +243,8 @@ def fft_sig (y1:np.ndarray, y2:np.ndarray):
 
 
     """
-    f0 = 2_000
-    fs = 500_000
-    N = int(2_000*(fs/f0))
+
+    N = int(2_000*(fs/f0)) #TODO what is this N???
     f= np.linspace (0, (N-1)*(fs/N),N )
 
     yf_input = np.fft.fft(y1)
