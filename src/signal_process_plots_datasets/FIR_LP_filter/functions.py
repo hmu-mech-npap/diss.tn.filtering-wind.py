@@ -132,11 +132,23 @@ class Graph_data_container:
         x_l =  np.floor(np.log10 ( min(self.y) ))-1
         x_u =  np.ceil(np.log10 ( max(self.y) ))+1
         return [10**x_l, 10**x_u]
+    
+    @property 
+    def extrema(self):
+        """returns the extreme values for x and y 
+        [x_min, x_max, y_min, y_max]
+
+        Returns:
+            _type_: _description_
+        """        
+        return [self.x.min(), self.x.max(), self.y.min(), self.y.max()]
 
     
 def plot_spect_comb2(graph_objlist ,
                     title:str, 
-                    xlim = None, Kolmogorov_offset = None,
+                    xlim = None, 
+                    ylim = 'auto',
+                    Kolmogorov_offset = None,
                     **kwargs,
                     ):
     """ ## plots different signal power spectrums combined in one graph
@@ -150,8 +162,12 @@ def plot_spect_comb2(graph_objlist ,
         xlim (tuple): x limits of power spectrum graph
     """
     fig, ax = plt.subplots(1,1, figsize=kwargs.get('figsize',None))
+    xylims = []
     for gdc_obj in graph_objlist:
-        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', s=1)
+        assert isinstance(gdc_obj, Graph_data_container)
+        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', s=kwargs.get('markersize',2))
+        xylims.append(gdc_obj.extrema)
+    
     
     try:
         plt.xlim(xlim)
@@ -164,7 +180,12 @@ def plot_spect_comb2(graph_objlist ,
         ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
 
         ax.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
-        ax.set_ylim(np.sqrt(graph_objlist[0].ys_lim))
+    if ylim == 'auto':
+        arr= np.array(xylims)[:,2:]
+        ax.set_ylim(np.sqrt([arr[:,0].min(), arr[:,1].max() ]))
+        
+    elif isinstance(ylim, list):
+        ax.set_ylim( ylim)
     # final formating
     ax.set_xscale('log')
     ax.set_yscale('log')
