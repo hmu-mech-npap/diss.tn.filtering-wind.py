@@ -8,7 +8,7 @@ import pandas as pd
 
 from nptdms import TdmsFile
 import nptdms
-from functions import spect, plot_spect_comb, plot_spectrum, plot_spect_comb2, Graph_data_container
+from functions import spect, plot_spect_comb2, Graph_data_container
 
 
 # %% [markdown]
