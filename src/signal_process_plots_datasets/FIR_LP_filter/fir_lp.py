@@ -3,11 +3,17 @@
  
 from lp_firwin_method_ import lp_firwin
 from scipy import signal
-from raw_signal_comp import df_tdms_0_0, df_tdms_1_0, df_tdms_0_5, df_tdms_1_5, df_tdms_0_11, df_tdms_1_10, f_spect_tdms_CA, Px_x_tdms_CA
-from functions import spect, plot_spect_comb
+
+from raw_signal_comp import (df_tdms_0_0, df_tdms_1_0,
+                             df_tdms_0_5, df_tdms_1_5,
+                             df_tdms_0_11, df_tdms_1_10,
+                             f_spect_tdms_CA, Px_x_tdms_CA,
+                             FS_100kHz)
+
+from functions import Graph_data_container, spect, plot_spect_comb2
 
 #Constants
-FS = 100_000 # Sampling frequency of the signal
+FS = FS_100kHz # Sampling frequency of the signal
 
 #Construct an FIR filter with signal.firwin() function
 filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=FS, cutoff_Hz=0.0001)
@@ -40,65 +46,68 @@ x_fir_1_10, y_fir_1_10 = spect(fir_lp_filt_1_10[warmup:], FS)
 # in one graph
 
 #Inverter Off
+
 # Compressed air 0 m/s
-plot_spect_comb(x1=x_fir_0_0,y1=y_fir_0_0,
-                x2=f_spect_tdms_CA[0],y2=Px_x_tdms_CA[0],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_0_0, y_fir_0_0, 
+                                        label='Filtered FIR'),
+                 Graph_data_container(f_spect_tdms_CA[0], Px_x_tdms_CA[0],
+                                        label='Raw signal')  ],
                 title='Wind speed CA=0 m/s Inverter Off',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize = (10,6))
+
 
 # Compressed air 5 m/s
-plot_spect_comb(x1=x_fir_0_5,y1=y_fir_0_5,
-                x2=f_spect_tdms_CA[2],y2=Px_x_tdms_CA[2],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_0_5, y_fir_0_5,
+                                        label='Filtered'),
+                 Graph_data_container(f_spect_tdms_CA[2],Px_x_tdms_CA[2],
+                                        label='CA = 5m/s')    ],
                 title='Wind speed CA=5 m/s Inverter Off',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6))
 
 # Compressed air 11 m/s
-plot_spect_comb(x1=x_fir_0_11,y1=y_fir_0_11,
-                x2=f_spect_tdms_CA[4],y2=Px_x_tdms_CA[4],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_0_11,y_fir_0_11,
+                                        label='Filtered FIR'),
+                 Graph_data_container(f_spect_tdms_CA[4], Px_x_tdms_CA[4],
+                                        label='Raw signal')  ],
                 title='Wind speed CA=11 m/s Inverter Off',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize = (10,6))
 
 # Inverter On
 # Compressed air 0 m/s
-plot_spect_comb(x1=x_fir_1_0,y1=y_fir_1_0,
-                x2=f_spect_tdms_CA[1],y2=Px_x_tdms_CA[1],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_1_0, y_fir_1_0,
+                                        label='Filtered FIR'),
+                 Graph_data_container(f_spect_tdms_CA[1], Px_x_tdms_CA[1],
+                                        label='Raw signal')  ],
                 title='Wind speed CA=0 m/s Inverter On',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6))
 
 # Compressed air 5 m/s
-plot_spect_comb(x1=x_fir_1_5,y1=y_fir_1_5,
-                x2=f_spect_tdms_CA[3],y2=Px_x_tdms_CA[3],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_1_5,y_fir_1_5,
+                                        label='Filtered FIR'),
+                 Graph_data_container(f_spect_tdms_CA[3], Px_x_tdms_CA[3],
+                                        label='Raw signal')  ],
                 title='Wind speed CA=5 m/s Inverter On',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6))
 
 # Compressed air 10 m/s
-plot_spect_comb(x1=x_fir_1_10,y1=y_fir_1_10,
-                x2=f_spect_tdms_CA[5],y2=Px_x_tdms_CA[5],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_fir_1_10, y_fir_1_10,
+                                        label='Filtered FIR'),
+                 Graph_data_container(f_spect_tdms_CA[5], Px_x_tdms_CA[5],
+                                        label='Raw signal')  ],
                 title='Wind speed CA=11 m/s Inverter On',
-                slabel1='Filtered FIR',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
-                )
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize = (10,6))
+
 
 # %%

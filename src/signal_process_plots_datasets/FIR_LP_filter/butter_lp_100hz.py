@@ -1,12 +1,19 @@
 # %%
 # Libraries, functions and variables to be imported
+
 import numpy as np
 from scipy import signal
-from raw_signal_comp import df_tdms_0_0, df_tdms_1_0, df_tdms_0_5, df_tdms_1_5, df_tdms_0_11, df_tdms_1_10, f_spect_tdms_CA, Px_x_tdms_CA
-from functions import spect, plot_spect_comb
+
+from raw_signal_comp import (df_tdms_0_0, df_tdms_1_0,
+                            df_tdms_0_5, df_tdms_1_5,
+                            df_tdms_0_11, df_tdms_1_10,
+                            f_spect_tdms_CA, Px_x_tdms_CA,
+                            FS_100kHz)
+
+from functions import spect, plot_spect_comb2, Graph_data_container
 
 # Constants
-FS = 100_000
+FS = FS_100kHz
 
 # Construction of Butterworth filter
 sos = signal.butter(N = 10, Wn = 200*np.pi, btype = 'lp', fs = FS, output = 'sos')
@@ -33,64 +40,77 @@ x_filt_ws_11,y_filt_ws_11 = spect(filtered_inv0_ws11, FS=FS)
 
 # Inverter off
 # Compare the signals for 0 m/s WS Comp.Air
-plot_spect_comb(x1=x_filt,y1=y_filt,
-                x2=f_spect_tdms_CA[0],y2=Px_x_tdms_CA[0],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_filt,y_filt,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[0],Px_x_tdms_CA[0],
+                                        label='Raw signal')    ],
                 title='Wind speed CA=0 m/s Inverter Off',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
 
 # Same for 5 m/s WS Comp. Air
-plot_spect_comb(x1=x_filt_ws_5,y1=y_filt_ws_5,
-                x2=f_spect_tdms_CA[2],y2= Px_x_tdms_CA[2],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x_filt_ws_5,y_filt_ws_5,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[2],Px_x_tdms_CA[2],
+                                        label='Raw signal')    ],
                 title='Wind speed CA=5 m/s Inverter Off',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
 
-# Same for 10/11 m/s WS Comp. Air
-plot_spect_comb(x1=x_filt_ws_11,y1=y_filt_ws_11,
-                x2=f_spect_tdms_CA[4],y2=Px_x_tdms_CA[4],
-                x3=0,y3=0,
+# Same for 11 m/s WS Comp. Air
+plot_spect_comb2([Graph_data_container(x_filt_ws_11,y_filt_ws_11,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[4],Px_x_tdms_CA[4],
+                                        label='Raw signal')    ],
                 title='Wind speed CA=11 m/s Inverter Off',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
 
 # Inverter on
 # Compare the signals for 0 m/s WS Comp.Air
-plot_spect_comb(x1=x2_filt,y1=y2_filt,
-                x2=f_spect_tdms_CA[1],y2=Px_x_tdms_CA[1],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x2_filt,y2_filt,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[1],Px_x_tdms_CA[1],
+                                        label = 'Raw signal')  ],
                 title='Wind speed CA=0 m/s Inverter On',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
 
 # Same for 5 m/s WS Comp. Air
-plot_spect_comb(x1=x2_filt_ws_5,y1=y2_filt_ws_5,
-                x2=f_spect_tdms_CA[3],y2= Px_x_tdms_CA[3],
-                x3=0,y3=0,
+plot_spect_comb2([Graph_data_container(x2_filt_ws_5,y2_filt_ws_5,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[3], Px_x_tdms_CA[3],
+                                        label='Raw signal')   ],
                 title='Wind speed CA=5 m/s Inverter On',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
 
-# Same for 10/11 m/s WS Comp. Air
-plot_spect_comb(x1=x2_filt_ws_10,y1=y2_filt_ws_10,
-                x2=f_spect_tdms_CA[5],y2=Px_x_tdms_CA[5],
-                x3=0,y3=0,
+# Same for 10 m/s WS Comp. Air
+plot_spect_comb2([Graph_data_container(x2_filt_ws_10,y2_filt_ws_10,
+                                        label='Filtered Butterworth'),
+                 Graph_data_container(f_spect_tdms_CA[5],Px_x_tdms_CA[5],
+                                        label='Raw signal')    ],
                 title='Wind speed CA=11 m/s Inverter On',
-                slabel1='Filtered Butterworth',
-                slabel2='Raw signal',slabel3='',
-                xlim=[1e1,1e5]
+                xlim=[1e1,1e5],
+                Kolmogorov_offset=1e2,
+                figsize=(10,6),
+                #to_disk=True
                 )
+
 
 # %%
