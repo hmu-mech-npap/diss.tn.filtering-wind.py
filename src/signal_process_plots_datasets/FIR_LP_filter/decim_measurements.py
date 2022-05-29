@@ -2,11 +2,9 @@
 
 from pathlib import Path
 
-from functions import (spect, Graph_data_container,
-                       plot_spect_comb2)
+from functions import spect, plot_spect_comb, plot_spectrum
 from nptdms import TdmsFile
 
-from raw_signal_comp import FS_100kHz
 
 #%%[markdown]
 #
@@ -25,6 +23,17 @@ from raw_signal_comp import FS_100kHz
 
 FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
 #FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+# If you prefear another folder for storing the data use this
+# the last line will join the names like a path from the system
+#  
+# home_folder = Path.home()
+# dir_no_1 = 'folder name as a string'
+# dir_no_2 = '.....'
+# dir_no_3 = '.....' 
+# dir_no_4 = '.....'
+#
+#FOLDER_FOR_DATA = home_folder / dir_no_1 / dir_no_2 / dir_no_3 / dir_no_4 / ..... / .....
 
 #%%
 
@@ -46,14 +55,10 @@ tdms_folder_id = 'WTmeas20220512-'
 # Inverter measurments 
 # Dir name 
 inv_meas_dir = 'Inverter'
+
 WT_inv_1_WS_0 = '115754'
 
-#Path for Inverter folder measurements (reference)
-path_inv_meas=(FOLDER_FOR_DATA /
-                inv_meas_dir /
-                f'{tdms_folder_id}{WT_inv_1_WS_0}' /
-                tdms_f_name
-                )
+path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
@@ -61,78 +66,55 @@ tdms_raw_WT =TdmsFile(path_inv_meas)
 dec_meas_dir = 'Decimation'
 dec_at_50_kHz = '121419'
 dec_at_5_kHz = '121435'
+path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
 
-#Path for decimated measurements at 50 kHz 
-path_dec_meas_50_kHz = (FOLDER_FOR_DATA /
-                        dec_meas_dir / 
-                        f'{tdms_folder_id}{dec_at_50_kHz}' /
-                        tdms_f_name
-                        )
-
-#Path for decimated measurements at 5 kHz 
-path_dec_meas_5_kHz=(FOLDER_FOR_DATA /
-                    dec_meas_dir /
-                    f'{tdms_folder_id}{dec_at_5_kHz}' /
-                    tdms_f_name
-                    )
+path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
 
 df_tdms_inv_meas_1_0 = tdms_raw_WT.as_dataframe()
 
-f_spect_WT, Px_x_WT = spect(df_tdms_inv_meas_1_0.iloc[:, 3].values,FS_100kHz)
+f_spect_WT, Px_x_WT = spect(df_tdms_inv_meas_1_0.iloc[:, 3].values,100_000)
 
-#Plot only the raw signal with Inverter on and WS 0 [m/s] 
-plot_spect_comb2([Graph_data_container(f_spect_WT, Px_x_WT,
-                                        label='Raw signal')  ],
+plot_spectrum(f_spect_WT, Px_x_WT,
                 title='Power spectrum of Inverter on and WT:0 [m/s] 100kHz',
-                xlim=[1e1,1e5],
-                Kolmogorov_offset=1e2,
-                figsize = (10,6))
-
+                xlim=[1e1,1e5])
 
 #Decimation from original measurment at 50 kHz 
-f_spect_WT_dec_50kHz, Px_x_WT_dec_50kHz = spect(df_tdms_inv_meas_1_0.iloc[::2, 3].values,
-                                                FS=int(FS_100kHz/2))
+f_spect_WT_dec_50kHz, Px_x_WT_dec_50kHz = spect(df_tdms_inv_meas_1_0.iloc[::2, 3].values, 50_000)
 
 #Decimation from original measurment at 5 kHz
-f_spect_WT_dec_5kHz, Px_x_WT_dec_5kHz = spect(df_tdms_inv_meas_1_0.iloc[::20, 3].values,
-                                                FS=int(FS_100kHz/20))
+f_spect_WT_dec_5kHz, Px_x_WT_dec_5kHz = spect(df_tdms_inv_meas_1_0.iloc[::20, 3].values,5_000)
 
-#Decimated measurements from "Decimation" folder as dataframe object
 df_tdms_dec_50kHz = tdms_raw_WT_50kHz.as_dataframe()
 df_tdms_dec_5kHz = tdms_raw_WT_5kHz.as_dataframe()
 
 # Power spectrum frequencies and amplitutes 
-f_dec_50kHz, Px_x_dec_50kHz= spect(df_tdms_dec_50kHz.iloc[:, 3], FS=int(FS_100kHz/2))
-f_dec_5kHz, Px_x_dec_5kHz= spect(df_tdms_dec_5kHz.iloc[:, 3], FS=int(FS_100kHz/20))
+f_dec_50kHz, Px_x_dec_50kHz= spect(df_tdms_dec_50kHz.iloc[:, 3], 50_000)
+f_dec_5kHz, Px_x_dec_5kHz= spect(df_tdms_dec_5kHz.iloc[:, 3], 5_000)
 
 #Power spectrum at 50kHz
-plot_spect_comb2([Graph_data_container(f_spect_WT_dec_50kHz, Px_x_WT_dec_50kHz,
-                                        label='Decimated from 100 kHz'),
-                 Graph_data_container(f_dec_50kHz,Px_x_dec_50kHz,
-                                        label='Decimated measurement')    ],
+plot_spect_comb(f_spect_WT_dec_50kHz, Px_x_WT_dec_50kHz, 
+                f_dec_50kHz, Px_x_dec_50kHz,
+                0,0,
                 title='Decimation at 50kHz',
-                xlim=[1e1,1e5],
-                Kolmogorov_offset=1e1,
-                figsize=(10,6))
+                slabel1='Decimated from 100 kHz',
+                slabel2='Decimated measurement',
+                slabel3='',
+                xlim=[1e1,1e5])
 
 #Decimation from 50 kHz to 5 kHz
-f_dec_50kHz_at_5kHz, Px_x_dec_50kHz_at_5kHz= spect(df_tdms_dec_50kHz.iloc[::10, 3],
-                                                    FS=int(FS_100kHz/20))
+f_dec_50kHz_at_5kHz, Px_x_dec_50kHz_at_5kHz= spect(df_tdms_dec_50kHz.iloc[::10, 3], 5_000)
 
 #Power spectrum at 5kHz
-plot_spect_comb2([Graph_data_container(f_spect_WT_dec_5kHz,Px_x_WT_dec_5kHz,
-                                        label='Decimated from 100kHz'),
-                 Graph_data_container(f_dec_5kHz, Px_x_dec_5kHz,
-                                        label='Decimated measurement'),
-                 Graph_data_container(f_dec_50kHz_at_5kHz,Px_x_dec_50kHz_at_5kHz,
-                                        label='Decimated from 50kHz')  ],
+plot_spect_comb(f_spect_WT_dec_5kHz, Px_x_WT_dec_5kHz,
+                f_dec_5kHz, Px_x_dec_5kHz,
+                f_dec_50kHz_at_5kHz,Px_x_dec_50kHz_at_5kHz, 
                 title='Decimation at 5kHz',
-                xlim=[1e1,1e5],
-                Kolmogorov_offset=1e0,
-                figsize=(10,6))
-
+                slabel1='Decimated from 100kHz',
+                slabel2='Decimated measurement',
+                slabel3='Decimated from 50kHz',
+                xlim=[1e1,1e5])
 
 # %%
