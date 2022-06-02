@@ -1,4 +1,11 @@
 # %%
+
+# ===============================================================================
+# I think this file could be replaced and deleted permenantly because the
+# class you made is filtering much faster the signal with a butterworth filter
+# and is replacing the hole file I think... 
+# =============================================================================== 
+
 # Libraries, functions and variables to be imported
 import numpy as np
 from scipy import signal
