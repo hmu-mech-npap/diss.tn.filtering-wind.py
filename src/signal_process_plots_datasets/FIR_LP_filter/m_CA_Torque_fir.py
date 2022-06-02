@@ -1,3 +1,7 @@
+#%%
+# File for looking at FIR filtering options
+#  
+#
 # %%
 # Functions and variables to be imported
 import numpy as np
@@ -5,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 from nptdms import TdmsFile
 
-from lp_firwin_method_ import lp_firwin
+from func_fir import lp_firwin
 from scipy import signal
 # This is bad practice... import the classes and do the stuff properly
 # from raw_signal_comp import df_tdms_0_0, df_tdms_1_0, df_tdms_0_5, df_tdms_1_5, df_tdms_0_11, df_tdms_1_10, f_spect_tdms_CA, Px_x_tdms_CA
@@ -120,7 +124,8 @@ FS = 100_000 # Sampling frequency of the signal
 #%%
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
 FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-#FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+if not FOLDER_FOR_DATA.exists():   
+    FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 # If you prefear another folder for storing the data use this
 # the last line will join the names like a path from the system

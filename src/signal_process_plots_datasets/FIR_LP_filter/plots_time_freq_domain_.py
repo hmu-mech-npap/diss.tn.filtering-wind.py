@@ -12,8 +12,8 @@ from functions import (Axis_titles, Fft_Plot_info,
                         plot_signals, plot_spect_comb2,
                         spect, fft_sig, plot_FFT)
 
-from lp_firwin_method_ import lp_firwin, filt_sig
-from file_import_ import data_import
+from func_fir import lp_firwin, filt_sig
+from functions import data_import
 
 
 #Constants

@@ -202,8 +202,10 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=1)],
                 xlim=[1e1,1e5], ylim = [1e-4,1e-2])
                 
 #%%
+# %matplotlib inline
+# %matplotlib qt
 # plot 50 kHz signals
-plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=2),
+plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=2, offset=1),
                   df_tdms_dec_50kHz.get_spectrum_raw_dec(dec=1)
                   ],
                 title='Comparison at 50kHz',

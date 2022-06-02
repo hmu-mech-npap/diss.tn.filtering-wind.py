@@ -157,8 +157,8 @@ plot_spect_comb2([df_tdms_0_0.get_spectrum_raw(),
                 df_tdms_1_0.get_spectrum_raw(),
                 df_tdms_1_0.get_spectrum_filt(fc_Hz),], 
                  title='Comparison between power spectra at WS=0 ',
-                     xlim =[1e1,1e5],
-                Kolmogorov_offset=1e2, to_disk=True)
+                     xlim =[1e2,1e5], ylim= [1e-7,1e-2],
+                Kolmogorov_offset=1e3, to_disk=True)
 
 
 #%%
