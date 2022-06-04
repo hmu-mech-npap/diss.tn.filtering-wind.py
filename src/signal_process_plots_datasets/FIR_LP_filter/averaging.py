@@ -382,44 +382,22 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.get_averaged(fr_Hz=100).get_spectrum_raw_
 # comparing the signal 
 # when different filters are applied and averaging occurs
 #%%
-plot_spect_comb2([df_tdms_inv_meas_1_0.filter(fc_Hz = 100).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.filter(fc_Hz = 200).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.filter(fc_Hz = 2000).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024)
+plot_spect_comb2([df_tdms_inv_meas_1_0.filter_as_obj(fc_Hz = 100).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024),
+                  df_tdms_inv_meas_1_0.filter_as_obj(fc_Hz = 200).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024),
+                  df_tdms_inv_meas_1_0.filter_as_obj(fc_Hz = 2000).get_averaged(fr_Hz=100).get_spectrum_raw_dec(dec=1, nperseg=1024)
                    ],
-                title='Comparison of decimated signal 100kHz',
-                xlim=[1e1,1e5], ylim = [1e-4,1e-0]
+                title='Comparison of averaging after different filters are applied ',
+                xlim=[1e0,1e4], ylim = [1e-8,1e-2]
                 )
-                
+#%% [markdown]
+# The above procedure should be applied to files with 
+# inverter on and off 
+#     and 
+# WS different than 0
+             
 #%%
 # # %matplotlib inline
 # %matplotlib qt
-# # plot 50 kHz signals
-# plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=2, offset=1),
-#                   df_tdms_dec_50kHz.get_spectrum_raw_dec(dec=1)
-#                   ],
-#                 title='Comparison at 50kHz',
-#                 xlim=[1e1,1e5], ylim = [1e-4,1e-2])
-
-
-
-# #%%
-# # plot 5 kHz signals
-# plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=20),
-#                   df_tdms_dec_50kHz.get_spectrum_raw_dec(dec=10),
-#                   df_tdms_dec_5kHz.get_spectrum_raw_dec(dec=1)
-#                   ],
-#                 title='Comparison at 5kHz',
-#                 xlim=[1e1,1e5], ylim = [1e-4,1e-2])
-
-
-# #%%[markdown]
-# # 20220529-2352:
-# # the three plots show different behaviour at the 10 Hz region
-# # it could be because of the nperseg parameter
-# # I should consider:
-# # - modifying the **nperseg** parameter accordingly. 
-# # - checking out the behavior of 
-# # - plotting stacked versions of the plot spectrum for an easier *comparison*. 
 
 
 
