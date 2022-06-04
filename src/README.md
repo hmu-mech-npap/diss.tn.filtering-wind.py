@@ -18,4 +18,5 @@ This is not complete this is just a "hello world" application for now.
 
 
 ## 1.3. **signal_process_plots_datasets**: 
-- [Contents](FIR_LP_filter_contents.md)
+- [Contents](signal_process_plots_datasets/FIR_LP_filter/FIR_LP_filter_contents.md)
+

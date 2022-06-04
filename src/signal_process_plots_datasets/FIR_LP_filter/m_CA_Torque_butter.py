@@ -81,9 +81,14 @@ class WT_Noise_ChannelProcessor():
 # %%
 #CONSTANTS
 
-# I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-#FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+ #  I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
+ # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
+ # FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+# Update for automated path detection
+FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
+if not FOLDER_FOR_DATA.exists():   
+    FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 # If you prefear another folder for storing the data use this
 # the last line will join the names like a path from the system
