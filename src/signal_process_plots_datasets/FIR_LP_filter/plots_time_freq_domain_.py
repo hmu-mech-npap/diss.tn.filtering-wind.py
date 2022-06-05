@@ -5,7 +5,6 @@
 #                         fft_sig, plot_FFT, plot_response)
 # from lp_firwin_method_ import lp_firwin, filt_sig
 # from file_import_ import data_import
-
 from functions import (Axis_titles, Fft_Plot_info,
                         Graph_data_container, Signals_for_fft_plot,
                         Time_domain_data_cont, fft_calc_sig,
