@@ -172,7 +172,6 @@ def plot_spect_comb2(graph_objlist ,
         KOLMOGORV_CONSTANT = - 5/3
         xs = np.array(graph_objlist[0].xs_lim)
         ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
-
         ax.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
     if ylim == 'auto':
         arr= np.array(xylims)[:,2:]
