@@ -124,7 +124,11 @@ class WT_Noise_ChannelProcessor():
 #FOLDER_FOR_DATA = Path.cwd()
 
 # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+#FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+if not FOLDER_FOR_DATA.exists():   
+    FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 # If you prefear another folder for storing the data use this
 # the last line will join the names like a path from the system

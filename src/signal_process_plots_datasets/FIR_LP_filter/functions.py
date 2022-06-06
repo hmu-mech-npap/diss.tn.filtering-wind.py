@@ -197,9 +197,9 @@ def plot_spect_comb2(graph_objlist ,
 # New classes for storing signal and titles information for human readable code 
 # and faster implementation regardless the actual operation of a function
 class Axis_titles:
-    def __init__(self, x:str, y:str) -> None:
-        self.x_title = x
-        self.y_title = y
+    def __init__(self, x_title:str, y_title:str) -> None:
+        self.x_title = x_title
+        self.y_title = y_title
 
 class Time_domain_data_cont():
     """A class for importing the x,y variables for a signal in time domain
@@ -598,4 +598,4 @@ def data_import(file_path:str, file_name_of_raw:str):
     for element0 in L:
         MATRIX_RAW.append(np.array(data_raw.get(element0)))
     
-    return MATRIX_RAW, L, List_of_chunked
+    return MATRIX_RAW, L, List_of_chunked, file_path, file_name_of_raw
