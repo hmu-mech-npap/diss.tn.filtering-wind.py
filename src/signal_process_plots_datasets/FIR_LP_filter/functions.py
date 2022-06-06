@@ -190,7 +190,7 @@ def plot_spect_comb2(graph_objlist ,
     ax.legend()
     ax.set_title(title)
     if kwargs.get('to_disk', None) is True:
-        target_path = pathlib.Path('_temp_fig/{}.png'.format(title.translate({ord(c): None for c in ': /='} )))
+        target_path = pathlib.Path('_temp_fig/{}.png'.format(title.translate({ord(c): None for c in ': /=\n'} )))
         target_path.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(target_path,facecolor='white', transparent=False)
     
