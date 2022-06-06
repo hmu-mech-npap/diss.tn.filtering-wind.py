@@ -19,7 +19,7 @@ from functions import data_import
 FS = 500_000
 
 # Import the file for process
-RAW_DATA_ALL, raw_keys, CHUNKED_DATA = data_import(file_path='/mnt/data_folder/', file_name_of_raw='noise_reference_raw.h5')
+RAW_DATA_ALL, raw_keys, CHUNKED_DATA, file_path, file_name = data_import(file_path='/mnt/data_folder/', file_name_of_raw='noise_reference_raw.h5')
 
 # Construct the desiered FIR filter
 filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=FS, cutoff_Hz=0.0001)
