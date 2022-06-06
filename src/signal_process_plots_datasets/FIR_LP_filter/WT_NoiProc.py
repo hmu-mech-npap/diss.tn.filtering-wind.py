@@ -14,16 +14,15 @@ logging.basicConfig( level=logging.WARNING)
 
 
 #%% Functions and classes
-def filt_butter_factory( filt_order = 2):
+def filt_butter_factory( filt_order = 2, fc_Hz:float=100):
     """this is a factory method that produces a BUTTERWORTH filter function 
     with a filter order and a cutoff frequency
     
     Args:
-        filt_order (int, optional): Filter order. Defaults to 2.
-        #TODO condider using also the fc_Hz as an argument so that the only parameters are:
-        # the data and sampling frequnecy 
+        filt_order (int, optional)  : Filter order. Defaults to 2.
+        fc_Hz (float, optional)     : cut off frequency in Hz (defaults to 100)
     """    
-    def filt_butter(ds:np.ndarray, fs_Hz:float, fc_Hz:float, filt_order = filt_order ):
+    def filt_butter(ds:np.ndarray, fs_Hz:float, fc_Hz:float= fc_Hz, filt_order = filt_order ):
                     # filter cutoff frequency
         """applies filtering to np.array with fs_Hz data, with cuffoff frequency
 
@@ -39,14 +38,16 @@ def filt_butter_factory( filt_order = 2):
         sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
         filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
         return filtered
+    # additional decoration sith params dictionary
+    # this is used instead of a class
+    filt_butter.params = {'filter order':2, 'fc_Hz':fc_Hz} 
     return filt_butter
-filter_Butter_default=filt_butter_factory(filt_order = 5)
+filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
 class WT_NoiseChannelProc():
     """
     Class for processing a tdms file for noise processing 
     """
-    #TODO Consider using class methods to implement factory methods. (from tdms or ) 
     __measurement_history = []
     
     def __init__(self, desc:str, fs_Hz:float, data:np.ndarray, 
@@ -81,7 +82,7 @@ class WT_NoiseChannelProc():
         """        
         return pd.Series(self.data, name=f'{self.channel_name}:raw')
     
-    def get_averaged(self, fr_Hz:float=100, desc:str= None):
+    def average(self, fr_Hz:float=100, desc:str= None):
         """returns another object 
 
         Args:
@@ -94,7 +95,8 @@ class WT_NoiseChannelProc():
         ds_fr = ds.groupby(ds.index// (fs_Hz/fr_Hz)).mean().values
         
         description = desc if desc is not None else self.description + f"_Av:{fr_Hz}"
-        #TODO use factory method to return a new object. 
+        #TODO need to think better the naming conventions 
+        # (consider using a dictionary with multiple keys e.g. different for plots etc)
         new_operations = self.operations.copy()
         new_operations.append(f'Apply Averaging :{fr_Hz}')
         return WT_NoiseChannelProc(desc = description
@@ -104,7 +106,7 @@ class WT_NoiseChannelProc():
                 operations = new_operations
                 )
         
-    def get_decimated(self, dec:int, offset:int=0):
+    def decimate(self, dec:int, offset:int=0):
         """returns a decimated data seires
 
         Args:
@@ -121,13 +123,14 @@ class WT_NoiseChannelProc():
                 operation=new_operation,  
                 fs_Hz= decimated_fs_Hz, data=self.data[offset::dec])
     
-    def filter(self, fc_Hz:float, filter_func=filter_Butter_default, fs_Hz=None )->pd.Series:
+    def _filter(self, fc_Hz:float, filter_func=filter_Butter_default, fs_Hz=None )->pd.Series:
         """return a filtered signal based on 
 
         Args:
             fc_Hz (float): cut off frequency in Hz
             filter_func (filt_butter_factory, optional): filtering function that thates two arguments (ds, fs_Hz). Defaults to 100, filt_order = 2).
             fs_Hz (None): sampling frequency in Hz (#TODO SHOULD BE REMOVED)
+            
             
         Returns:
             _type_: _description_
@@ -138,8 +141,8 @@ class WT_NoiseChannelProc():
         filtered = filter_func(ds=self.data, fs_Hz=fs_Hz, fc_Hz=fc_Hz )
         return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
     
-    def filter_as_obj(self,  fc_Hz:float, filter_func=filter_Butter_default, fs_Hz=None, desc=None):
-        ds_filt = self.filter( fc_Hz=fc_Hz, filter_func=filter_func, fs_Hz=fs_Hz )
+    def filter(self,  fc_Hz:float, filter_func=filter_Butter_default, fs_Hz=None, desc=None):
+        ds_filt = self._filter( fc_Hz=fc_Hz, filter_func=filter_func, fs_Hz=fs_Hz )
         description = desc if desc is not None else self.description + f"_fc:{fc_Hz}"
         return WT_NoiseChannelProc.from_obj(self, 
             desc = description,
@@ -147,19 +150,20 @@ class WT_NoiseChannelProc():
             operation = f'pass filter {fc_Hz}'
             )
     
-    def get_spectrum_raw(self,window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
+    def calc_spectrum(self,window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
         """returns a Graph_data_container object with the power spectrum of the data. 
         uses the decimation function
 
         Returns:
             _type_: _description_
         """        
-        gobj = self.get_spectrum_raw_dec(dec=1, window=window,nperseg= nperseg, scaling=scaling)     
+        gobj = self.calc_spectrum_gen(dec=1, window=window,nperseg= nperseg, scaling=scaling)     
         return gobj
     
     
-    def get_spectrum_raw_dec(self, dec:int=1, offset:int=0, window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
-        """returns a Graph_data_container object with the power spectrum of the **decimated** data. 
+    def calc_spectrum_gen(self, dec:int=1, offset:int=0, window='flattop', nperseg=1_024, scaling='spectrum')->Graph_data_container:
+        """generic functio for calculating the spectrum of a time series
+        adnd return a Graph_data_container object with the power spectrum of the **decimated** data. 
 
         Args:
             dec (int): decimation factor 
@@ -177,29 +181,28 @@ class WT_NoiseChannelProc():
         return Graph_data_container(x=x_r,y = y_r, 
             label = label)
     
-    
-    def get_spectrum_filt(self, fc_Hz:float, filt_func=filter_Butter_default)->Graph_data_container:
-        """returns a Graph_data_container object with the power spectrum of the data. 
+    # def calc_spectrum_filt(self, fc_Hz:float, filt_func=filter_Butter_default)->Graph_data_container:
+    #     """ (). it can be easily substituted by filter().get_
+    #     returns a Graph_data_container object with the power spectrum of the data. 
 
-        Args:
-            fc_Hz (float): _description_
+    #     Args:
+    #         fc_Hz (float): _description_
 
-        Returns:
-            Graph_data_container: _description_
-        """        
-        x_f,y_f = spect(self.filter(fc_Hz=fc_Hz, filter_func=filt_func), FS=self.fs_Hz)        
-        return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
+    #     Returns:
+    #         Graph_data_container: _description_
+    #     """        
+    #     #TODO This should be removed in a next version
+    #     x_f,y_f = spect(self._filter(fc_Hz=fc_Hz, filter_func=filt_func), FS=self.fs_Hz)        
+    #     return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
     
-    def plot_filtered_th(self,fc_Hz):
+    def plot_filtered_th(self,filter_func):
         """plots the Time History
 
         Args:
             fc_Hz (_type_): _description_
         """        
         plt.plot(self.data, label = 'raw')
-        plt.plot(self.filter(fc_Hz=fc_Hz), label = f'filtered: {fc_Hz}')
-
-
+        plt.plot(self.filter(filter_func=filter_func), label = f'filtered: {filter_func.params}')
     
     @classmethod
     def from_tdms(cls, tdms_channel:nptdms.tdms.TdmsChannel, desc:str):

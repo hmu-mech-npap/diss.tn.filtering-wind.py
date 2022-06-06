@@ -35,7 +35,7 @@ def test_create_from_obj(example_wtncp):
     assert new_obj.operations[-1] == 'copy '
     
 def test_decimate(example_wtncp):
-    new_obj = example_wtncp.get_decimated(dec=2)
+    new_obj = example_wtncp.decimate(dec=2)
     assert new_obj.group_name == 'Wind Measurement'
     assert new_obj.channel_name == 'Torque'
     assert new_obj._channel_data is None
@@ -46,7 +46,7 @@ def test_decimate(example_wtncp):
     assert new_obj.operations[-1] == 'Decimation factor:2, Offset:0, new fs_Hz:50.0'
     
 def test_filter(example_wtncp):
-    new_obj = example_wtncp.filter_as_obj(fc_Hz=10)
+    new_obj = example_wtncp.filter(fc_Hz=10)
     assert new_obj.group_name == 'Wind Measurement'
     assert new_obj.channel_name == 'Torque'
     assert new_obj._channel_data is None
