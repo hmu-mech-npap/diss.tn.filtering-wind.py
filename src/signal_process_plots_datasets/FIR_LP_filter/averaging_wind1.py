@@ -26,7 +26,7 @@ import pandas as pd
 import nptdms
 from nptdms import TdmsFile
 
-from functions import spect,  plot_spect_comb2, Graph_data_container,plot_comparative_response
+from functions import spect,  plot_spect_comb2, Graph_data_container
 from WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory
 filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
@@ -57,7 +57,7 @@ tdms_folder_id = 'WTmeas20220512-'
 #%% CONSTANTS
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind1'
 
 #%%
 # Inverter measurements 
@@ -74,8 +74,6 @@ WT_inv_1_WS_0 = '115754'
 path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
-[print(x) for x in tdms_raw_WT[GROUP_NAME].channels()]
-
 
 df_tdms_inv_meas_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_WT[GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=0, 100kHz')
@@ -249,7 +247,7 @@ for item in raw_signal_CA:
     x=TdmsFile( Path( y , tdms_f_name))
     tdms_raw_CA.append(x)
 
-
+#%%
 # GROUP_NAME = 'Wind Measurement'
 # CHAN_NAME = 'Torque'
 
@@ -331,11 +329,74 @@ plot_spect_comb2([df_tdms_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spec
 # %%
 
 
+def plot_comparative_response(wt_obj, # cutoff frequency
+        filter_func, response_offset=2e-4, 
+        Kolmogorov_offset=1,
+        figsize=(16,9),
+        plot_th = False):
+    """plotting a comparison of raw filtered and 
+
+    Args:
+        wt_obj (_type_): _description_
+        response_offset (_type_, optional): _description_. Defaults to 2e-4.
+        figsize (tuple, optional): _description_. Defaults to (16,9).
+    """    
+    sig = wt_obj.data
+    fs_Hz= wt_obj.fs_Hz
+    
+    filt_p = filter_func.params 
+    sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_Hz'], 
+            btype= 'lp', fs=fs_Hz, output='sos')
+
+    
+    filtered = filter_func(sig, fs_Hz)
+    
+    # calculate spectrum 
+    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
+    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
+
+    wb, hb = signal.sosfreqz(sos)
+    fb = wb/(2*np.pi)
+    t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
+    
+    if plot_th:
+        # plot time domain 
+        fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
+        fig.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
+        ax1.plot(t, sig)
+        ax1.set_title('raw signal')
+        # ax1.axis([0, 1, -2, 2])
+        ax2.plot(t, filtered)
+        ax2.set_title('After filter')
+        # ax2.axis([0, 1, -2, 2])
+        ax2.set_xlabel('Time [seconds]')
+        plt.tight_layout()
+    
+    fig, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
+    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='response')
+    ax2.semilogy(f, np.sqrt(Pxx_spec), label='raw')
+    ax2.semilogy(f, np.sqrt(Pxx_spec_filt), label='filtered')
+    if Kolmogorov_offset is not None:
+        KOLMOGORV_CONSTANT = - 5.0/3
+        xs = f
+        ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
+        ax2.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
+    
+    ax2.set_title('filter frequency response for {}'.format(wt_obj.description))
+    ax2.set_xlabel('Frequency [Hz]')
+    ax2.set_ylabel('Amplitute [dB]')
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+    ax2.margins(0, 0.1)
+    ax2.grid(which= 'both', axis= 'both')
+    ax2.set_ylim([1e-8, 1e-2])
+    ax2.legend()
+    # plt.savefig('Bessel Filter Freq Response.png')
+
+    
+filter_Butter_default = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
 
 # %%
-    
-filter_Butter_default = filt_butter_factory(filt_order = 2, fc_Hz = 200)
-
 plot_comparative_response(df_tdms_0_0, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,
@@ -343,21 +404,13 @@ plot_comparative_response(df_tdms_0_0, # cutoff frequency
         ,figsize =(12,8),
         plot_th=False)
 #%%
-# plot_comparative_response(df_tdms_0_5, # cutoff frequency
-#         filter_func=filter_Butter_default, 
-#         response_offset=2e-4,
-#         Kolmogorov_offset = 1e3            
-#         ,figsize =(12,8),
-#         plot_th=False)
-# plt.savefig(f'_temp_fig/_s3_filter_i0_w5_B{filter_Butter_default.params["fc_Hz"]}.png')
-
-plot_comparative_response(df_tdms_1_5, # cutoff frequency
+plot_comparative_response(df_tdms_0_5, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,
         Kolmogorov_offset = 1e3            
         ,figsize =(12,8),
-        plot_th=False)   
-plt.savefig(f'_temp_fig/_s3_filter_i1_w5_B{filter_Butter_default.params["fc_Hz"]}.png')
+        plot_th=False)
+    
 
 # %%
 plot_comparative_response(df_tdms_0_11, # cutoff frequency

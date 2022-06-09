@@ -145,6 +145,7 @@ def plot_spect_comb2(graph_objlist ,
                     xlim = None, 
                     ylim = 'auto',
                     Kolmogorov_offset = None,
+                    markers = ['.','o','x','_'],
                     **kwargs,
                     ):
     """ ## plots different signal power spectrums combined in one graph
@@ -155,12 +156,19 @@ def plot_spect_comb2(graph_objlist ,
         title (str): The main title of the figure 
         xlim (tuple): x limits of power spectrum graph
     """
+
     fig, ax = plt.subplots(1,1, figsize=kwargs.get('figsize',None))
     xylims = []
+    no_grph = 0
     for gdc_obj in graph_objlist:
         assert isinstance(gdc_obj, Graph_data_container)
-        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', s=kwargs.get('markersize',2))
+        marker = markers[no_grph% len(markers)]
+        ax.scatter(gdc_obj.x, np.sqrt(gdc_obj.y), label=f'{gdc_obj.label}', 
+                   s=kwargs.get('markersize',2),
+                   marker=marker
+                   )
         xylims.append(gdc_obj.extrema)
+        no_grph +=1
     
     
     try:
@@ -599,3 +607,69 @@ def data_import(file_path:str, file_name_of_raw:str):
         MATRIX_RAW.append(np.array(data_raw.get(element0)))
     
     return MATRIX_RAW, L, List_of_chunked, file_path, file_name_of_raw
+
+
+
+def plot_comparative_response(wt_obj, # cutoff frequency
+        filter_func, response_offset=2e-4, 
+        Kolmogorov_offset=1,
+        figsize=(16,9),
+        plot_th = False):
+    """plotting a comparison of raw filtered and 
+
+    Args:
+        wt_obj (_type_): _description_
+        response_offset (_type_, optional): _description_. Defaults to 2e-4.
+        figsize (tuple, optional): _description_. Defaults to (16,9).
+    """    
+    sig = wt_obj.data
+    fs_Hz= wt_obj.fs_Hz
+    
+    filt_p = filter_func.params 
+    sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_Hz'], 
+            btype= 'lp', fs=fs_Hz, output='sos')
+
+    
+    filtered = filter_func(sig, fs_Hz)
+    
+    # calculate spectrum 
+    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
+    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
+
+    wb, hb = signal.sosfreqz(sos)
+    fb = wb/(2*np.pi)
+    t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
+    
+    if plot_th:
+        # plot time domain 
+        fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
+        fig.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
+        ax1.plot(t, sig)
+        ax1.set_title('raw signal')
+        # ax1.axis([0, 1, -2, 2])
+        ax2.plot(t, filtered)
+        ax2.set_title('After filter')
+        # ax2.axis([0, 1, -2, 2])
+        ax2.set_xlabel('Time [seconds]')
+        plt.tight_layout()
+    
+    fig, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
+    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='response')
+    ax2.semilogy(f, np.sqrt(Pxx_spec), label='raw')
+    ax2.semilogy(f, np.sqrt(Pxx_spec_filt), label='filtered')
+    if Kolmogorov_offset is not None:
+        KOLMOGORV_CONSTANT = - 5.0/3
+        xs = f
+        ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
+        ax2.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
+    
+    ax2.set_title('filter frequency response for {}'.format(wt_obj.description))
+    ax2.set_xlabel('Frequency [Hz]')
+    ax2.set_ylabel('Amplitute [dB]')
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+    ax2.margins(0, 0.1)
+    ax2.grid(which= 'both', axis= 'both')
+    ax2.set_ylim([1e-8, 1e-2])
+    ax2.legend()
+    # plt.savefig('Bessel Filter Freq Response.png')
