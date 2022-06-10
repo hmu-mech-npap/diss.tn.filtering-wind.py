@@ -126,7 +126,7 @@ class WT_Noise_ChannelProcessor():
 # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
 #FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
@@ -171,7 +171,7 @@ inv_meas_dir = 'Inverter'
 #WT_inv_1_WS_0 = '115754'
 
 # New measurements proper channel
-WT_inv_1_WS_0 = 'inv1_0.1'
+WT_inv_1_WS_0 = 'in1_0.1'
 
 # contains the following channels
 # [<TdmsChannel with path /'Wind Measurement'/'Torque'>,
