@@ -34,8 +34,6 @@ filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 import logging
 logging.basicConfig( level=logging.WARNING)
 
-#%% Imported from raw_signal_Comp2
-
 #%%[markdown]
 #
 # only the 100 kHz signal is required.  
@@ -47,31 +45,27 @@ FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
-#%%
+#%% CONSTANTS
+TDMS_FNAME = 'Data.tdms'
+GROUP_NAME = 'Wind Measurement'
+CHAN_NAME = 'Wind2'
 
-#Constant directories and names for the .tdms file structure
-tdms_f_name = 'Data.tdms'
-tdms_folder_id = 'WTmeas20220512-'
 
 #%% [markdown]
-#%% CONSTANTS
-
-GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Wind1'
-
-#%%
 # Inverter measurements 
-# Dir name 
-inv_meas_dir = 'Inverter'
 
-WT_inv_1_WS_0 = '115754'
+# Dir name 
+#Constant directories and names for the .tdms file structure
+inv_meas_dir = FOLDER_FOR_DATA / 'Inverter'
+
+WT_inv_1_WS_0 = 'in1_0.1'
 # contains the following channels
 # [<TdmsChannel with path /'Wind Measurement'/'Torque'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Drag'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind1'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind2'>]
 
-path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
+path_inv_meas = inv_meas_dir / f'{WT_inv_1_WS_0}' / TDMS_FNAME
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
@@ -81,12 +75,12 @@ df_tdms_inv_meas_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_WT[GROUP_NAME][CHA
 
 
 # Decimation folder measurments 
-dec_meas_dir = 'Decimation'
-dec_at_50_kHz = '121419'
-dec_at_5_kHz = '121435'
-path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
+dec_meas_dir = FOLDER_FOR_DATA / 'Decimation'
+dec_at_50_kHz = 'de50.1'
+dec_at_5_kHz = 'de5.1'
+path_dec_meas_50_kHz = dec_meas_dir / f'{dec_at_50_kHz}' / TDMS_FNAME
 
-path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
+path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_5_kHz}' / TDMS_FNAME
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
@@ -173,20 +167,6 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.filter(fc_Hz = 100).average(fr_Hz=100).ca
 # # %matplotlib inline
 # %matplotlib qt
 
-
-
-#%%
-class Plotter_Class():
-    #TODO Not Implemented
-    """#TODOthis is a class that can take different object
-    and takes their raw data and plot:
-    - Time histories
-    - spectrums 
-    """    
-    pass
-
-
-
 #%% [markdown]
 #------------------------------------------------------------------
 # # Averaging comparison for Compressed air dataset.
@@ -197,42 +177,24 @@ class Plotter_Class():
 
 
 # %%
-#CONSTANTS
-
- #  I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
- # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
- # FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
-
-# Update for automated path detection
-
-
-# If you prefear another folder for storing the data use this
-# the last line will join the names like a path from the system
-#  
-# home_folder = Path.home()
-# dir_no_1 = 'folder name as a string'
-# dir_no_2 = '.....'
-# dir_no_3 = '.....' 
-# dir_no_4 = '.....'
-#
-#FOLDER_FOR_DATA = home_folder / dir_no_1 / dir_no_2 / dir_no_3 / dir_no_4 / ..... / .....
-
 
 #Constant directories and names for the .tdms file structure
-tdms_folder_id = 'WTmeas20220512-'
-tdms_f_name = 'Data.tdms'
+comp_air_dir = FOLDER_FOR_DATA/ 'compressed air'
+
+TDMS_FNAME = 'Data.tdms'
+GROUP_NAME = 'Wind Measurement'
+CHAN_NAME = 'Wind2'
 
 # Dir names for the Compressed air measurment
-comp_air_dir = 'compressed air'
 
-data_CA_inv_0_WS_0 = '112318'
-data_CA_inv_0_WS_5 = '112629'
-data_CA_inv_0_WS_11= '112709'
-data_CA_inv_1_WS_0 = '113005' 
-data_CA_inv_1_WS_5 = '113534'
-data_CA_inv_1_WS_10= '113614'
+data_CA_inv_0_WS_0 = 'ca0_0.1'
+data_CA_inv_0_WS_5 = 'ca0_5.1'
+data_CA_inv_0_WS_11= 'ca0_10.1'
+data_CA_inv_1_WS_0 = 'ca1_0.1' 
+data_CA_inv_1_WS_5 = 'ca1_5.1'
+data_CA_inv_1_WS_10= 'ca1_10.1'
 
-path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+path_comp = FOLDER_FOR_DATA / comp_air_dir
 
 # CA stands for compressed air
 
@@ -243,26 +205,26 @@ raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5,
 tdms_raw_CA = []
 
 for item in raw_signal_CA:
-    y = f'{path_comp}{item}'
-    x=TdmsFile( Path( y , tdms_f_name))
+    y = f'{path_comp}/{item}'
+    x=TdmsFile( Path( y , TDMS_FNAME))
     tdms_raw_CA.append(x)
 
 #%%
 # GROUP_NAME = 'Wind Measurement'
-# CHAN_NAME = 'Torque'
+# CHAN_NAME = 'Wind 2'
 
-df_tdms_0_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[0][GROUP_NAME][CHAN_NAME]
+ca_0_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[0][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=0')
-df_tdms_0_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[1][GROUP_NAME][CHAN_NAME]
+ca_0_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[1][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=5')
-df_tdms_0_11 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[2][GROUP_NAME][CHAN_NAME]
+ca_0_11 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[2][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=11')
-# df_tdms_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[3][GROUP_NAME][CHAN_NAME]
-#                 , desc= 'Inverter on, WS=0')
-df_tdms_1_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[4][GROUP_NAME][CHAN_NAME]
+ca_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[3][GROUP_NAME][CHAN_NAME]
+                 , desc= 'Inverter on, WS=0')
+ca_1_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[4][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter on, WS=5')
-# df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
-                # , desc= 'Inverter on, WS=10')
+ca_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter on, WS=10')
 
 #%%
 #TODO consider renaming df_tdms_0_0 to df_tdms_i0_w0
@@ -276,27 +238,28 @@ NPERSEG=1024
 fc_Hz=200
 fr_HZ = 100
 #%%
-plot_spect_comb2([df_tdms_0_5.calc_spectrum(nperseg=NPERSEG*20),
-                df_tdms_0_5.decimate(2).calc_spectrum(nperseg=NPERSEG*10),
-                df_tdms_0_5.decimate(20).calc_spectrum(nperseg=NPERSEG)], 
+plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG*100),
+                ca_0_5.decimate(2).calc_spectrum(nperseg=NPERSEG*10),
+                ca_0_5.decimate(20).calc_spectrum(nperseg=NPERSEG)], 
                  title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
                      xlim =[1e2,3e5], ylim= [1e-7,1e-2],
                 Kolmogorov_offset=1e3, to_disk=True)
 
 #%%
-plot_spect_comb2([df_tdms_0_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(2).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(20).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
+plot_spect_comb2([ca_0_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_0_5.decimate(10).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_0_5.decimate(100).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)
+                ], 
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated  and averaged',
-                xlim =[1e0,3e2], ylim= [1e-7,1e-2],
-                Kolmogorov_offset=2e-2, to_disk=True)
+                xlim =[1e0,3e2], ylim= [1e-4,1e-0],markersize=20,
+                Kolmogorov_offset=1e-0, to_disk=True)
 #%%
-plot_spect_comb2([df_tdms_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
+plot_spect_comb2([ca_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_0_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_0_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
                  title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated, filtered and finally averaged ',
-                     xlim =[1e0,3e2], ylim= [1e-7,1e-2],
-                Kolmogorov_offset=2e-2, to_disk=True)
+                     xlim =[1e0,3e2], ylim= [4e-4,1e-0],
+                Kolmogorov_offset=1e-0, to_disk=True)
 
 
 # %% [markdown]
@@ -304,119 +267,59 @@ plot_spect_comb2([df_tdms_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spec
 # 
 # %%  ===========================================================
 
-plot_spect_comb2([df_tdms_1_5.calc_spectrum(nperseg=NPERSEG*20),
-                df_tdms_1_5.decimate(2).calc_spectrum(nperseg=NPERSEG*10),
-                df_tdms_1_5.decimate(20).calc_spectrum(nperseg=NPERSEG)], 
+plot_spect_comb2([ca_1_5.calc_spectrum(nperseg=NPERSEG*100),
+                ca_1_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10),
+                ca_1_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
                  title='Comparison of spectra for signals at WS=5 for inverter On \n decimated ',
-                     xlim =[1e2,3e5], ylim= [1e-5,1e-1],
-                Kolmogorov_offset=1e3, to_disk=True)
+                     xlim =[1e1,3e5], ylim= [1e-5,1e-1],
+                Kolmogorov_offset=1e0, to_disk=True)
 # %%
 
-plot_spect_comb2([df_tdms_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(2).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(20).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
+plot_spect_comb2([ca_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_1_5.decimate(2).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_1_5.decimate(20).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated  and averaged',
-                xlim =[1e0,3e2], ylim= [1e-7,1e-2],
-                Kolmogorov_offset=2e-2, to_disk=True)
+                xlim =[1e0,3e2], ylim= [1e-4,1e-1],
+                Kolmogorov_offset=5e-1, to_disk=True)
 #%%
 fc_Hz = 10
-plot_spect_comb2([df_tdms_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
+plot_spect_comb2([ca_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_1_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                ca_1_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated, filtered and finally averaged ',
                 xlim =[1e0,3e2], ylim= [1e-7,1e-2],
                 Kolmogorov_offset=2e-2, to_disk=True)
 # %%
 
 
-def plot_comparative_response(wt_obj, # cutoff frequency
-        filter_func, response_offset=2e-4, 
-        Kolmogorov_offset=1,
-        figsize=(16,9),
-        plot_th = False):
-    """plotting a comparison of raw filtered and 
-
-    Args:
-        wt_obj (_type_): _description_
-        response_offset (_type_, optional): _description_. Defaults to 2e-4.
-        figsize (tuple, optional): _description_. Defaults to (16,9).
-    """    
-    sig = wt_obj.data
-    fs_Hz= wt_obj.fs_Hz
-    
-    filt_p = filter_func.params 
-    sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_Hz'], 
-            btype= 'lp', fs=fs_Hz, output='sos')
 
     
-    filtered = filter_func(sig, fs_Hz)
-    
-    # calculate spectrum 
-    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
-    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
-
-    wb, hb = signal.sosfreqz(sos)
-    fb = wb/(2*np.pi)
-    t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
-    
-    if plot_th:
-        # plot time domain 
-        fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
-        fig.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
-        ax1.plot(t, sig)
-        ax1.set_title('raw signal')
-        # ax1.axis([0, 1, -2, 2])
-        ax2.plot(t, filtered)
-        ax2.set_title('After filter')
-        # ax2.axis([0, 1, -2, 2])
-        ax2.set_xlabel('Time [seconds]')
-        plt.tight_layout()
-    
-    fig, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
-    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='response')
-    ax2.semilogy(f, np.sqrt(Pxx_spec), label='raw')
-    ax2.semilogy(f, np.sqrt(Pxx_spec_filt), label='filtered')
-    if Kolmogorov_offset is not None:
-        KOLMOGORV_CONSTANT = - 5.0/3
-        xs = f
-        ys = xs**(KOLMOGORV_CONSTANT)*Kolmogorov_offset
-        ax2.plot(xs,ys, 'r--', label = 'Kolmogorov -5/3')
-    
-    ax2.set_title('filter frequency response for {}'.format(wt_obj.description))
-    ax2.set_xlabel('Frequency [Hz]')
-    ax2.set_ylabel('Amplitute [dB]')
-    ax2.set_xscale('log')
-    ax2.set_yscale('log')
-    ax2.margins(0, 0.1)
-    ax2.grid(which= 'both', axis= 'both')
-    ax2.set_ylim([1e-8, 1e-2])
-    ax2.legend()
-    # plt.savefig('Bessel Filter Freq Response.png')
-
-    
-filter_Butter_default = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+filter_Butter_default = filt_butter_factory(filt_order = 2, fc_Hz = 200)
 
 # %%
-plot_comparative_response(df_tdms_0_0, # cutoff frequency
+plot_comparative_response(ca_0_0, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,
-        Kolmogorov_offset = 1e3            
+        Kolmogorov_offset = 1e3,
+        nperseg=NPERSEG*100
         ,figsize =(12,8),
         plot_th=False)
 #%%
-plot_comparative_response(df_tdms_0_5, # cutoff frequency
+plot_comparative_response(ca_0_5, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,
-        Kolmogorov_offset = 1e3            
+        Kolmogorov_offset = 1e-0
         ,figsize =(12,8),
+        nperseg=NPERSEG*100,
         plot_th=False)
     
 
 # %%
-plot_comparative_response(df_tdms_0_11, # cutoff frequency
+plot_comparative_response(ca_0_11, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,            
-        Kolmogorov_offset = 1e3            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
         ,figsize =(12,8))
 
 # %%

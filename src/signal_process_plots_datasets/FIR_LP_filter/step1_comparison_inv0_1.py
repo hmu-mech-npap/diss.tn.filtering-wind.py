@@ -21,8 +21,6 @@ filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 import logging
 logging.basicConfig( level=logging.WARNING)
 
-#%% Imported from raw_signal_Comp2
-
 #%%[markdown]
 #
 # only the 100 kHz signal is required.  
@@ -38,50 +36,64 @@ if not FOLDER_FOR_DATA.exists():
 FIGSIZE_STD = (12,6)
 #Constant directories and names for the .tdms file structure
 # Dir name 
-GRP_MEAS_DIR = 'Inverter'
-TMDS_FOLDER_PREFIX = 'WTmeas20220512-'
 TDMS_FNAME = 'Data.tdms'
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Wind1'
+CHAN_NAME = 'Wind2'
 
 #%%
+ca_meas_dir = 'compressed air'
 # Inverter measurements of interest
-WT_inv_0_WS_0 = '115657'
-WT_inv_1_WS_0 = '115754'
+data_CA_inv_0_WS_0 = 'ca0_0.1'
+data_CA_inv_0_WS_5 = 'ca0_5.1'
+data_CA_inv_0_WS_11= 'ca0_10.1'
+data_CA_inv_1_WS_0 = 'ca1_0.1' 
+data_CA_inv_1_WS_5 = 'ca1_5.1'
+data_CA_inv_1_WS_10= 'ca1_10.1'
 
-path_comp = FOLDER_FOR_DATA / GRP_MEAS_DIR / TMDS_FOLDER_PREFIX
+
+path_comp = FOLDER_FOR_DATA / ca_meas_dir 
 
 # suffixes:
 # - CA : compressed air
 # - Inv : Inverter
 # - DEC : decimation
 
-raw_signal_Inv = [WT_inv_0_WS_0, WT_inv_1_WS_0]
+raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5, 
+                data_CA_inv_0_WS_11, data_CA_inv_1_WS_0,
+                data_CA_inv_1_WS_5, data_CA_inv_1_WS_10 ]
 
 l_tdms_Inv = []
 
-for item in raw_signal_Inv:
-    x=TdmsFile( Path( f'{path_comp}{item}' , TDMS_FNAME))
+for item in raw_signal_CA:
+    x=TdmsFile( Path( f'{path_comp}/{item}' , TDMS_FNAME))
     l_tdms_Inv.append(x)
     
 #%%    
 [print(x) for x in l_tdms_Inv[0][GROUP_NAME].channels()]
 # %%
-df_inv_i0_w0 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[0][GROUP_NAME][CHAN_NAME]
-                , desc= 'Inverter Off, WS=0, 100kHz')
-df_inv_i1_w0 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[1][GROUP_NAME][CHAN_NAME]
-                , desc= 'Inverter On, WS=0, 100kHz')
+df_ca_i0_w0 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[0][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter Off, WS=0, 500kHz')
+df_ca_i0_w5 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[1][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter Off, WS=5, 500kHz')
+df_ca_i0_w10 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[2][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter Off, WS=10, 500kHz')
+df_ca_i1_w0 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[3][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter On, WS=0, 500kHz')
+df_ca_i1_w5 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[4][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter On, WS=5, 500kHz')
+df_ca_i1_w10 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter On, WS=10, 500kHz')
 # %%
 
 fig, axs = plt.subplots(1,2, sharey=True, figsize= FIGSIZE_STD)
-final_point = 10000 # -1 for 
-axs[0].plot(df_inv_i0_w0.data_as_Series[:final_point], '.', alpha=0.3)
+final_point = 100000 # -1 for 
+axs[0].plot(df_ca_i0_w0.data_as_Series[:final_point], '.', alpha=0.3)
 axs[0].set_ylabel('Transducer Voltage')
 axs[0].set_xlabel('Measurement No')
 axs[0].grid('both')
 axs[0].set_title('Inverter Off - WS=0')
 
-axs[1].plot(df_inv_i1_w0.data_as_Series[:final_point], '.', alpha=0.3)
+axs[1].plot(df_ca_i1_w0.data_as_Series[:final_point], '.', alpha=0.3)
 axs[1].set_xlabel('Measurement No')
 axs[1].set_ylabel('Transducer Voltage')
 axs[1].grid('both')
@@ -90,13 +102,27 @@ plt.savefig(f'_temp_fig/_Step_1-Comparison-{final_point}pts.png')
 # %% [markdown ]
 # Power spectrums
 
+
 # %%
-fig, axs = plt.subplots(1,1, sharey=True, figsize= FIGSIZE_STD)
-final_point = -1  # -1 for 
-axs.plot(df_inv_i0_w0.calc_spectrum(), '.', alpha=0.3)
-axs.plot(df_inv_i0_w0.calc_spectrum(), '.', alpha=0.3)
-axs.set_ylabel('Transducer Voltage')
-axs.set_xlabel('Measurement No')
-axs.grid('both')
-axs.set_title('Inverter Off - WS=0')
-plt.savefig(f'_temp_fig/_Step_2-Comparison-SPec {final_point}pts.png')
+plot_spect_comb2([df_ca_i0_w0.calc_spectrum(),df_ca_i1_w0.calc_spectrum()],
+                title = 'Power Spectrum comparison for Interter On/Off at WS=0',
+                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
+                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
+                markersize=15,
+                markers = ['.','x','_'])
+# %%
+plot_spect_comb2([df_ca_i0_w5.calc_spectrum(),df_ca_i1_w5.calc_spectrum()],
+                title = 'Power Spectrum comparison for Interter On/Off at WS=5',
+                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
+                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
+                markersize=15,
+                markers = ['.','x','_'])
+
+# %%
+plot_spect_comb2([df_ca_i0_w10.calc_spectrum(),df_ca_i1_w10.calc_spectrum()],
+                title = 'Power Spectrum comparison for Interter On/Off at WS=10',
+                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
+                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
+                markersize=15,
+                markers = ['.','x','_'])
+# %%

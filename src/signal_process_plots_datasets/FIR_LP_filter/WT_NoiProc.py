@@ -248,3 +248,13 @@ class WT_NoiseChannelProc():
         return cls(desc, fs_Hz, data, channel_name, group_name, _channel_data, 
             operations=new_ops)
 # %%
+
+#%%
+class Plotter_Class():
+    #TODO Not Implemented
+    """#TODOthis is a class that can take different object
+    and takes their raw data and plot:
+    - Time histories
+    - spectrums 
+    """    
+    pass

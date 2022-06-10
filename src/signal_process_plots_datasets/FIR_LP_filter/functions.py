@@ -609,12 +609,13 @@ def data_import(file_path:str, file_name_of_raw:str):
     return MATRIX_RAW, L, List_of_chunked, file_path, file_name_of_raw
 
 
-
 def plot_comparative_response(wt_obj, # cutoff frequency
         filter_func, response_offset=2e-4, 
         Kolmogorov_offset=1,
         figsize=(16,9),
+        nperseg = 1024,
         plot_th = False):
+    #TODO make this part of WT_NoiProc 
     """plotting a comparison of raw filtered and 
 
     Args:
@@ -633,8 +634,8 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     filtered = filter_func(sig, fs_Hz)
     
     # calculate spectrum 
-    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
-    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=1024, scaling='spectrum')
+    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
+    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
 
     wb, hb = signal.sosfreqz(sos)
     fb = wb/(2*np.pi)
@@ -642,8 +643,8 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     
     if plot_th:
         # plot time domain 
-        fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
-        fig.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
+        fig1, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True, figsize=figsize )
+        fig1.suptitle('Time Domain Filtering of signal with f1=10[Hz], f2=20[Hz] and noise')
         ax1.plot(t, sig)
         ax1.set_title('raw signal')
         # ax1.axis([0, 1, -2, 2])
@@ -653,10 +654,10 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         ax2.set_xlabel('Time [seconds]')
         plt.tight_layout()
     
-    fig, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
+    fig2, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
     ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='response')
-    ax2.semilogy(f, np.sqrt(Pxx_spec), label='raw')
-    ax2.semilogy(f, np.sqrt(Pxx_spec_filt), label='filtered')
+    ax2.semilogy(f, np.sqrt(Pxx_spec), '.', label='raw')
+    ax2.semilogy(f, np.sqrt(Pxx_spec_filt), '.', label='filtered')
     if Kolmogorov_offset is not None:
         KOLMOGORV_CONSTANT = - 5.0/3
         xs = f
@@ -670,6 +671,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
     ax2.set_yscale('log')
     ax2.margins(0, 0.1)
     ax2.grid(which= 'both', axis= 'both')
-    ax2.set_ylim([1e-8, 1e-2])
+    ax2.set_xlim([1e1, 1e5])
+    ax2.set_ylim([1e-8, 1e-1])
     ax2.legend()
     # plt.savefig('Bessel Filter Freq Response.png')
