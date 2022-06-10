@@ -10,7 +10,6 @@ import scipy.signal as signal
 import numpy as np
 import pandas as pd
 
-import nptdms
 from nptdms import TdmsFile
 
 from functions import spect,  plot_spect_comb2, Graph_data_container

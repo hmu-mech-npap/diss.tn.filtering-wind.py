@@ -655,7 +655,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         plt.tight_layout()
     
     fig2, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
-    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='response')
+    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='filter response')
     ax2.semilogy(f, np.sqrt(Pxx_spec), '.', label='raw')
     ax2.semilogy(f, np.sqrt(Pxx_spec_filt), '.', label='filtered')
     if Kolmogorov_offset is not None:

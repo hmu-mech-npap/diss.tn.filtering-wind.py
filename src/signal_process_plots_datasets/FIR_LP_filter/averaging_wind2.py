@@ -26,7 +26,7 @@ import pandas as pd
 import nptdms
 from nptdms import TdmsFile
 
-from functions import spect,  plot_spect_comb2, Graph_data_container
+from functions import spect,  plot_spect_comb2, Graph_data_container, plot_comparative_response
 from WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory
 filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
@@ -69,7 +69,7 @@ path_inv_meas = inv_meas_dir / f'{WT_inv_1_WS_0}' / TDMS_FNAME
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
-df_tdms_inv_meas_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_WT[GROUP_NAME][CHAN_NAME]
+in1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_WT[GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=0, 100kHz')
 #%%
 
@@ -86,49 +86,39 @@ tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
 
 
-df_tdms_dec_50kHz = WT_NoiseChannelProc.from_tdms(tdms_raw_WT_50kHz[GROUP_NAME][CHAN_NAME]
+dec_50kHz = WT_NoiseChannelProc.from_tdms(tdms_raw_WT_50kHz[GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=0, 50kHz')
-df_tdms_dec_5kHz = WT_NoiseChannelProc.from_tdms(tdms_raw_WT_5kHz[GROUP_NAME][CHAN_NAME]
+dec_5kHz = WT_NoiseChannelProc.from_tdms(tdms_raw_WT_5kHz[GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=0, 5kHz')
 
 # %%
 # %matplotlib qt
-# ds = df_tdms_inv_meas_1_0.raw_data()
-# fs_Hz = df_tdms_inv_meas_1_0.fs_Hz
-# fr_Hz = 100
 
-# ds_100 = ds.groupby(ds.index// (fs_Hz/fr_Hz)).mean()
-
-# plt.plot(ds.index/fs_Hz, ds, '.', alpha = 0.3)
-# plt.plot(ds_100.index/fr_Hz, ds_100, '.', alpha = 1)
-
-df_tdms_inv_meas_1_0_av100 = df_tdms_inv_meas_1_0.average(100)
-print(df_tdms_inv_meas_1_0.operations)
-print(df_tdms_inv_meas_1_0_av100.operations)
-print(df_tdms_inv_meas_1_0.decimate(1).operations)
-print(df_tdms_inv_meas_1_0.decimate(1).average(100).operations)
-print(df_tdms_inv_meas_1_0.filter(fc_Hz=100).average(100).operations)
+in1_0_av100 = in1_0.average(100)
+print(in1_0.operations)
+print(in1_0_av100.operations)
+print(in1_0.decimate(1).operations)
+print(in1_0.decimate(1).average(100).operations)
+print(in1_0.filter(fc_Hz=100).average(100).operations)
 # %%
 #TODO should create testing for class
-# print(df_tdms_inv_meas_1_0.fs_Hz)
-# print(df_tdms_inv_meas_1_0.data)
-# print(df_tdms_inv_meas_1_0.data_as_Series)
-# print(df_tdms_inv_meas_1_0._filter(fc_Hz=100))
-# print(df_tdms_inv_meas_1_0.get_spectrum_filt(fc_Hz=100)) # graph obj
-# print(df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=1)) # graph obj
+# print(in1_0.fs_Hz)
+# print(in1_0.data)
+# print(in1_0.data_as_Series)
+# print(in1_0._filter(fc_Hz=100))
+# print(in1_0.get_spectrum_filt(fc_Hz=100)) # graph obj
+# print(in1_0.get_spectrum_raw_dec(dec=1)) # graph obj
 
-print(df_tdms_inv_meas_1_0.decimate(1).operations)
-# print(df_tdms_inv_meas_1_0.get_averaged(fr_Hz=100))   #-> Obj
+print(in1_0.decimate(1).operations)
+# print(in1_0.get_averaged(fr_Hz=100))   #-> Obj
 # %%
-# %%
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Up to here 
 # #%%
-plot_spect_comb2([df_tdms_inv_meas_1_0.calc_spectrum_gen(dec=1, nperseg=20*1024),
-                  df_tdms_inv_meas_1_0.calc_spectrum_gen(dec=2, nperseg=10*1024),
-                  df_tdms_inv_meas_1_0.calc_spectrum_gen(dec=20, nperseg=1024)
+plot_spect_comb2([in1_0.calc_spectrum_gen(dec=1, nperseg=100*1024),
+                  in1_0.calc_spectrum_gen(dec=10, nperseg=10*1024),
+                  in1_0.calc_spectrum_gen(dec=100, nperseg=1024)
                   ],
                 title='Comparison of decimated signal 100kHz',
-                xlim=[1e1,1e5], ylim = [1e-4,1e-0]
+                xlim=[1e1,1e5], ylim = [1e-4,5e-2]
                 )
 #%% [markdown]
 # ## Comparing averaging after decimation  
@@ -137,9 +127,9 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.calc_spectrum_gen(dec=1, nperseg=20*1024)
 #
 #  this is for ws0 so we may need to look at different WS (with and without)
 #%%
-plot_spect_comb2([df_tdms_inv_meas_1_0.average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.decimate(dec=2,offset=0).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.decimate(dec=20,offset=0).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
+plot_spect_comb2([in1_0.average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.decimate(dec=2,offset=0).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.decimate(dec=20,offset=0).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
                   ],
                 title='Comparison of decimated and averaged signal at WS0',
                 xlim=[1e0,1e4], ylim = [1e-8,1e-2]
@@ -150,9 +140,9 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.average(fr_Hz=100).calc_spectrum_gen(dec=
 # comparing the signal 
 # when different filters are applied and averaging occurs
 #%%
-plot_spect_comb2([df_tdms_inv_meas_1_0.filter(fc_Hz = 100).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.filter(fc_Hz = 200).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  df_tdms_inv_meas_1_0.filter(fc_Hz = 2000).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
+plot_spect_comb2([in1_0.filter(fc_Hz = 100).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.filter(fc_Hz = 200).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.filter(fc_Hz = 2000).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
                    ],
                 title='Comparison of averaging after different filters are applied ',
                 xlim=[1e0,1e4], ylim = [1e-8,1e-2]
