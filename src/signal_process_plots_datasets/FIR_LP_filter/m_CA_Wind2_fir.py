@@ -124,7 +124,7 @@ from functions import (WT_Noise_ChannelProcessor, Graph_data_container,
 
 #%%
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
@@ -147,14 +147,42 @@ tdms_f_name = 'Data.tdms'
 # Dir names for the Compressed air measurment
 comp_air_dir = 'compressed air'
 
-data_CA_inv_0_WS_0 = '112318'
-data_CA_inv_0_WS_5 = '112629'
-data_CA_inv_0_WS_11= '112709'
-data_CA_inv_1_WS_0 = '113005' 
-data_CA_inv_1_WS_5 = '113534'
-data_CA_inv_1_WS_10= '113614'
+# Old measurements directories with wrong channel
+# data_CA_inv_0_WS_0 = '112318'
+# data_CA_inv_0_WS_5 = '112629'
+# data_CA_inv_0_WS_11= '112709'
+# data_CA_inv_1_WS_0 = '113005' 
+# data_CA_inv_1_WS_5 = '113534'
+# data_CA_inv_1_WS_10= '113614'
+# 
+# path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+# 
+# # CA stands for compressed air
+# 
+# raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5, 
+#                 data_CA_inv_0_WS_11, data_CA_inv_1_WS_0,
+#                 data_CA_inv_1_WS_5, data_CA_inv_1_WS_10 ]
+# 
+# tdms_raw_CA = []
+# 
+# for item in raw_signal_CA:
+#     y = f'{path_comp}{item}'
+#     x=TdmsFile( Path( y , tdms_f_name))
+#     tdms_raw_CA.append(x)
+# 
+# 
+# GROUP_NAME = 'Wind Measurement'
+# CHAN_NAME = 'Torque'
 
-path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+# New measurements with renamed folders for future rec version information
+data_CA_inv_0_WS_0 = 'ca0_0.1'
+data_CA_inv_0_WS_5 = 'ca0_5.1'
+data_CA_inv_0_WS_11= 'ca0_10.1'
+data_CA_inv_1_WS_0 = 'ca1_0.1' 
+data_CA_inv_1_WS_5 = 'ca1_5.1'
+data_CA_inv_1_WS_10= 'ca1_10.1'
+
+path_comp = FOLDER_FOR_DATA / comp_air_dir
 
 # CA stands for compressed air
 
@@ -165,13 +193,13 @@ raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5,
 tdms_raw_CA = []
 
 for item in raw_signal_CA:
-    y = f'{path_comp}{item}'
+    y = f'{path_comp}/{item}'
     x=TdmsFile( Path( y , tdms_f_name))
     tdms_raw_CA.append(x)
 
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind2'
 
 # rename the variables to add index of number in the name as you proposed
 
@@ -276,7 +304,7 @@ class Fir_filter:
 plot_spect_comb2([df_tdms_i1_w0.get_spectrum_raw(),
                 df_tdms_i1_w0.get_spectrum_filt(fc_Hz=2_000),
                 Fir_filter(df_tdms_i1_w0).get_spect_fir_output(fc_hz=0.0002)    ],
-                title='CA ws 0 inv 0',
+                title='CA ws 0 inv 1',
                 Kolmogorov_offset=1e3,
                 xlim=[1e1,1e5],
                 )
@@ -284,7 +312,7 @@ plot_spect_comb2([df_tdms_i1_w0.get_spectrum_raw(),
 plot_spect_comb2([df_tdms_i1_w5.get_spectrum_raw(),
                 df_tdms_i1_w5.get_spectrum_filt(fc_Hz=2_000),
                 Fir_filter(df_tdms_i1_w5).get_spect_fir_output(fc_hz=0.0002)  ],
-                title='CA ws 5 inv 0',
+                title='CA ws 5 inv 1',
                 Kolmogorov_offset=1e3,
                 xlim=[1e1,1e5],
                 )
@@ -292,7 +320,7 @@ plot_spect_comb2([df_tdms_i1_w5.get_spectrum_raw(),
 plot_spect_comb2([df_tdms_i1_w10.get_spectrum_raw(),
                 df_tdms_i1_w10.get_spectrum_filt(fc_Hz=2_000),
                 Fir_filter(df_tdms_i1_w10).get_spect_fir_output(fc_hz=0.0002)  ],
-                title='CA ws 11 inv 0',
+                title='CA ws 11 inv 1',
                 Kolmogorov_offset=1e3,
                 xlim=[1e1,1e5],
                 )

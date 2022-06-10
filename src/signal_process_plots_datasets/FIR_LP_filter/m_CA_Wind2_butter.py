@@ -86,7 +86,7 @@ class WT_Noise_ChannelProcessor():
  # FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 # Update for automated path detection
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
@@ -109,14 +109,43 @@ tdms_f_name = 'Data.tdms'
 # Dir names for the Compressed air measurment
 comp_air_dir = 'compressed air'
 
-data_CA_inv_0_WS_0 = '112318'
-data_CA_inv_0_WS_5 = '112629'
-data_CA_inv_0_WS_11= '112709'
-data_CA_inv_1_WS_0 = '113005' 
-data_CA_inv_1_WS_5 = '113534'
-data_CA_inv_1_WS_10= '113614'
+# Old measurements with wrong channel record
+#  
+# data_CA_inv_0_WS_0 = '112318'
+# data_CA_inv_0_WS_5 = '112629'
+# data_CA_inv_0_WS_11= '112709'
+# data_CA_inv_1_WS_0 = '113005' 
+# data_CA_inv_1_WS_5 = '113534'
+# data_CA_inv_1_WS_10= '113614'
+# 
+# path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+# 
+# # CA stands for compressed air
+# 
+# raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5, 
+#                 data_CA_inv_0_WS_11, data_CA_inv_1_WS_0,
+#                 data_CA_inv_1_WS_5, data_CA_inv_1_WS_10 ]
+# 
+# tdms_raw_CA = []
+# 
+# for item in raw_signal_CA:
+#     y = f'{path_comp}{item}'
+#     x=TdmsFile( Path( y , tdms_f_name))
+#     tdms_raw_CA.append(x)
+# 
+# GROUP_NAME = 'Wind Measurement' 
+# CHAN_NAME = 'Torque' 
 
-path_comp = FOLDER_FOR_DATA / comp_air_dir / tdms_folder_id
+
+# New renamed folders for rec version information
+data_CA_inv_0_WS_0 = 'ca0_0.1'
+data_CA_inv_0_WS_5 = 'ca0_5.1'
+data_CA_inv_0_WS_11= 'ca0_10.1'
+data_CA_inv_1_WS_0 = 'ca1_0.1' 
+data_CA_inv_1_WS_5 = 'ca1_5.1'
+data_CA_inv_1_WS_10= 'ca1_10.1'
+
+path_comp = FOLDER_FOR_DATA / comp_air_dir
 
 # CA stands for compressed air
 
@@ -127,13 +156,14 @@ raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5,
 tdms_raw_CA = []
 
 for item in raw_signal_CA:
-    y = f'{path_comp}{item}'
+    y = f'{path_comp}/{item}'
     x=TdmsFile( Path( y , tdms_f_name))
     tdms_raw_CA.append(x)
 
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind2'
+
 
 df_tdms_0_0 = WT_Noise_ChannelProcessor(tdms_raw_CA[0][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=0')
