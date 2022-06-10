@@ -179,7 +179,7 @@ WT_inv_1_WS_0 = 'inv1_0.1'
 #  <TdmsChannel with path /'Wind Measurement'/'Wind1'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind2'>]
 
-path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
+path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{WT_inv_1_WS_0}' / tdms_f_name
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
@@ -196,9 +196,9 @@ dec_meas_dir = 'Decimation'
 #New folder names
 dec_at_50_kHz = 'de50.1'
 dec_at_5_kHz = 'de5.1'
-path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
+path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_50_kHz}' / tdms_f_name
 
-path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
+path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_5_kHz}' / tdms_f_name
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
