@@ -158,14 +158,21 @@ tdms_folder_id = 'WTmeas20220512-'
 #   
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Torque'
+# Old name
+# CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind2'
 
 #%%
 # Inverter measurments 
 # Dir name 
 inv_meas_dir = 'Inverter'
 
-WT_inv_1_WS_0 = '115754'
+# Old file id 
+#WT_inv_1_WS_0 = '115754'
+
+# New measurements proper channel
+WT_inv_1_WS_0 = 'inv1_0.1'
+
 # contains the following channels
 # [<TdmsChannel with path /'Wind Measurement'/'Torque'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Drag'>,
@@ -183,8 +190,12 @@ df_tdms_inv_meas_1_0 = WT_Noise_ChannelProcessor(tdms_raw_WT[GROUP_NAME][CHAN_NA
 
 # Decimation folder measurments 
 dec_meas_dir = 'Decimation'
-dec_at_50_kHz = '121419'
-dec_at_5_kHz = '121435'
+# dec_at_50_kHz = '121419'
+# dec_at_5_kHz = '121435'
+
+#New folder names
+dec_at_50_kHz = 'de50.1'
+dec_at_5_kHz = 'de5.1'
 path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
 
 path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
