@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from WT_NoiProc import WT_NoiseChannelProc
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 
 def test_one():
     pass

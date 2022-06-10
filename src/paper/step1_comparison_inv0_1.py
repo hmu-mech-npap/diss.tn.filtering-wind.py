@@ -12,10 +12,12 @@ import pandas as pd
 
 from nptdms import TdmsFile
 
-from functions import spect,  plot_spect_comb2, Graph_data_container
-from WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory
-filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
+from pros_noisefiltering.gen_functions import spect
+from pros_noisefiltering.Graph_data_container import Graph_data_container
+from pros_noisefiltering.plotting_funcs import   plot_spect_comb2
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory, plot_comparative_response
+filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
 import logging
 logging.basicConfig( level=logging.WARNING)
@@ -118,10 +120,12 @@ plot_spect_comb2([df_ca_i0_w5.calc_spectrum(),df_ca_i1_w5.calc_spectrum()],
                 markers = ['.','x','_'])
 
 # %%
-plot_spect_comb2([df_ca_i0_w10.calc_spectrum(),df_ca_i1_w10.calc_spectrum()],
+NPERSEG_DEF = 1024<<8
+plot_spect_comb2([df_ca_i0_w10.calc_spectrum(nperseg=NPERSEG_DEF),
+                  df_ca_i1_w10.calc_spectrum(nperseg=NPERSEG_DEF)],
                 title = 'Power Spectrum comparison for Interter On/Off at WS=10',
-                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
-                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
+                xlim =[1e1,3e5], ylim= [1e-6,1e-1],
+                Kolmogorov_offset=2e0, to_disk=True,figsize = FIGSIZE_STD,
                 markersize=15,
                 markers = ['.','x','_'])
 # %%
