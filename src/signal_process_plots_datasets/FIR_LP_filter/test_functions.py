@@ -4,7 +4,6 @@ import pytest
 from functions import (Axis_titles, Fft_Plot_info, 
                         data_import)
 
-from m_CA_Torque_fir import Fir_filter
 
 def test_first_():
     pass
