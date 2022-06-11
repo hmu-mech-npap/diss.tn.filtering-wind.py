@@ -126,7 +126,7 @@ class WT_Noise_ChannelProcessor():
 # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
 #FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
@@ -158,21 +158,28 @@ tdms_folder_id = 'WTmeas20220512-'
 #   
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Torque'
+# Old name
+# CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind2'
 
 #%%
 # Inverter measurments 
 # Dir name 
 inv_meas_dir = 'Inverter'
 
-WT_inv_1_WS_0 = '115754'
+# Old file id 
+#WT_inv_1_WS_0 = '115754'
+
+# New measurements proper channel
+WT_inv_1_WS_0 = 'in1_0.1'
+
 # contains the following channels
 # [<TdmsChannel with path /'Wind Measurement'/'Torque'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Drag'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind1'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind2'>]
 
-path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
+path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{WT_inv_1_WS_0}' / tdms_f_name
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
@@ -183,11 +190,15 @@ df_tdms_inv_meas_1_0 = WT_Noise_ChannelProcessor(tdms_raw_WT[GROUP_NAME][CHAN_NA
 
 # Decimation folder measurments 
 dec_meas_dir = 'Decimation'
-dec_at_50_kHz = '121419'
-dec_at_5_kHz = '121435'
-path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
+# dec_at_50_kHz = '121419'
+# dec_at_5_kHz = '121435'
 
-path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
+#New folder names
+dec_at_50_kHz = 'de50.1'
+dec_at_5_kHz = 'de5.1'
+path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_50_kHz}' / tdms_f_name
+
+path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_5_kHz}' / tdms_f_name
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
