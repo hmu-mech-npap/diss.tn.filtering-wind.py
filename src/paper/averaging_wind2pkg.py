@@ -207,8 +207,8 @@ ca_0_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[0][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=0')
 ca_0_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[1][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter off, WS=5')
-ca_0_11 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[2][GROUP_NAME][CHAN_NAME]
-                , desc= 'Inverter off, WS=11')
+ca_0_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[2][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter off, WS=10')
 ca_1_0 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[3][GROUP_NAME][CHAN_NAME]
                  , desc= 'Inverter on, WS=0')
 ca_1_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[4][GROUP_NAME][CHAN_NAME]
@@ -229,11 +229,14 @@ fc_Hz=200
 fr_HZ = 100
 #%%
 plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG*100),
-                ca_0_5.decimate(2).calc_spectrum(nperseg=NPERSEG*10),
-                ca_0_5.decimate(20).calc_spectrum(nperseg=NPERSEG)], 
-                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
-                     xlim =[1e2,3e5], ylim= [1e-7,1e-2],
-                Kolmogorov_offset=1e3, to_disk=True)
+                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10),
+                ca_0_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
+                title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
+                xlim =[1e1,3e5], ylim= [1e-7,1e-1],
+                markersize=20,
+                Kolmogorov_offset=1e0, 
+                fname=None)
+
 
 #%%
 plot_spect_comb2([ca_0_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
@@ -241,15 +244,20 @@ plot_spect_comb2([ca_0_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_0_5.decimate(100).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)
                 ], 
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated  and averaged',
-                xlim =[1e0,3e2], ylim= [1e-4,1e-0],markersize=20,
-                Kolmogorov_offset=1e-0, to_disk=True)
+                xlim =[1e1,1e2], ylim= [1e-4,1e-1],
+                markersize=20,
+                Kolmogorov_offset=1e0, 
+                fname=None)
+
 #%%
 plot_spect_comb2([ca_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_0_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_0_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
-                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated, filtered and finally averaged ',
-                     xlim =[1e0,3e2], ylim= [4e-4,1e-0],
-                Kolmogorov_offset=1e-0, to_disk=True)
+                title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated, filtered and finally averaged ',
+                xlim =[1e0,3e2], ylim= [1e-5,1e-0],
+                markersize=20,
+                Kolmogorov_offset=1e0, 
+                fname=None)
 
 
 # %% [markdown]
@@ -260,8 +268,8 @@ plot_spect_comb2([ca_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(
 plot_spect_comb2([ca_1_5.calc_spectrum(nperseg=NPERSEG*100),
                 ca_1_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10),
                 ca_1_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
-                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated ',
-                     xlim =[1e1,3e5], ylim= [1e-5,1e-1],
+                title='Comparison of spectra for signals at WS=5 for inverter On \n decimated ',
+                xlim =[1e1,3e5], ylim= [1e-5,1e-1],
                 Kolmogorov_offset=1e0, to_disk=True)
 # %%
 
@@ -270,15 +278,19 @@ plot_spect_comb2([ca_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_1_5.decimate(20).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated  and averaged',
                 xlim =[1e0,3e2], ylim= [1e-4,1e-1],
-                Kolmogorov_offset=5e-1, to_disk=True)
+                markersize=20,
+                Kolmogorov_offset=1e0, 
+                fname=None)
 #%%
 fc_Hz = 10
 plot_spect_comb2([ca_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_1_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                 ca_1_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)], 
                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated, filtered and finally averaged ',
-                xlim =[1e0,3e2], ylim= [1e-7,1e-2],
-                Kolmogorov_offset=2e-2, to_disk=True)
+                xlim =[1e0,3e2], ylim= [1e-7,6e-1],
+                markersize=20,
+                Kolmogorov_offset=1e-1, 
+                fname=None)
 # %%
 
 
@@ -294,6 +306,7 @@ plot_comparative_response(ca_0_0, # cutoff frequency
         nperseg=NPERSEG*100
         ,figsize =(12,8),
         plot_th=False)
+plt.savefig('_temp_fig/s2-PS-WS0-filt200')
 #%%
 plot_comparative_response(ca_0_5, # cutoff frequency
         filter_func=filter_Butter_default, 
@@ -302,14 +315,46 @@ plot_comparative_response(ca_0_5, # cutoff frequency
         ,figsize =(12,8),
         nperseg=NPERSEG*100,
         plot_th=False)
-    
+plt.savefig('_temp_fig/s2-PS-WS5-filt200')
 
 # %%
-plot_comparative_response(ca_0_11, # cutoff frequency
+plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_default, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-WS10-filt200')
+# %%
+    
 
+
+# %% [markdown ]
+# %%
+filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-WS10-filt2000')
+# %%
+# %% [markdown ]
+# %%
+filter_Butter_12000 = filt_butter_factory(filt_order = 2, fc_Hz = 12000)
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_12000, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-WS10-filt12000')
+plot_comparative_response(ca_1_10, # cutoff frequency
+        filter_func=filter_Butter_12000, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-i1-WS10-filt12000')
 # %%

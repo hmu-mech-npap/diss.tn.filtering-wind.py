@@ -50,7 +50,6 @@ data_CA_inv_1_WS_0 = 'ca1_0.1'
 data_CA_inv_1_WS_5 = 'ca1_5.1'
 data_CA_inv_1_WS_10= 'ca1_10.1'
 
-
 path_comp = FOLDER_FOR_DATA / ca_meas_dir 
 
 # suffixes:
@@ -84,47 +83,79 @@ df_ca_i1_w5 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[4][GROUP_NAME][CHAN_NAME]
 df_ca_i1_w10 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=10, 500kHz')
 # %%
+def compare_timehistories(df_ni,df_wi, final_point = 100000,
+    stitle='', fname:str =None):
+    """_summary_
 
-fig, axs = plt.subplots(1,2, sharey=True, figsize= FIGSIZE_STD)
-final_point = 100000 # -1 for 
-axs[0].plot(df_ca_i0_w0.data_as_Series[:final_point], '.', alpha=0.3)
-axs[0].set_ylabel('Transducer Voltage')
-axs[0].set_xlabel('Measurement No')
-axs[0].grid('both')
-axs[0].set_title('Inverter Off - WS=0')
+    Args:
+        df_ni (_type_): data set  without inverter
+        df_wi (_type_): data set  with inverter
+        final_point (_type_, optional): _description_. Defaults to 100000stitle=''.
+    """    
+    """plots a comparison of time histories to observe the effect of the inverter. 
+    
+    """    
+    fig, axs = plt.subplots(1,2, sharey=True, figsize= FIGSIZE_STD)
+     # -1 for 
+    axs[0].plot(df_ni.data_as_Series[:final_point], '.', alpha=0.3)
+    axs[0].set_ylabel('Transducer Voltage')
+    axs[0].set_xlabel('Measurement No')
+    axs[0].grid('both')
+    axs[0].set_title(df_ni.description)
 
-axs[1].plot(df_ca_i1_w0.data_as_Series[:final_point], '.', alpha=0.3)
-axs[1].set_xlabel('Measurement No')
-axs[1].set_ylabel('Transducer Voltage')
-axs[1].grid('both')
-axs[1].set_title('Inverter On - WS=0')
-plt.savefig(f'_temp_fig/_Step_1-Comparison-{final_point}pts.png')
+    axs[1].plot(df_wi.data_as_Series[:final_point], '.', alpha=0.3)
+    axs[1].set_xlabel('Measurement No')
+    axs[1].set_ylabel('Transducer Voltage')
+    axs[1].grid('both')
+    axs[1].set_title(df_wi.description)
+    plt.suptitle(stitle)
+    if fname is not None:
+        fullfname = f'_temp_fig/{fname}.png'
+        plt.savefig(fullfname)
+#%%
+compare_timehistories(df_ca_i0_w0,df_ca_i1_w0, stitle='Time history comparison:  WS=0 m/s',fname='s1_Comp_th-ws0.png')
+compare_timehistories(df_ca_i0_w10,df_ca_i1_w10, stitle='Time history comparison:  WS=10 m/s',fname='s1_Comp_th-ws10.png')
+#%%
+
+
+
+
+
 # %% [markdown ]
 # Power spectrums
 
 
 # %%
-plot_spect_comb2([df_ca_i0_w0.calc_spectrum(),df_ca_i1_w0.calc_spectrum()],
+NPERSEG_DEF = 1024<<8
+plot_spect_comb2([df_ca_i0_w0.calc_spectrum(nperseg=NPERSEG_DEF),df_ca_i1_w0.calc_spectrum(nperseg=NPERSEG_DEF)],
                 title = 'Power Spectrum comparison for Inverter On/Off at WS=0',
-                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
-                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
-                markersize=15,
-                markers = ['.','x','_'])
+                xlim =[1e0,3e5], ylim= [1e-7,1e-2],
+                Kolmogorov_offset=1e-2, 
+                figsize = FIGSIZE_STD,
+                markersize=3,
+                alpha =1,
+                markers = ['o','.','_'],
+                fname = 'S2_Comp_PS_WS0')
 # %%
-plot_spect_comb2([df_ca_i0_w5.calc_spectrum(),df_ca_i1_w5.calc_spectrum()],
+plot_spect_comb2([df_ca_i0_w5.calc_spectrum(nperseg=NPERSEG_DEF),
+                  df_ca_i1_w5.calc_spectrum(nperseg=NPERSEG_DEF)],
                 title = 'Power Spectrum comparison for Inverter On/Off at WS=5',
-                xlim =[1e2,3e5], ylim= [1e-4,1e-2],
-                Kolmogorov_offset=1e3, to_disk=True,figsize = FIGSIZE_STD,
-                markersize=15,
-                markers = ['.','x','_'])
+                xlim =[1e0,3e5], ylim= [1e-7,1e-1],
+                Kolmogorov_offset=1e-0, 
+                figsize = FIGSIZE_STD,
+                markersize=3,
+                markers = ['o','.','_'],
+                fname = 'S2_Comp_PS_WS5')
 
 # %%
-NPERSEG_DEF = 1024<<8
+
 plot_spect_comb2([df_ca_i0_w10.calc_spectrum(nperseg=NPERSEG_DEF),
                   df_ca_i1_w10.calc_spectrum(nperseg=NPERSEG_DEF)],
                 title = 'Power Spectrum comparison for Inverter On/Off at WS=10',
                 xlim =[1e1,3e5], ylim= [1e-6,1e-1],
-                Kolmogorov_offset=2e0, to_disk=True,figsize = FIGSIZE_STD,
+                Kolmogorov_offset=2e0,
+                figsize = FIGSIZE_STD,
                 markersize=15,
-                markers = ['.','x','_'])
+                markers = ['o','.','_'],
+                fname = 'S2_Comp_PS_WS10')
 # %%
