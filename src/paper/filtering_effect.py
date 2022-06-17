@@ -117,14 +117,27 @@ NPERSEG=1024
 fc_Hz=200
 fr_HZ = 100
 #%%
-plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG*100),
-                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10),
+plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG),
+                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG),
                 ca_0_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
                 xlim =[1e1,3e5], ylim= [1e-7,1e-1],
                 markersize=20,
-                Kolmogorov_offset=1e0, 
+                Kolmogorov_offset=1e0,
+                figsize = (15,10), 
                 fname=None)
+
+#%%
+plot_spect_comb2([ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*100, scaling='density'),
+                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10, scaling='density'),                
+                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*1, scaling='density')], 
+                title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
+                xlim =[1e1,3e5], ylim= [1e-7,1e-1],
+                markersize=20,
+                Kolmogorov_offset=1e0,
+                figsize = (15,10), 
+                fname=None)
+
 
 
 #%%
@@ -187,6 +200,22 @@ plot_spect_comb2([ca_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(
 filter_Butter_20 = filt_butter_factory(filt_order = 2, fc_Hz = 20)
 filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_Hz = 200)
 filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+
+
+# %% [markdown] ===========================================================================================================
+# # Inverter is OFF
+# ## Cut off frequency 20 Hz - Inverter is OFF
+# %%
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_20, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-WS10-filt20')
+
+# %% [markdown]
+# ## Cut off frequency 200 Hz - Inverter is OFF
 # %%
 plot_comparative_response(ca_0_0, # cutoff frequency
         filter_func=filter_Butter_200, 
@@ -218,8 +247,9 @@ plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}')
     
 
 
-# %% [markdown ]
 # %%
+# %% [markdown]
+# ## Cut off frequency 2000 Hz - Inverter is OFF
 
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_2000, 
@@ -227,17 +257,12 @@ plot_comparative_response(ca_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_2000.params.get("fc_Hz")}'))
+plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_2000.params.get("fc_Hz")}')
+
+# %% [markdown]  ==========================================================================================
+# # Inverter is On
+# ## Cut off frequency 20 Hz - Inverter is On
 # %%
-# %% [markdown ]
-# %%
-plot_comparative_response(ca_0_10, # cutoff frequency
-        filter_func=filter_Butter_20, 
-        response_offset=2e-4,            
-        Kolmogorov_offset = 4e0,
-        nperseg=NPERSEG*100
-        ,figsize =(12,8))
-plt.savefig('_temp_fig/s2-PS-WS10-filt20')
 plot_comparative_response(ca_1_10, # cutoff frequency
         filter_func=filter_Butter_20, 
         response_offset=2e-4,            
@@ -245,4 +270,59 @@ plot_comparative_response(ca_1_10, # cutoff frequency
         nperseg=NPERSEG*100
         ,figsize =(12,8))
 plt.savefig('_temp_fig/s2-PS-i1-WS10-filt20')
+# %%
+# ## Cut off frequency 200 Hz - Inverter is On
+# %%
+plot_comparative_response(ca_1_10, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-i1-WS10-filt200')
+
+# %% [markdown]
+# ## Cut off frequency 2000 Hz - Inverter is On
+# %%
+plot_comparative_response(ca_1_10, # cutoff frequency
+        filter_func=filter_Butter_2000, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig('_temp_fig/s2-PS-i1-WS10-filt2000')
+
+# %% [markdown] ===========================================================================================================
+# TODO split this into another file
+# # Effect of cut off frequency at different wind speeds
+# This section is after the "optimal" frequency was selected to test whether there was a difference at different wind speeds
+
+
+# %%
+plot_comparative_response(ca_0_0, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig(f'_temp_fig/s3-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+
+plot_comparative_response(ca_0_5, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig(f'_temp_fig/s3-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+
+
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,8))
+plt.savefig(f'_temp_fig/s3-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+
+
 # %%
