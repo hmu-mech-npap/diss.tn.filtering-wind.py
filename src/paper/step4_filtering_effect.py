@@ -113,13 +113,13 @@ ca_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
 #%%
 # Estimate the power spectral density of the raw signal
 # Hotwire speed 0 m/s
-NPERSEG=1024
+NPERSEG=1024<<8
 fc_Hz=200
 fr_HZ = 100
 #%%
 plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG),
-                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG),
-                ca_0_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
+                ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG/10),
+                ca_0_5.decimate(100).calc_spectrum(nperseg=NPERSEG/100)], 
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
                 xlim =[1e1,3e5], ylim= [1e-7,1e-1],
                 markersize=20,
@@ -133,7 +133,7 @@ plot_spect_comb2([ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*100, scaling
                 ca_0_5.decimate(10).calc_spectrum(nperseg=NPERSEG*1, scaling='density')], 
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
                 xlim =[1e1,3e5], ylim= [1e-7,1e-1],
-                markersize=20,
+                markersize=5,
                 Kolmogorov_offset=1e0,
                 figsize = (15,10), 
                 fname=None)
@@ -167,6 +167,7 @@ plot_spect_comb2([ca_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).set_desc('fr: 
 # 
 # %%  ===========================================================
 
+NPERSEG=1024
 plot_spect_comb2([ca_1_5.calc_spectrum(nperseg=NPERSEG*100),
                 ca_1_5.decimate(10).calc_spectrum(nperseg=NPERSEG*10),
                 ca_1_5.decimate(100).calc_spectrum(nperseg=NPERSEG)], 
@@ -197,22 +198,74 @@ plot_spect_comb2([ca_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(
 
 
 
-filter_Butter_20 = filt_butter_factory(filt_order = 2, fc_Hz = 20)
+filter_Butter_20 = filt_butter_factory(filt_order =2, fc_Hz = 20)
 filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_Hz = 200)
 filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
 
 
 # %% [markdown] ===========================================================================================================
-# # Inverter is OFF
-# ## Cut off frequency 20 Hz - Inverter is OFF
-# %%
+# # Plots for Presentation 
+# Inverter is OFF
+# different cut off frequencies.
+#%% 
+FIGSIZE_SQR = (6,6)
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_20, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
-        ,figsize =(12,8))
-plt.savefig('_temp_fig/s2-PS-WS10-filt20')
+        ,figsize =FIGSIZE_SQR
+        )
+plt.savefig('_temp_fig/s3-PS-WS10-filt20')
+
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR
+        )
+plt.savefig('_temp_fig/s3-PS-WS10-filt2000')
+
+#%%
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,6)
+        )
+plt.savefig('_temp_fig/s3-PS-WS10-filt200')
+
+#%%[mardkowng]
+# this is for showing the adverse effects of increasing the order usign a 6th order butteworth 
+#%%
+FIGSIZE_SQR = (6,6)
+plot_comparative_response(ca_0_10, # cutoff frequency
+        filter_func= filt_butter_factory(filt_order = 6, fc_Hz = 200), 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,6)
+        )
+plt.savefig('_temp_fig/s3-PS-WS10-filt20_6')
+
+
+
+# %% [markdown]
+# ## Cut off frequency 200 Hz - Inverter is ON
+plot_comparative_response(ca_1_10, # cutoff frequency
+        filter_func=filter_Butter_200, 
+        response_offset=2e-4,            
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =(12,6)
+        )
+plt.savefig('_temp_fig/s3-PS-WS10_i1-filt200')
+
+
+
+
 
 # %% [markdown]
 # ## Cut off frequency 200 Hz - Inverter is OFF
@@ -230,9 +283,9 @@ plot_comparative_response(ca_0_5, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,
         Kolmogorov_offset = 1e-0
-        ,figsize =(12,8),
-        nperseg=NPERSEG*100,
-        plot_th=False)
+        ,figsize =FIGSIZE_SQR
+        , nperseg=NPERSEG*100
+        ,plot_th=False)
 plt.savefig(f'_temp_fig/s2-PS-WS5-filt{filter_Butter_200.params.get("fc_Hz")}')
 
 # %%
@@ -299,13 +352,14 @@ plt.savefig('_temp_fig/s2-PS-i1-WS10-filt2000')
 
 
 # %%
+NPERSEG=1024
 plot_comparative_response(ca_0_0, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s3-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 
 plot_comparative_response(ca_0_5, # cutoff frequency
         filter_func=filter_Butter_200, 
@@ -313,16 +367,17 @@ plot_comparative_response(ca_0_5, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s3-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 
-
+#%%
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s3-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+
 
 
 # %%

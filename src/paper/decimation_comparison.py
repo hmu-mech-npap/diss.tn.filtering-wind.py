@@ -105,14 +105,14 @@ print(ca1_0.decimate(1).operations)
 # %% [markdown]
 # This takes 
 #%%
-NPERSEG=1024<<4
+NPERSEG=1024<<6
 FIGSIZE = (15,10)
 plot_spect_comb2([ca1_0.decimate(dec=1,offset=0).set_desc('500 kHz').calc_spectrum( nperseg=NPERSEG),
                   ca1_0.decimate(dec=10,offset=0).set_desc('50 kHz (dec=10)').calc_spectrum( nperseg=NPERSEG/10),
                   ca1_0.decimate(dec=100,offset=0).set_desc('5 kHz (dec=100)').calc_spectrum( nperseg=NPERSEG/100)
                   ],
                 title='Comparison of decimated signal 500kHz by two orders of magnitude',
-                xlim=[1e1,2.5e5], ylim = [1e-5,5e-2],
+                xlim=[1e1,2.5e5], ylim = [1e-5,0.5e-2],
                 figsize = FIGSIZE,
                 draw_lines=True
                 )
@@ -124,13 +124,13 @@ plot_spect_comb2([ca1_0.decimate(dec=1,offset=0).set_desc('500 kHz').calc_spectr
 #
 
 plot_spect_comb2([ca1_0.set_desc('500 kHz').calc_spectrum( nperseg=NPERSEG),
-                  dec_50kHz.set_desc('50 kHz').calc_spectrum( nperseg=NPERSEG/2),
-                  dec_5kHz.set_desc('5 kHz').calc_spectrum( nperseg=NPERSEG/10)
+                  dec_50kHz.set_desc('50 kHz').calc_spectrum( nperseg=NPERSEG/10),
+                  dec_5kHz.set_desc('5 kHz').calc_spectrum( nperseg=NPERSEG/100)
                   ],
-                title='Comparison of signal 100kHz',
+                title='Comparison of signals with different sampling rates',
                 xlim=[1e1,2.5e5], ylim = [1e-5,0.5e-2],
-                figsize = FIGSIZE,
-                draw_lines=True
+                figsize = FIGSIZE
+                , draw_lines=True
                 )
              
 #%%[markdown ]
@@ -141,26 +141,24 @@ plot_spect_comb2([ca1_0.set_desc('500 kHz').calc_spectrum( nperseg=NPERSEG),
 
 def compare_timehistories(df_ni,df_wi, final_point = 100000,
     stitle='', fname:str =None, figsize=(15,10)):
-    """_summary_
+    """plots a comparison of time histories to observe the effect of the inverter. 
+    
 
     Args:
         df_ni (_type_): data set  without inverter
         df_wi (_type_): data set  with inverter
         final_point (_type_, optional): _description_. Defaults to 100000stitle=''.
     """    
-    """plots a comparison of time histories to observe the effect of the inverter. 
-    
-    """    
-    final_point2 = df_wi.fs_Hz/df_ni.fs_Hz*final_point
+    final_point2 = int(df_wi.fs_Hz/df_ni.fs_Hz*final_point)
     fig, axs = plt.subplots(1,2, sharey=True, figsize= figsize)
      # -1 for 
-    axs[0].plot(df_ni.data_as_Series[:final_point].index/df_ni.fs_Hz df_ni.data_as_Series[:final_point], '.', alpha=0.3)
+    axs[0].plot(df_ni.data_as_Series[:final_point].index/df_ni.fs_Hz, df_ni.data_as_Series[:final_point], '.', alpha=0.3)
     axs[0].set_ylabel('Transducer Voltage')
     axs[0].set_xlabel('Measurement No')
     axs[0].grid('both')
     axs[0].set_title(df_ni.description)
 
-    axs[1].plot(df_wi.data_as_Series[:final_point2].index/df_ni.fs_Hz, df_wi.data_as_Series[:final_point2], '.', alpha=0.3)
+    axs[1].plot(df_wi.data_as_Series[:final_point2].index/df_wi.fs_Hz, df_wi.data_as_Series[:final_point2], '.', alpha=0.3)
     axs[1].set_xlabel('Measurement No')
     axs[1].set_ylabel('Transducer Voltage')
     axs[1].grid('both')
