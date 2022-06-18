@@ -211,13 +211,13 @@ filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
 FIGSIZE_SQR = (6,6)
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_20, 
-        response_offset=2e-4,            
+        response_offset=2e-2,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR
         )
 plt.savefig('_temp_fig/s3-PS-WS10-filt20')
-
+#%%
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_2000, 
         response_offset=2e-4,            
@@ -248,7 +248,7 @@ plot_comparative_response(ca_0_10, # cutoff frequency
         nperseg=NPERSEG*100
         ,figsize =(12,6)
         )
-plt.savefig('_temp_fig/s3-PS-WS10-filt20_6')
+plt.savefig('_temp_fig/s3-PS-WS10-filt200_6')
 
 
 
@@ -269,33 +269,44 @@ plt.savefig('_temp_fig/s3-PS-WS10_i1-filt200')
 
 # %% [markdown]
 # ## Cut off frequency 200 Hz - Inverter is OFF
+# TODO split this into another file
+# # Effect of cut off frequency at different wind speeds
+# This section is after the "optimal" frequency was selected to test whether there was a difference at different wind speeds
+
 # %%
+FIGSIZE_WIDE = (10,6)
 plot_comparative_response(ca_0_0, # cutoff frequency
         filter_func=filter_Butter_200, 
-        response_offset=2e-4,
-        Kolmogorov_offset = 4e-2,
+        response_offset=3e-6,
+        Kolmogorov_offset = 1e-0,
         nperseg=NPERSEG*100
-        ,figsize =(12,8),
+        ,figsize =FIGSIZE_WIDE,
+        ylim=[1e-8,1e-2],
         plot_th=False)
-plt.savefig(f'_temp_fig/s2-PS-WS0-filt{filter_Butter_200.params.get("fc_Hz")}')
+plt.savefig(f'_temp_fig/s4-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 #%%
 plot_comparative_response(ca_0_5, # cutoff frequency
         filter_func=filter_Butter_200, 
-        response_offset=2e-4,
-        Kolmogorov_offset = 1e-0
-        ,figsize =FIGSIZE_SQR
-        , nperseg=NPERSEG*100
-        ,plot_th=False)
-plt.savefig(f'_temp_fig/s2-PS-WS5-filt{filter_Butter_200.params.get("fc_Hz")}')
+        response_offset=3e-6,
+        Kolmogorov_offset = 1e-0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_WIDE,
+        ylim=[1e-8,1e-2],
+        plot_th=False)
+plt.savefig(f'_temp_fig/s4-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}')
+        # ,facecolor='white', transparent=False)
 
 # %%
 plot_comparative_response(ca_0_10, # cutoff frequency
         filter_func=filter_Butter_200, 
-        response_offset=2e-4,            
-        Kolmogorov_offset = 4e0,
+        response_offset=3e-6,
+        Kolmogorov_offset = 1e-0,
         nperseg=NPERSEG*100
-        ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}')
+        ,figsize =FIGSIZE_WIDE,
+        ylim=[1e-8,1e-2],
+        plot_th=False)
+plt.savefig(f'_temp_fig/s4-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}')
+        # ,facecolor='white', transparent=False)
 # %%
     
 
@@ -348,35 +359,36 @@ plt.savefig('_temp_fig/s2-PS-i1-WS10-filt2000')
 # %% [markdown] ===========================================================================================================
 # TODO split this into another file
 # # Effect of cut off frequency at different wind speeds
-# This section is after the "optimal" frequency was selected to test whether there was a difference at different wind speeds
+# This section is after the "optimal" frequency was selected 
+# to test whether there was a difference at different wind speeds
 
 
 # %%
 NPERSEG=1024
-plot_comparative_response(ca_0_0, # cutoff frequency
+plot_comparative_response(ca_1_0, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 
-plot_comparative_response(ca_0_5, # cutoff frequency
+plot_comparative_response(ca_1_5, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 
 #%%
-plot_comparative_response(ca_0_10, # cutoff frequency
+plot_comparative_response(ca_1_10, # cutoff frequency
         filter_func=filter_Butter_200, 
         response_offset=2e-4,            
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
 
 
 
