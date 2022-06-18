@@ -149,7 +149,7 @@ def all_data(folder_for_data:Path)-> dict:
 if __name__=='__main__':
 
 
-    FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
+    FOLDER_FOR_DATA = Path('/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
     if not FOLDER_FOR_DATA.exists():   
         FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
