@@ -1,3 +1,4 @@
+# %%
 from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
@@ -89,6 +90,9 @@ df_tdms_1_5 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[4][GROUP_NAME][CHAN_NAME
 df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter on, WS=10')
 
+#%%
+#Here a new algorithm is tested but the results are not promissing
+# reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
 Sr = df_tdms_0_0.fs_Hz
 dt = 1 / int(Sr)
 print (f"The time interval of the measurement is:\n{dt}")
@@ -119,7 +123,9 @@ plt.yscale('log')
 plt.show()
 print (df_tdms_0_0.data_as_Series, df_tdms_0_0.data)
 
-
+#%%
+#Here my black box fft algorithm from the pkg is tested
+#the results are more logical than the prev. alg
 
 f, yin,yout = fft_sig([fft_calc_sig(df_tdms_0_0.data,
                                             df_tdms_1_0.data, label="inv off")])
@@ -129,6 +135,7 @@ f1, yin1,yout1 = fft_sig([fft_calc_sig(df_tdms_0_5.data,
 f2, yin2,yout2 = fft_sig([fft_calc_sig(df_tdms_0_10.data,
                                             df_tdms_1_10.data, label="inv off")])
 
+#some lists for fast plotting 3 plots with a for loop
 ws0 = [f,yin,yout]
 
 ws5 = [f1,yin1,yout1]

@@ -1,3 +1,4 @@
+# %%
 from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
@@ -92,13 +93,16 @@ dfi_i1_w15 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[4][GROUP_NAME][CHAN_NAME]
 dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=20, 100kHz')
 
-
+# here the plots are comparing the raw signals.
+# First plot is with the inverter state off and on and ws 0
 f, yin,yout = fft_sig([fft_calc_sig(dfi_i0_w0.data,
                                             dfi_i1_w0.data, label="inv on")])
 
+# here the inverter is on and the ws is 5, 10 (1st and 2nd graph respectively)
 f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
                                             dfi_i1_w10.data, label="inv on")])
 
+# here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
 f1, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
                                             dfi_i1_w20.data, label="inv on")])
 
@@ -111,6 +115,7 @@ ws10 = [f2,yin2,yout2]
 
 data_list = [ws0,ws5,ws10]
 
+# %%
 ws_list = ['ws-0','ws-5/10','ws-15/20']
 for item,descr_sig in zip(data_list,ws_list):
     plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
