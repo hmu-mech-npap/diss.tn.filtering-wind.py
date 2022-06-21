@@ -103,7 +103,7 @@ f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
                                             dfi_i1_w10.data, label="inv on")])
 
 # here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
-f1, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
+f2, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
                                             dfi_i1_w20.data, label="inv on")])
 
 
