@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 plt.style.use('seaborn-poster')
-%matplotlib inline
+#%matplotlib inline
 #%% setup signal
 # sampling rate
 sr = 2000
@@ -70,4 +70,24 @@ plt.xlim(0, 10)
 
 plt.show()
 
+# %%
+# Some plot standards
+plt.rcParams ['figure.figsize'] =[16,12]
+plt.rcParams.update ({'font.size': 18})
+
+n= len(t)
+fhat = fft(x,n)                              # compute fft
+PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
+freq = (1/(ts*n)) * np.arange(n)             # create x-axis (frequencies)
+L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
+
+fig, axs = plt.subplots(2,1)
+
+plt.sca(axs[0])
+plt.plot(t,x)
+
+plt.sca(axs[1])
+plt.plot(freq[L],PSD[L])
+plt.show()
+#this is a version that uses the new package pros_noisefiltering
 # %%
