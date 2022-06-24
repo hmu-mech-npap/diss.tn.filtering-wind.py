@@ -134,3 +134,4 @@ dmypy.json
 .pyre/
 /src/signal_process_plots_datasets/FIR_LP_filter/_temp_fig/
 /src/paper/_temp_fig/
+S2*.png
