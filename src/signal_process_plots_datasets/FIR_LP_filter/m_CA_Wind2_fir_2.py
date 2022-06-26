@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from nptdms import TdmsFile
-
-from func_fir import lp_firwin
 from scipy import signal
+# from func_fir import lp_firwin
+# from scipy import signal
 # This is bad practice... import the classes and do the stuff properly
 # from raw_signal_comp import df_tdms_0_0, df_tdms_1_0, df_tdms_0_5, df_tdms_1_5, df_tdms_0_11, df_tdms_1_10, f_spect_tdms_CA, Px_x_tdms_CA
 
@@ -21,6 +21,7 @@ from scipy import signal
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 from pros_noisefiltering.gen_functions import plot_spect_comb2, spect
+from pros_noisefiltering.filters import fir
 
 #%%
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
@@ -82,7 +83,7 @@ df_tdms_i1_w10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_N
 # Define a class for FIR operations like 
 def fir_filter(ds:np.ndarray,time:np.ndarray, fs_hz:float,
                 fc_hz = 0.0002, filt_order = 20):
-    filt_coeff, w, h = lp_firwin(filt_order,fs_hz,fc_hz)
+    filt_coeff, w, h = fir.lp_firwin(filt_order,fs_hz,fc_hz)
     filt_data = signal.lfilter(filt_coeff, 1.0, ds)
     warmup = filt_order-1
     uncorrupted_output = filt_data[warmup:]
