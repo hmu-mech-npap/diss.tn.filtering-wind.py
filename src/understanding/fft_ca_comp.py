@@ -98,7 +98,7 @@ df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[5][GROUP_NAME][CHAN_NAME]
 #%%
 #Here a new algorithm is tested but the results are not promissing
 # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
-Sr = df_tdms_0_0.fs_Hz
+Sr = df_tdms_1_0.fs_Hz
 dt = 1 / int(Sr)
 print (f"The time interval of the measurement is:\n{dt}")
 
@@ -109,7 +109,7 @@ plt.rcParams ['figure.figsize'] =[16,12]
 plt.rcParams.update ({'font.size': 18})
 
 n= len(time_s)
-fhat = fft(df_tdms_0_0.data,n)                              # compute fft
+fhat = fft(df_tdms_1_0.data,n)                              # compute fft
 PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
 freq = (1/(dt*n)) * np.arange(n)             # create x-axis (frequencies)
 L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
@@ -119,14 +119,14 @@ fig, axs = plt.subplots(2,1)
 
 plt.sca(axs[0])
 #plt.plot(time_s,df_tdms_0_0.data)
-plt.loglog(freq,abs(PSD))
+plt.loglog(freq,np.sqrt(PSD))
 
 plt.sca(axs[1])
 plt.plot(freq[L],abs(PSD[L]))
 #plt.xscale('log')
 plt.yscale('log')
 plt.show()
-print (df_tdms_0_0.data_as_Series, df_tdms_0_0.data)
+print (df_tdms_1_0.data_as_Series, df_tdms_1_0.data)
 
 #%%
 #Here my black box fft algorithm from the pkg is tested
@@ -160,73 +160,3 @@ for item,descr_sig in zip(data_list,ws_list):
          [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
                 )
 
-
-
-# # here the plots are comparing the raw signals.
-# # First plot is with the inverter state off and on and ws 0
-# f, yin,yout = fft_sig([fft_calc_sig(dfi_i0_w0.data,
-#                                             dfi_i1_w0.data, label="inv on")])
-
-# # here the inverter is on and the ws is 5, 10 (1st and 2nd graph respectively)
-# f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
-#                                             dfi_i1_w10.data, label="inv on")])
-
-# # here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
-# f2, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
-#                                             dfi_i1_w20.data, label="inv on")])
-
-
-# ws0 = [f,yin,yout]
-
-# ws5 = [f1,yin1,yout1]
-
-# ws10 = [f2,yin2,yout2]
-
-# data_list = [ws0,ws5,ws10]
-
-# # %%
-# ws_list = ['ws-0','ws-5/10','ws-15/20']
-# for item,descr_sig in zip(data_list,ws_list):
-#     plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
-
-#          [Fft_Plot_info(Title="Inverter off/on",
-#                        filter_type='',
-#                        signal_state=f'raw-{descr_sig}-on')     ],
-
-#          [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
-#                 )
-
-
-
-# #%%
-# #Here a new algorithm is tested but the results are not promissing
-# # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
-# Sr = dfi_i0_w0.fs_Hz
-# dt = 1 / int(Sr)
-# print (f"The time interval of the measurement is:\n{dt}")
-
-# time_s = np.arange(0,7,dt)
-# print(f"The time array is: \n {time_s}")
-
-# plt.rcParams ['figure.figsize'] =[16,12]
-# plt.rcParams.update ({'font.size': 18})
-
-# n= len(time_s)
-# fhat = fft(dfi_i0_w0.data,n)                              # compute fft
-# PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
-# freq = (1/(dt*n)) * np.arange(n)             # create x-axis (frequencies)
-# L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
-
-# print(f"This is the length of the time array and should be = 2_650_000 >< no {n}")
-# fig, axs = plt.subplots(2,1)
-
-# plt.sca(axs[0])
-# #plt.plot(time_s,df_tdms_0_0.data)
-# plt.loglog(freq,abs(PSD))
-
-# plt.sca(axs[1])
-# plt.plot(freq[L],(PSD[L]))
-# #plt.xscale('log')
-# plt.yscale('log')
-# plt.show()
-# print (dfi_i0_w0.data_as_Series, dfi_i0_w0.data)
