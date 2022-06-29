@@ -128,3 +128,4 @@ for item,descr_sig in zip(data_list,ws_list):
                 )
 
 
+plt.show()
