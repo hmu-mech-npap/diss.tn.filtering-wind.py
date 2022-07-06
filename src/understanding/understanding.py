@@ -88,6 +88,7 @@ plt.plot(t,x)
 
 plt.sca(axs[1])
 plt.plot(freq[L],PSD[L])
+plt.xlim(0,10)
 plt.show()
 #this is a version that uses the new package pros_noisefiltering
 # %%
