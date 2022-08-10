@@ -199,14 +199,14 @@ class FFT_new:
 FFT_new(df_tdms_1_0.decimate(dec=5,offset=0),title='Decimation number 5 CA INV ON').fft_calc_and_plot()
 len(df_tdms_1_0.decimate(dec=5,offset=0).data)
 
-FFT_new(dfi_i1_w0.decimate(dec=1,offset=0),title='Decimation number 1 INV INV ON').fft_calc_and_plot()
-len(dfi_i1_w0.decimate(dec=1,offset=0).data)
+FFT_new(dfi_i1_w0,title='Decimation number 1 INV INV ON').fft_calc_and_plot()
+len(dfi_i1_w0.data)
 
-FFT_new(df_tdms_1_0,title='Decimation None INV INV ON').fft_calc_and_plot()
+FFT_new(df_tdms_1_0,title='Decimation None CA INV ON').fft_calc_and_plot()
 len(df_tdms_1_0.data)
 
 # uncomment the line if the plots are not showing with the python inferior shell (emacs)
-# plt.show()
+plt.show()
 
 # printing the standard deviation for the 2 sources of measurements
 
