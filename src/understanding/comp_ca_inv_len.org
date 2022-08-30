@@ -3,7 +3,7 @@
 #+STARTUP: showeverything
 #+AUTHOR: Nikos Papadakis, Nikolas Torosian
 
-Here the idea is to compare the lenths of the datasets couse i think there are
+Here the idea is to compare the lengths of the datasets cause i think there are
 more samples in the CA dataset than in the INV dataset recorded in June
 * Imports
 #+begin_src jupyter-python :session py :async yes :results raw drawer
@@ -79,7 +79,7 @@ CHAN_NAME = 'Wind2'
 :end:
 * Comp. air
 
-Dir names for the Compressed air measurment
+Dir names for the Compressed air measurement
 
 =================================================
 
@@ -269,10 +269,9 @@ plt.show()
 
 #+RESULTS:
 :results:
-: 3100000
-[[file:./.ob-jupyter/747f4fb568ac005d24dd3e83c517a20f5942856c.png]]
-    [[file:./.ob-jupyter/0323c02d7fc6f4d7008f0744910d969dbaf54327.png]]
-[[file:./.ob-jupyter/87e37843d4ace0b100c0aa131e3a869a3042f5a3.png]]
+[[file:./.ob-jupyter/9be18c2bb6c391c556fd99583599785e7c9cf4ca.png]]
+[[file:./.ob-jupyter/87cced8dcc91cffc6cfab34506bbdbc42417f1e3.png]]
+[[file:./.ob-jupyter/4c127b2981e9814347561e0f7c359316e95353c1.png]]
 :end:
 
 * Length check for sample number in datasets
