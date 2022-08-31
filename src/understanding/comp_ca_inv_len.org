@@ -242,7 +242,7 @@ class FFT_new:
         fig, axs = plt.subplots(2,1)
 
         plt.sca(axs[0])
-        plt.grid('both')
+        plt.grid(True,which='both')
         plt.title(self.Title)
         plt.xlabel('Time [s]')
         plt.ylabel('Amplitute (Voltage)')
@@ -254,7 +254,7 @@ class FFT_new:
         plt.title('Frequency domain')
         plt.xlabel('Frequencies [Hz]')
         plt.ylabel('Power/Freq')
-        plt.grid('both')
+        plt.grid(True,which='both')
 
 FFT_new(df_tdms_1_0.decimate(dec=5,offset=0),title='Decimation number 5 CA INV ON').fft_calc_and_plot()
 len(df_tdms_1_0.decimate(dec=5,offset=0).data)
