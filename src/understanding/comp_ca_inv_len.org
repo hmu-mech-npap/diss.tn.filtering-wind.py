@@ -218,6 +218,8 @@ print (f'This should be close :\n length of CA :\n {len(df_tdms_1_0.data_as_Seri
 
 
 * Signal in frequency domain
++ Here a new algorithm is used with less clutter and from a more trusted source.
+reference : [[https://www.youtube.com/watch?v=s2K1JfNR7Sc][Denoising Data with FFT [Python] - YouTube]]
 
 #+begin_src jupyter-python :session py :async yes :results raw drawer
 class FFT_new:
