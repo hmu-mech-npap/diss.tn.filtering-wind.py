@@ -1,3 +1,9 @@
+#+TITLE: CA measurements in F.D. compared on/off
+#+PROPERTY: header-args :tangle ~/Documents/dissertation/diss.tn.filtering-wind.py/src/understanding/fft_ca_com.py
+#+STARTUP: showeverything
+#+AUTHOR: Nikos Papadakis, Nikolas Torosian
+
+
 * Imports
 + Libraries and functions that will later be used for processing and plotting the results.
 
@@ -255,7 +261,7 @@ for item,descr_sig in zip(data_list,ws_list):
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/6d29fcc43f07724475cb8039a8225765e47247b9.png]]
-[[file:./.ob-jupyter/b0f9985877daa9262d241ce685566f0cf09b3891.png]]
-[[file:./.ob-jupyter/02e0debfb0918eba4230ac207a72890111a9f815.png]]
+[[file:./.ob-jupyter/58891d65056b0c9ef9d7af46f0f14f269f50debf.png]]
+[[file:./.ob-jupyter/dabcd464fc32c9796481e30f3dd5f5c7e091cb06.png]]
+[[file:./.ob-jupyter/2329e71a2a436e627e3081f42e575d9b7642ac95.png]]
 :end:

@@ -176,6 +176,11 @@ len(df_tdms_1_0.data)
 
 plt.show()
 
+x = FFT_new(df_tdms_1_5, title="None")
+print(x.time_sec)
+
+# Here I test the differencies among Welch's method and the new algorithm for power spectral density estimation
+
 # Inverter state 0
 print(f'The standard deviation for the CA set is : \n {np.std(df_tdms_0_0.data)}')
 

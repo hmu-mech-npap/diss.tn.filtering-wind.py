@@ -96,6 +96,7 @@ dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
 #%%
 # TODO Make this in a class with functions so there is no problem with migrating
 # this fft algorithm to pypkg and remove duplicate code (redundancy)
+# # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
 #
 class FFT_new:
     def __init__(self, signal):

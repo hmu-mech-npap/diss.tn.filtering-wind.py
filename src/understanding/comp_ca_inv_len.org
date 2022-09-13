@@ -267,14 +267,40 @@ len(df_tdms_1_0.data)
 #This addition is for the inferior python shell for plotting the graphs using gtk app
 
 plt.show()
+
+x = FFT_new(df_tdms_1_5, title="None")
+print(x.time_sec)
 #+end_src
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/9be18c2bb6c391c556fd99583599785e7c9cf4ca.png]]
-[[file:./.ob-jupyter/87cced8dcc91cffc6cfab34506bbdbc42417f1e3.png]]
-[[file:./.ob-jupyter/4c127b2981e9814347561e0f7c359316e95353c1.png]]
+[[file:./.ob-jupyter/51b6532a82b038c30f42950ceb7fe4cc097f44d6.png]]
+[[file:./.ob-jupyter/57c3192d04386d7de1ae2ae13a4a2fc5cbcfc50c.png]]
+[[file:./.ob-jupyter/e4f0984fb521ce89a79df8e83d54f54f111b328d.png]]
+#+begin_example
+Float64Index([                  0.0,                 2e-06,
+                              4e-06,                 6e-06,
+                              8e-06, 9.999999999999999e-06,
+                            1.2e-05,               1.4e-05,
+                            1.6e-05,               1.8e-05,
+              ...
+                            6.99998,     6.999981999999999,
+                 6.9999839999999995,              6.999986,
+                           6.999988,    6.9999899999999995,
+                           6.999992,              6.999994,
+                  6.999995999999999,              6.999998],
+             dtype='float64', length=3500000)
+#+end_example
 :end:
+* Cross examination of old and new F.F.T. algorithms
++ Essentially the idea is to produce the same graphs as we did with the old class. This will tell us if Welch's method is effecting the Power Spectral density graphs
+
+#+begin_src jupyter-python :session py  :async yes :results raw drawer
+# Here I test the differencies among Welch's method and the new algorithm for power spectral density estimation
+
+#+end_src
+
+
 
 * Length check for sample number in datasets
 
