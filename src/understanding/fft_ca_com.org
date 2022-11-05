@@ -21,7 +21,8 @@ import nptdms
 
 import pros_noisefiltering as pnf
 from pros_noisefiltering.gen_functions import (spect,plot_spect_comb2,
-                                               Fft_Plot_info,Axis_titles,plot_FFT,Signals_for_fft_plot,
+                                               Fft_Plot_info,Axis_titles,
+                                               plot_FFT,Signals_for_fft_plot,
                                                fft_calc_sig,fft_sig)
 
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
@@ -183,6 +184,45 @@ plt.show()
 print (df_tdms_1_0.data_as_Series, df_tdms_1_0.data)
 
 #+end_src
+
+#+RESULTS:
+#+begin_example
+0          1.620280
+1          1.618670
+2          1.616738
+3          1.616094
+4          1.619314
+             ...
+3099995    1.629619
+3099996    1.618992
+3099997    1.624788
+3099998    1.618348
+3099999    1.622534
+Name: Wind2:raw, Length: 3100000, dtype: float64 [1.62028023 1.61867018 1.61673812 ... 1.62478838 1.61834817 1.6225343 ]
+#+end_example
+
+#+RESULTS:
+[[file:./.ob-jupyter/1e83365c425da0aecdfb69701fe5ba50895d2d92.png]]
+
+#+RESULTS:
+: /usr/lib/python3.10/site-packages/matplotlib/cbook/__init__.py:1369: ComplexWarning: Casting complex values to real discards the imaginary part
+:   return np.asarray(x, float)
+
+#+RESULTS:
+: This is the length of the time array and should be = 2_650_000 >< no 3500000
+
+#+RESULTS:
+: The time interval of the measurement is:
+: 2e-06
+: The time array is:
+:  [0.000000e+00 2.000000e-06 4.000000e-06 ... 6.999994e+00 6.999996e+00
+:  6.999998e+00]
+
+#+RESULTS:
+
+#+RESULTS:
+:results:
+:end:
 
 #+RESULTS:
 #+begin_example
