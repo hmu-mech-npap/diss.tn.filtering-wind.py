@@ -2,7 +2,7 @@
 data_folder
 *.h5
 measurements_12_05_22
-
+src/understanding/.ob-jupyter
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -135,3 +135,4 @@ dmypy.json
 /src/signal_process_plots_datasets/FIR_LP_filter/_temp_fig/
 /src/paper/_temp_fig/
 S2*.png
+.ob-jupyter
