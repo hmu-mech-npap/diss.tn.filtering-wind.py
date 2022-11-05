@@ -54,7 +54,7 @@ CHAN_NAME = 'Wind2'
 #%%
 # Inverter measurments 
 # Dir name 
-inv_meas_dir = 'Inverter'
+inv_meas_dir = 'inverter'
 
 # Old file id 
 #WT_inv_1_WS_0 = '115754'
@@ -142,3 +142,4 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.decimate(dec=20).calc_spectrum_gen(nperse
 
 
 # %%
+plt.show()

@@ -153,3 +153,4 @@ plot_spect_comb2([df_tdms_i1_w10.calc_spectrum(),
                 xlim=[1e1,1e5],
                 )
 #%%
+plt.show()
