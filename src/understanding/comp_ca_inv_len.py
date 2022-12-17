@@ -139,18 +139,23 @@ class FftNew:
     Here is an example of how the calculation of fft for a given
     signal is implemented.
 
-    Examples
+    Main function
     ----------
-    >>> def fft_calc_and_plot(self):
-    >>>    n = len(self.time_sec)
+    >>>def fft_calc_and_plot(self):
+    >>>    num_samp = len(self.time_sec)
     >>>    # compute fft
-    >>>    fhat = np.fft(self.sig, n)
+    >>>    fhat = fft(self.sig, num_samp)
     >>>    # Power spectrum (power/freq)
-    >>>    PSD = fhat * np.conj(fhat) / n
+    >>>    psd = fhat * np.conj(fhat) / num_samp
     >>>    # create x-axis (frequencies)
-    >>>    freq = (1/(self.dt*n)) * np.arange(n)
+    >>>    freq = (1/(self.time_interv * num_samp)) * np.arange(num_samp)
     >>>    # plot only first half (possitive)
-    >>>    plt_pos = np.arange(1, np.floor(n/2), dtype=int)
+    >>>    plt_pos = np.arange(1, np.floor(num_samp/2), dtype=int)
+
+    Usage
+    ----------
+    >>>FftNew(df_tdms_1_0.decimate(dec=5, offset=0),
+    >>>     title='Decimation number 5 CA INV ON').fft_calc_and_plot()
 
     Reference
     ----------
@@ -243,3 +248,4 @@ print(x.time_sec)
 # print(f'WS:10]] : \n {np.std(df_tdms_1_10.data)}')
 
 # print(f'ON[WS:10]] : \n {np.std(dfi_i1_w10.data)}')
+FftNew(df_tdms_0_0, title="blablabla").fft_calc_and_plot()
