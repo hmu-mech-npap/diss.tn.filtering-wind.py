@@ -101,8 +101,9 @@ def filt_sig(coeff: np.ndarray, order: int, FS: float, Raw: list):
         x = signal.lfilter(coeff, 1.0, item)
         Blank.append(x)
 
-    # Time interval of the samples
+    # BUG Time interval of the samples
     TIME = np.linspace(0, 7.599998, 3_800_000)
+    # BUG
     chunked_time = TIME[::10]
 
     # The first N-1 samples are corrupted by the initial conditions
