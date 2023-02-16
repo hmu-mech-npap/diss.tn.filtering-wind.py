@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 from nptdms import TdmsFile
 
-from func_fir import lp_firwin
+from pros_noisefiltering.filters.fir import lp_firwin
 from scipy import signal
 # This is bad practice... import the classes and do the stuff properly
 # from raw_signal_comp import df_tdms_0_0, df_tdms_1_0, df_tdms_0_5, df_tdms_1_5, df_tdms_0_11, df_tdms_1_10, f_spect_tdms_CA, Px_x_tdms_CA

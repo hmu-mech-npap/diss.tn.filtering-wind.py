@@ -17,26 +17,26 @@ def lp_firwin(numtaps_2: int, FS: float, cutoff_Hz: float):
     Parameters:
     ===========
     numtaps_2 : int
-    The order of the filter to be produced.
+        The order of the filter to be produced.
 
     FS : float
-    The sampling frequency of the samples.
+        The sampling frequency of the samples.
 
     cutoff_Hz : float
-    cutoff freq in Hz.
+        cutoff freq in Hz.
 
     Returns:
     ========
     Filt : list
-    A list of arrays containing the filtered signal
-    with no delay (time delay of FIR filter: time_delay = 1/2(numtaps-1))
+        A list of arrays containing the filtered signal
+        with no delay (time delay of FIR filter: time_delay = 1/2(numtaps-1))
 
     Blank : list
-    A list of arrays containing the filtered signal
-    with time delay from FIR filter process.
+        A list of arrays containing the filtered signal
+        with time delay from FIR filter process.
 
     TIME : np.ndarray
-    The `time interval` from the dataframe
+        The `time interval` from the dataframe
 
     Usage example:
     ==============
@@ -61,36 +61,36 @@ def filt_sig(coeff: np.ndarray, order: int, FS: float, Raw: list):
     Args:
     =======
     coeff : np.ndarray
-    The filter coefficients that will be used.
+        The filter coefficients that will be used.
 
     order : int
-    The order of the filter for the delay process
+        The order of the filter for the delay process
 
     FS : float
-    The sampling frequency of the signal.
+        The sampling frequency of the signal.
+
     Raw : list
-    The list of arrays from the dataframe of raw signal
+        The list of arrays from the dataframe of raw signal
 
     Returns:
     ========
     Filt : list
-    A list of arrays containing the filtered signal with no delay
-    `time delay of FIR filter: time_delay= 1/2(numtaps-1)`
+        A list of arrays containing the filtered signal with no delay
+        `time delay of FIR filter: time_delay= 1/2(numtaps-1)`
 
     Blank : list
-    A list of arrays containing the filtered signal `with time delay`
-    from FIR filter process.
+        A list of arrays containing the filtered signal `with time delay`
+        from FIR filter process.
 
     TIME : np.ndarray
-    The time interval of the signal from the dataframe.
+        The time interval of the signal from the dataframe.
 
     TIME_NO_SHIFT : np.ndarray
-    The time interval of the filtered signal with `no delay`.
+        The time interval of the filtered signal with `no delay`.
 
     Usage example:
     ==============
-    >>> Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=fir.filt_sig
-    >>>                (coeff=filter_coeff, order=20, FS=FS, Raw=CHUNKED_DATA)
+    >>> Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=fir.filt_sig(coeff=filter_coeff,order=20, FS=FS,Raw=CHUNKED_DATA)
     """
     # Filtering the raw signal with the above FIR filter
     chunked_time = []
