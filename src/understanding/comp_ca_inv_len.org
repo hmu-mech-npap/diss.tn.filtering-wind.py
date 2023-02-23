@@ -1,5 +1,4 @@
 #+TITLE: length_comparison
-#+PROPERTY: header-args :tangle ~/Documents/dissertation/diss.tn.filtering-wind.py/src/understanding/comp_ca_inv_len.py
 #+STARTUP: showeverything
 #+AUTHOR: Nikos Papadakis, Nikolas Torosian
 
@@ -78,13 +77,9 @@ CHAN_NAME = 'Wind2'
 :results:
 :end:
 * Comp. air
-
 Dir names for the Compressed air measurement
-
 =================================================
-
 Here the Compressed air measurements are imported
-
 =================================================
 
 #+begin_src jupyter-python :session py :async yes :results raw drawer
@@ -123,7 +118,7 @@ for item in raw_signal_CA:
 :results:
 :end:
 
-* Compressed air measurements
+* Compressed air measurements :df_tdms_x_x_objects:
 #+begin_src jupyter-python :session py :async yes :results raw drawer
 
 
@@ -149,7 +144,7 @@ df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[5][GROUP_NAME][CHAN_NAME]
 :results:
 :end:
 
-* Wind tunnel measurements
+* Wind tunnel measurements :dfi_ix_wx_objects:
 #+begin_src jupyter-python :session py :async yes :results raw drawer
 
 
@@ -216,8 +211,7 @@ print (f'This should be close :\n length of CA :\n {len(df_tdms_1_0.data_as_Seri
 : 540000
 :end:
 
-
-* Signal in frequency domain
+* Signal in frequency domain :standalone_spectrum_analyser:
 + Here a new algorithm is used with less clutter and from a more trusted source.
 reference : [[https://www.youtube.com/watch?v=s2K1JfNR7Sc][Denoising Data with FFT [Python] - YouTube]]
 
@@ -227,7 +221,7 @@ class FFT_new:
         self.Title = title
         self.sr = signal.fs_Hz
         self.sig = signal.data
-        self.ind = signal.data_as_Series.index
+        self.ind = np.array(range(0,len(signal.data_as_Series),1))
         self.dt = 1/ int(self.sr)
         self.time_sec = self.ind * self.dt
 
@@ -277,25 +271,28 @@ print(x.time_sec)
 [[file:./.ob-jupyter/8cbe8816a056f1e3444270fd1bda3ac3666a2967.png]]
 [[file:./.ob-jupyter/7d2e881ae1f36b9ffe2839d1325001f458aba35d.png]]
 [[file:./.ob-jupyter/5863e5eb0a10de55872ea74091d28b7344221485.png]]
-#+begin_example
-Float64Index([                  0.0,                 2e-06,
-                              4e-06,                 6e-06,
-                              8e-06, 9.999999999999999e-06,
-                            1.2e-05,               1.4e-05,
-                            1.6e-05,               1.8e-05,
-              ...
-                            6.99998,     6.999981999999999,
-                 6.9999839999999995,              6.999986,
-                           6.999988,    6.9999899999999995,
-                           6.999992,              6.999994,
-                  6.999995999999999,              6.999998],
-             dtype='float64', length=3500000)
-#+end_example
+: [0.000000e+00 2.000000e-06 4.000000e-06 ... 6.999994e+00 6.999996e+00
+:  6.999998e+00]
 :end:
+
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+a = np.array(range(0,len(df_tdms_0_0.data_as_Series),1))
+print (a)
+print(dfi_i1_w0.average(fr_Hz=200).calc_spectrum_gen(dec=1, nperseg=100*1024))
+#+end_src
+
+#+RESULTS:
+:results:
+: [      0       1       2 ... 2649997 2649998 2649999]
+: <pros_noisefiltering.Graph_data_container.Graph_data_container object at 0x7fc813de52d0>
+: /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 102400 is greater than input length  = 1080, using nperseg = 1080
+:   warnings.warn('nperseg = {0:d} is greater than input length '
+:end:
+
 
 ** TODO add last fuction doc.
 [[file:~/Documents/dissertation/diss.tn.filtering-wind.py/src/understanding/comp_ca_inv_len.py::class FftNew:]]
-* step4 filter inspection
+* step4 filter inspection :new_filter_method:
 ** Papadakis paper Plots has a more elegant solution for freq domain
 *** imports needed for butterworth construction :filt_butter_factory:
 #+begin_src jupyter-python :session py  :async yes :results raw drawer
@@ -705,13 +702,134 @@ plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")
 [[file:./.ob-jupyter/ae4d7f8d10b61c65240c56ca1010e3b3abe2ef5f.png]]
 [[file:./.ob-jupyter/a243af07045a4bda27d2e9efc27bc3e4b7607319.png]]
 :end:
-** Tying to recreate situations for FIR filter debugged from pypkg :bug:
-*** +build a filter factory without hard coding sampling frequency by number+
+** Recreate situations for FIR filter debugged from pypkg [60%] :debbuged:
+*** DONE build a filter factory without hard coding sampling frequency by number [100%]
 **** Imports
 #+begin_src jupyter-python :session py :async yes :results raw drawer
 
 from scipy import signal
 import numpy as np
+
+# filter_Butter_20 = filt_butter_factory(filt_order =2, fc_Hz = 20)
+# filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_Hz = 200)
+# filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+# NPERSEG=1024<<8
+# fc_Hz=200
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+**** DONE  BETTER CONSTRUCTOR
+:LOGBOOK:
+CLOSED: [2023-02-16 Πεμ 08:21]
+- CLOSING NOTE [2023-02-16 Πεμ 08:21] \\
+  Εδώ καλο ειναι να μπορέσουμε να το βαλουμε μεσα στο πακετο. λογικα δουλευει ακριβως σαν την κλαση του παπαδακη. μπορει να χρησιμοποιηθει και με το function plot_comparative_response( ... ) για πιο ακριβη συγκριση του FIR με το IIR φιλτρο που επιθυμουμε!!!!
+:END:
+:REFERENCE:
++ Ripple image
+  [[file:~/Screenshots/sos-tf-diff.png]]
+  + image reference: [[https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt.html#scipy.signal.sosfilt][scipy.signal.sosfilt]]
++ Filtering functions(sos output type)
+  - [[https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt.html#scipy.signal.sosfilt][signal.sosfilt]]
+:END:
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+# Define a class for FIR operations like
+def fir_factory_constructor(fir_order=32, fc_fir_Hz:float=200):
+    """#This is the new way should be working with Papadakis solution above."""
+
+    def fir_filter(ds:np.ndarray,
+                   fs_hz:float, fc_hz:float= fc_fir_Hz,
+                   fir_filt_order=fir_order ):
+
+        fir_filt_coeff= signal.firwin(numtaps=fir_filt_order,
+                                      fs=fs_hz,
+                                      cutoff=fc_hz ,
+                                      # pass_zero=False ,
+                                      # scale= True,
+                                      )
+        # # Hann approach
+        # fir_filt_coeff=signal.firwin(fir_order + 1, [0, 200/fs_hz], fs=fs_hz , window='hann')
+
+        # make output sos type to ensure normal operation
+        # this is crusial for elimination of ending ripples see image above
+        sos_fir_mode = signal.tf2sos(fir_filt_coeff, 1)
+        sos_filt_data = signal.sosfilt(sos_fir_mode, ds-ds[0])+ds[0]
+        warmup = fir_filt_order-1
+        uncorrupted_output = sos_filt_data[warmup:]
+        # filt_sig_time_int = time[warmup:]-((warmup/2)/fs_hz)
+        return uncorrupted_output #uncorr_sos_output
+
+    #Add the parameter attribute for checking filter response
+    fir_filter.params = {'filter order':fir_order, 'fc_Hz':fc_fir_Hz}
+    return fir_filter
+
+filter_fir_default=fir_factory_constructor(fir_order = 2, fc_fir_Hz= 100)
+
+class Fir_filter:
+    """# This class is used to take a signal as a tdms dataframe object (from pypkg funcs).
+    """
+
+    def __init__(self,signals) -> None:
+
+        self.raw = signals.data
+        #self.time_int = np.linspace(0, 7, len(self.raw))
+        self.description = signals.description
+        self._channel_data= signals._channel_data
+        self.fs_Hz = int (1/signals._channel_data.properties['wf_increment'])
+        self.channel_name = signals._channel_data.name
+        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_Hz), len(self.raw))
+
+    def apply_fir(self, fc_hz, order_for_filter:int):
+        filtered =fir_filter(self.raw, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+        return pd.Series(filtered, name=f'{self.channel_name}:fir_filt_fc_{fc_hz}')
+
+    # def output_time_dur(self, fc_hz):
+    #     filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+    #     return filt_time_int
+
+    # DEPENDS on a BUG (spect() function DO NOT USE!!)
+    # def get_spect_fir_output(self, fc_hz, order_for_filter):
+    #     x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz, order_for_filter=108), FS= self.fs_Hz)
+    #     filt_type = 'FIR' return Graph_data_container(x=x_filt,y=y_filt,
+    #                                                   label =  f'{self.description}-{self.channel_name} - filt: {filt_type}-{fc_hz}')
+    #              BUG
+
+    def _fir_filter(self, fc_Hz:float=fir_fc_hz, filter_func=filter_fir_default, fs_Hz=None )->pd.Series:
+        """#TODO UPDATE DOCSTRING: return a filtered signal based on
+
+        Args:
+            fc_Hz (float): cut off frequency in Hz
+            filter_func (filt_fir_factory, optional): filtering function that thates two arguments (ds, fs_Hz). Defaults to 100, filt_order = 2).
+            fs_Hz (None): sampling frequency in Hz (is None in declaration)
+
+
+        Returns:
+            _type_: _description_
+        """
+        if fs_Hz is not None:
+            logging.warning(f'issued {fs_Hz} sampling frequency while the default is {self.fs_Hz}')
+        fs_Hz = fs_Hz if fs_Hz is not None else self.fs_Hz
+        filtered = filter_func(ds=self.data, fs_Hz=fs_Hz, fc_Hz=fc_Hz )
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
+
+    def fir_nested_filter(self,  fc_Hz:float, filter_func=filter_fir_default, fs_Hz=None, desc=None):
+        ds_filt = self._fir_filter( fc_Hz=fc_Hz, filter_func=filter_func, fs_Hz=fs_Hz )
+        description = desc if desc is not None else self.description + f"_fc:{fc_Hz}"
+        return WT_NoiseChannelProc.from_obj(self,
+            desc = description,
+            data = ds_filt.values,
+            operation = f'pass filter {fc_Hz}'
+            )
+
+
+# Function needed from WT_NoiseChannelProc objects to apply a butterworth
+def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz:float = 200, filt_order = 3 ):
+                 # filter cutoff frequency
+    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
+    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    return filtered
 
 #+end_src
 
@@ -719,10 +837,606 @@ import numpy as np
 :results:
 :end:
 
-**** KILL OLD Constructor :noexport:
+**** comparing raw and filtered signals with FIR :IIR_FIR_COMPARISON:
++ plot the fir filter response numtaps as above to double check
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+
+fir_fc_hz=200
+fir_or=65
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_1_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          # xlim=0e0,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_1_10, # cutoff frequency
+        filter_func=filter_Butter_200,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+
+#+end_src
+*** DONE compare wind speeds with constant cutoff freq [100%] :new_filtering_method:
+
+**** DONE inv 0 ws 0 fc=200Hz
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=200
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_0, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_0, # cutoff frequency
+        filter_func=filter_Butter_200,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+**** DONE inv 0 ws 5 fc=200Hz
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=200
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_5, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_5, # cutoff frequency
+        filter_func=filter_Butter_200,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/2838a4f7b626ce0172ef7630b10e8e824c215531.png]]
+[[file:./.ob-jupyter/4a3bd54c26c00fdf5e48969781862c61f146af1d.png]]
+:end:
+
+#+begin_src jupyter-python :session none :async yes
+# dummy
+#+end_src
+**** DONE inv 0 ws 10 fc=200Hz
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=200
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_200,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/d2964500b41eb687102652cdda3246914d11f0dc.png]]
+[[file:./.ob-jupyter/e24508d26a6734474745f769a7e1d636a113b01a.png]]
+:end:
+*** DONE play with sustain (slope of cutting edge) [100%]
+:LOGBOOK:
+CLOSED: [2023-02-16 Πεμ 12:53]
+
+- CLOSING NOTE [2023-02-16 Πεμ 12:53] \\
+  the optimal is the last slope.
+  BEST approach with feedback checking with butterworth by Papadaki.
+:END:
+
+**** DONE [MAX SLOPE] inv 0 ws 10 [m/s] fc=100 [Hz]
+:LOGBOOK:
+- CLOSING NOTE [2023-02-16 Πεμ 11:15] \\
+  this is perfect to give extreme examples of filters
+  overfiltering !!
+  IIR order = 20
+  FIR order = 104
+:END:
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=100
+fir_or=104
+
+
+fir_filter_cnstr_xslope=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+butter_filter_cnstr_xslope=filt_butter_factory(filt_order = 20, fc_Hz = 100)
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=butter_filter_cnstr_xslope,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/4417b8445ec30410a38c55fa96f0f1378c5e5baf.png]]
+[[file:./.ob-jupyter/df557fa1aa1fb79f4c2890d6a72a3c9f2a03b35d.png]]
+:end:
+**** DONE [MID SLOPE] inv 1 ws 10 [m/s] fc=2_000 [Hz]
+:LOGBOOK:
+- CLOSING NOTE [2023-02-16 Πεμ 12:41] \\
+  ready and tested!
+  make also some tweaks here for titles and stuff!
+:END:
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=24
+
+fir_filter_cnstr_xorder = fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+butter_filter_cnstr_xslope = filt_butter_factory(filt_order=4, fc_Hz=2_000)
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_1_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_1_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/c0b2f0da545f532045c51e5b1c6d41351340cae6.png]]
+[[file:./.ob-jupyter/4d3977202a40028566533b4c054d85ec425452d2.png]]
+:end:
+**** DONE [OPTIMAL SLOPE] inv 1 ws 10 [m/s] fc=2_000 [Hz]
+:LOGBOOK:
+- CLOSING NOTE [2023-02-16 Πεμ 12:49] \\
+  done and tested with comparative_response function.
+:END:
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=8
+
+butter_filter_cnstr_xslope = filt_butter_factory(filt_order=8, fc_Hz=2_000)
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/1b2b7d412fd660ab07b5ae81abce720a499b0e36.png]]
+[[file:./.ob-jupyter/d0f54ab657c9188148280a5d41ff6308d2e44114.png]]
+:end:
+*** TODO compare different cutoff frequencies [66%] :new_filtering_method:
+**** DONE inv 0 ws 10 fc=2000 [Hz]
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/270d290a6370797e684bd3ef1345b7dc8fb561b6.png]]
+[[file:./.ob-jupyter/d0f54ab657c9188148280a5d41ff6308d2e44114.png]]
+:end:
+**** DONE inv 0 ws 10 fc=20Hz
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=20
+fir_or=34
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_20,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/12571988aca2eb6d8197af26230b3fde5d500d9c.png]]
+[[file:./.ob-jupyter/1764232c1484c9f1b69a3b22ea6ff4164c093805.png]]
+:end:
+
+#+begin_src jupyter-python :session none :async yes
+# dummy
+#+end_src
+**** TODO inv 0 ws 10 fc=X Hz
+
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=85
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_200,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+
+#+RESULTS:
+:results:
+: /usr/lib/python3.10/site-packages/pros_noisefiltering-0.0.4-py3.10.egg/pros_noisefiltering/WT_NoiProc.py:315: UserWarning: Data has no positive values, and therefore cannot be log-scaled.
+[[file:./.ob-jupyter/cdc95148e7678aef381566121ca37a21e30a894c.png]]
+[[file:./.ob-jupyter/e24508d26a6734474745f769a7e1d636a113b01a.png]]
+:end:
+
+#+begin_src jupyter-python :session none :async yes
+# dummy
+#+end_src
+*** TODO play with filter gain levels [0%]
+**** TODO inv 0 ws 10 fc=2000 [Hz]
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+**** TODO inv 0 ws 10 fc=2000 [Hz]
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+**** TODO inv 0 ws 10 fc=2000 [Hz]
+
+#+begin_src jupyter-python :session py :async yes :results drawer
+fir_fc_hz=2000
+fir_or=104
+
+fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
+FIGSIZE_SQR_L = (8,10)
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+                          filter_func=fir_filter_cnstr_xorder ,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100,
+                          figsize =FIGSIZE_SQR_L)
+
+plot_comparative_response(df_tdms_0_10, # cutoff frequency
+        filter_func=filter_Butter_2000,
+        response_offset=2e-4,
+        Kolmogorov_offset = 4e0,
+        nperseg=NPERSEG*100
+        ,figsize =FIGSIZE_SQR_L)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+#+end_src
+* TODO [#A] migrate to polars (eliminate indexes)
+** make a link to the pypkg
+* [#A] WHAT IS LOADED TO JUPYTER KERNEL
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+%whos
+#+end_src
+
+#+RESULTS:
+:results:
+#+begin_example
+Variable                     Type                   Data/Info
+-------------------------------------------------------------
+Axis_titles                  type                   <class 'pros_noisefilteri<...>n_functions.Axis_titles'>
+CHAN_NAME                    str                    Wind2
+FFT_new                      type                   <class '__main__.FFT_new'>
+FIGSIZE_SQR                  tuple                  n=2
+FIGSIZE_SQR_L                tuple                  n=2
+FIGSIZE_STD                  tuple                  n=2
+FIGSIZE_WIDE                 tuple                  n=2
+FOLDER_FOR_DATA              PosixPath              /home/dtos_experiment/Doc<...>2/new_record_prop_channel
+Fft_Plot_info                type                   <class 'pros_noisefilteri<...>functions.Fft_Plot_info'>
+Fir_filter                   type                   <class '__main__.Fir_filter'>
+GROUP_NAME                   str                    Wind Measurement
+Graph_data_container         type                   <class 'pros_noisefilteri<...>er.Graph_data_container'>
+NPERSEG                      int                    1024
+Path                         type                   <class 'pathlib.Path'>
+Signals_for_fft_plot         type                   <class 'pros_noisefilteri<...>ns.Signals_for_fft_plot'>
+TDMS_FNAME                   str                    Data.tdms
+TdmsFile                     type                   <class 'nptdms.tdms.TdmsFile'>
+WT_NoiseChannelProc          type                   <class 'pros_noisefilteri<...>roc.WT_NoiseChannelProc'>
+a                            ndarray                2650000: 2650000 elems, type `int64`, 21200000 bytes (20.2178955078125 Mb)
+apply_filter                 function               <function apply_filter at 0x7fc810c4ef80>
+butter_filter_cnstr_xslope   function               <function filt_butter_fac<...>butter at 0x7fc810c6fbe0>
+comp_air_dir                 str                    compressed air
+data_CA_inv_0_WS_0           str                    ca0_0.1
+data_CA_inv_0_WS_11          str                    ca0_10.1
+data_CA_inv_0_WS_5           str                    ca0_5.1
+data_CA_inv_1_WS_0           str                    ca1_0.1
+data_CA_inv_1_WS_10          str                    ca1_10.1
+data_CA_inv_1_WS_5           str                    ca1_5.1
+data_inv_inv_0_WS_0          str                    in0_0.1
+data_inv_inv_1_WS10          str                    in1_10.1
+data_inv_inv_1_WS15          str                    in1_15.1
+data_inv_inv_1_WS_0          str                    in1_0.1
+data_inv_inv_1_WS_20         str                    in1_20.1
+data_inv_inv_1_WS_5          str                    in1_5.1
+df_tdms_0_0                  WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d6d10>
+df_tdms_0_10                 WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d75e0>
+df_tdms_0_5                  WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d7520>
+df_tdms_1_0                  WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d6bf0>
+df_tdms_1_10                 WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d6b30>
+df_tdms_1_5                  WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc8276d6ce0>
+dfi_i0_w0                    WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc82753c8e0>
+dfi_i1_w0                    WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc82753c820>
+dfi_i1_w10                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc82753e8c0>
+dfi_i1_w15                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc827736da0>
+dfi_i1_w20                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc827736680>
+dfi_i1_w5                    WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc82753c550>
+fc_Hz                        int                    10
+fft                          function               <function fft at 0x7fc85c0a4d30>
+fft_calc_sig                 type                   <class 'pros_noisefilteri<...>_functions.fft_calc_sig'>
+fft_sig                      function               <function fft_sig at 0x7fc82771c700>
+filt_butter_factory          function               <function filt_butter_factory at 0x7fc82771cc10>
+filter_Butter_20             function               <function filt_butter_fac<...>butter at 0x7fc81082f490>
+filter_Butter_200            function               <function filt_butter_fac<...>butter at 0x7fc81082fac0>
+filter_Butter_2000           function               <function filt_butter_fac<...>butter at 0x7fc81082feb0>
+filter_fir_default           function               <function fir_factory_con<...>filter at 0x7fc81082fc70>
+fir_factory_constructor      function               <function fir_factory_con<...>ructor at 0x7fc810c4ecb0>
+fir_fc_hz                    int                    100
+fir_filter_cnstr_xorder      function               <function fir_factory_con<...>filter at 0x7fc8109723b0>
+fir_filter_cnstr_xslope      function               <function fir_factory_con<...>filter at 0x7fc810c6d000>
+fir_or                       int                    65
+fr_HZ                        int                    100
+ifft                         function               <function ifft at 0x7fc85c0a4e50>
+inv_meas_dir                 str                    inverter
+item                         str                    in1_20.1
+l_tdms_CA                    list                   n=6
+l_tdms_Inv                   list                   n=6
+np                           module                 <module 'numpy' from '/us<...>kages/numpy/__init__.py'>
+nptdms                       module                 <module 'nptdms' from '/u<...>ages/nptdms/__init__.py'>
+path_comp                    PosixPath              /home/dtos_experiment/Doc<...>ord_prop_channel/inverter
+pd                           module                 <module 'pandas' from '/u<...>ages/pandas/__init__.py'>
+plot_FFT                     function               <function plot_FFT at 0x7fc82771c8b0>
+plot_comparative_response    function               <function plot_comparativ<...>sponse at 0x7fc82771cdc0>
+plot_spect_comb2             function               <function plot_spect_comb2 at 0x7fc82771c280>
+plt                          module                 <module 'matplotlib.pyplo<...>es/matplotlib/pyplot.py'>
+pnf                          module                 <module 'pros_noisefilter<...>sefiltering/__init__.py'>
+raw_signal_CA                list                   n=6
+signal                       module                 <module 'scipy.signal' fr<...>cipy/signal/__init__.py'>
+spect                        function               <function spect at 0x7fc82771c0d0>
+x                            FFT_new                <__main__.FFT_new object at 0x7fc810d17a60>
+#+end_example
+:end:
+* refile_stuff :noexport:
+** junk
+#+begin_src jupyter-python :session py :async yes
+print(df_tdms_0_0.fs_Hz)
+print(fc_Hz)
+print(np.std(df_tdms_0_0.data_as_Series))
+print(np.std(df_tdms_0_0.filter(fc_Hz=2_000, filter_func=apply_filter).data_as_Series))
+print(np.std(Fir_filter(df_tdms_0_0).apply_fir(fc_hz=2000, order_for_filter=65)))
+
+print(fc_Hz)
+
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+: 500000.0000000014
+: 10
+: 0.006195530830989477
+: 0.00153298627789367
+# [goto error]
+#+begin_example
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Input [0;32mIn [50][0m, in [0;36m<cell line: 5>[0;34m()[0m
+[1;32m      3[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd(df_tdms_0_0[38;5;241m.[39mdata_as_Series))
+[1;32m      4[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd(df_tdms_0_0[38;5;241m.[39mfilter(fc_Hz[38;5;241m=[39m[38;5;241m2_000[39m, filter_func[38;5;241m=[39mapply_filter)[38;5;241m.[39mdata_as_Series))
+[0;32m----> 5[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd([43mFir_filter[49m[43m([49m[43mdf_tdms_0_0[49m[43m)[49m[38;5;241;43m.[39;49m[43mapply_fir[49m[43m([49m[43mfc_hz[49m[38;5;241;43m=[39;49m[38;5;241;43m2000[39;49m[43m,[49m[43m [49m[43morder_for_filter[49m[38;5;241;43m=[39;49m[38;5;241;43m65[39;49m[43m)[49m))
+[1;32m      7[0m [38;5;28mprint[39m(fc_Hz)
+
+Input [0;32mIn [42][0m, in [0;36mFir_filter.apply_fir[0;34m(self, fc_hz, order_for_filter)[0m
+[1;32m     47[0m [38;5;28;01mdef[39;00m [38;5;21mapply_fir[39m([38;5;28mself[39m, fc_hz, order_for_filter:[38;5;28mint[39m):
+[0;32m---> 48[0m     filtered [38;5;241m=[39m[43mfir_filter[49m([38;5;28mself[39m[38;5;241m.[39mraw, fs_hz[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mfs_Hz, fc_hz[38;5;241m=[39mfc_hz)
+[1;32m     49[0m     [38;5;28;01mreturn[39;00m pd[38;5;241m.[39mSeries(filtered, name[38;5;241m=[39m[38;5;124mf[39m[38;5;124m'[39m[38;5;132;01m{[39;00m[38;5;28mself[39m[38;5;241m.[39mchannel_name[38;5;132;01m}[39;00m[38;5;124m:fir_filt_fc_[39m[38;5;132;01m{[39;00mfc_hz[38;5;132;01m}[39;00m[38;5;124m'[39m)
+
+[0;31mNameError[0m: name 'fir_filter' is not defined
+#+end_example
+:END:
+*** DONE testing the new filter method with signal inverter ON and WS 5 :IIR_FIR_COMPARISON:
+CLOSED: [2023-02-16 Πεμ 08:23]
+:LOGBOOK:
+- CLOSING NOTE [2023-02-16 Πεμ 08:23] \\
+  test passes nearly identical Standard deviation
+:END:
+
+
+#+RESULTS:
+:RESULTS:
+: fs =        500000.0000000014
+: fc/fir =    200
+: order/fir = 104
+: stnd dev raw-sig 0.08411345523411061
+: stnd dev butterw 0.07590339469023784
+: stnd dev fir-out 0.0759598237693874
+[[file:./.ob-jupyter/b25397acd28385a081903b24833765b9667c1605.png]]
+:END:
+** testing standard deviation for FIR filtered signal in datasets
+
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+
+# Inverter state 0
+print(f'The standard deviation for the CA set is : \n {np.std(df_tdms_0_0.data)}')
+
+print(f'The standard deviation for the Inverter`s set is : \n {np.std(dfi_i0_w0.data)}')
+
+# Inverter state 1
+print(f'The standard deviation for the CA set is [ON] : \n {np.std(df_tdms_1_0.data)}')
+
+print(f'The standard deviation for the Inverter`s set is [ON] : \n {np.std(dfi_i1_w0.data)}')
+
+# Inverter state 1 WS 5
+print(f'The standard deviation for the CA set is [ON [WS:5]] : \n {np.std(df_tdms_1_5.data)}')
+
+print(f'The standard deviation for the Inverter`s set is [ON[WS:5]] : \n {np.std(dfi_i1_w5.data)}')
+
+# Inverter state 1 WS 10
+print(f'The standard deviation for the CA set is [ON [WS:10]] : \n {np.std(df_tdms_1_10.data)}')
+
+print(f'The standard deviation for the Inverter`s set is [ON[WS:10]] : \n {np.std(dfi_i1_w10.data)}')
+#+end_src
+
+#+RESULTS:
+:results:
+#+begin_example
+The standard deviation for the CA set is :
+ 0.006195530830990014
+The standard deviation for the Inverter`s set is :
+ 0.007631000516108838
+The standard deviation for the CA set is [ON] :
+ 0.03640710377731642
+The standard deviation for the Inverter`s set is [ON] :
+ 0.039231610005325684
+The standard deviation for the CA set is [ON [WS:5]] :
+ 0.043360563542830126
+The standard deviation for the Inverter`s set is [ON[WS:5]] :
+ 0.038539116482425785
+The standard deviation for the CA set is [ON [WS:10]] :
+ 0.08411345523399606
+The standard deviation for the Inverter`s set is [ON[WS:10]] :
+ 0.04000171217337094
+#+end_example
+:end:
+** DONE OLD Constructor :noexport:
+CLOSED: [2023-02-16 Πεμ 08:18]
+:LOGBOOK:
+- CLOSING NOTE [2023-02-16 Πεμ 08:18] \\
+  this is obsolete and has hardcoded numbers!! Bad practice!
+:END:
 #+begin_src jupyter-python :session none :async yes :results raw drawer
 def filt_fir_factory( numtaps_2: int, fc_Hz:float):
-    """this is a factory method that produces a FIR filter function
+    """
+This is a factory method that produces a FIR filter function
     with a filter order and a cutoff frequency
 
     Args:
@@ -781,257 +1495,6 @@ filter_fir_default=filt_fir_factory(numtaps_2=2, fc_Hz=200)
 #+RESULTS:
 :results:
 :end:
-**** [#A] BETTER CONSTRUCTOR
-+ Ripple image
-  [[file:~/Screenshots/sos-tf-diff.png]]
-  + image reference: [[https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt.html#scipy.signal.sosfilt][scipy.signal.sosfilt]]
-
-#+begin_src jupyter-python :session py :async yes :results raw drawer
-# Define a class for FIR operations like
-def fir_factory_constructor(fir_order=32, fc_fir_Hz:float=200):
-    """#This is the new way should be working with Papadakis solution above."""
-
-    def fir_filter(ds:np.ndarray,
-                   fs_hz:float, fc_hz:float= fc_fir_Hz,
-                   fir_filt_order=fir_order ):
-
-        fir_filt_coeff= signal.firwin(numtaps=fir_filt_order,
-                                      fs=fs_hz,
-                                      cutoff=fc_hz ,
-                                      # pass_zero=False ,
-                                      # scale= True,
-                                      )
-
-        # # Hann approach
-        # fir_filt_coeff=signal.firwin(fir_order + 1, [0, 200/fs_hz], fs=fs_hz , window='hann')
-
-        # make output sos type to ensure normal operation
-        # this is crusial for elimination of ending ripples see image above
-        sos_fir_mode = signal.tf2sos(fir_filt_coeff, 1)
-        sos_filt_data = signal.sosfilt(sos_fir_mode, ds-ds[0])+ds[0]
-        warmup = fir_filt_order-1
-        uncorrupted_output = sos_filt_data[warmup:]
-        # filt_sig_time_int = time[warmup:]-((warmup/2)/fs_hz)
-        return uncorrupted_output #uncorr_sos_output
-
-    #Add the parameter attribute for checking filter response
-    fir_filter.params = {'filter order':fir_order, 'fc_Hz':fc_fir_Hz}
-    return fir_filter
-
-filter_fir_default=fir_factory_constructor(fir_order = 2, fc_fir_Hz= 100)
-
-class Fir_filter:
-    """# This class is used to take a signal as a tdms dataframe object (from pypkg funcs).
-    """
-
-    def __init__(self,signals) -> None:
-
-        self.raw = signals.data
-        #self.time_int = np.linspace(0, 7, len(self.raw))
-        self.description = signals.description
-        self._channel_data= signals._channel_data
-        self.fs_Hz = int (1/signals._channel_data.properties['wf_increment'])
-        self.channel_name = signals._channel_data.name
-        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_Hz), len(self.raw))
-
-    def apply_fir(self, fc_hz, order_for_filter:int):
-        filtered =fir_filter(self.raw, fs_hz=self.fs_Hz, fc_hz=fc_hz)
-        return pd.Series(filtered, name=f'{self.channel_name}:fir_filt_fc_{fc_hz}')
-
-    # def output_time_dur(self, fc_hz):
-    #     filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_Hz, fc_hz=fc_hz)
-    #     return filt_time_int
-
-    def get_spect_fir_output(self, fc_hz, order_for_filter):
-        x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz, order_for_filter=108), FS= self.fs_Hz)
-        filt_type = 'FIR'
-        return Graph_data_container(x=x_filt,y=y_filt,
-                                    label =  f'{self.description}-{self.channel_name} - filt: {filt_type}-{fc_hz}'
-                                    )
-    def _fir_filter(self, fc_Hz:float=fir_fc_hz, filter_func=filter_fir_default, fs_Hz=None )->pd.Series:
-        """return a filtered signal based on
-
-        Args:
-            fc_Hz (float): cut off frequency in Hz
-            filter_func (filt_fir_factory, optional): filtering function that thates two arguments (ds, fs_Hz). Defaults to 100, filt_order = 2).
-            fs_Hz (None): sampling frequency in Hz (#TODO SHOULD BE REMOVED)
-
-
-        Returns:
-            _type_: _description_
-        """
-        if fs_Hz is not None:
-            logging.warning(f'issued {fs_Hz} sampling frequency while the default is {self.fs_Hz}')
-        fs_Hz = fs_Hz if fs_Hz is not None else self.fs_Hz
-        filtered = filter_func(ds=self.data, fs_Hz=fs_Hz, fc_Hz=fc_Hz )
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
-
-    def fir_nested_filter(self,  fc_Hz:float, filter_func=filter_fir_default, fs_Hz=None, desc=None):
-        ds_filt = self._fir_filter( fc_Hz=fc_Hz, filter_func=filter_func, fs_Hz=fs_Hz )
-        description = desc if desc is not None else self.description + f"_fc:{fc_Hz}"
-        return WT_NoiseChannelProc.from_obj(self,
-            desc = description,
-            data = ds_filt.values,
-            operation = f'pass filter {fc_Hz}'
-            )
-
-
-# Function needed from WT_NoiseChannelProc objects to apply a butterworth
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz:float = 200, filt_order = 3 ):
-                 # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
-    return filtered
-
-#+end_src
-
-#+RESULTS:
-:results:
-:end:
-
-**** testing the new filter method :IIR_FIR_COMPARISON:
-
-#+begin_src jupyter-python :session py  :async yes :results raw drawer
-fir_fc_hz=200
-fir_or=240
-FIGSIZE_SQR = (6,6)
-plot_spect_comb2([df_tdms_0_0.calc_spectrum(),
-                df_tdms_0_0.filter(fc_Hz=2_000, filter_func=apply_filter).calc_spectrum(),
-                Fir_filter(df_tdms_0_0).get_spect_fir_output(fir_fc_hz, fir_or)    ],
-                title='CA ws 0 inv 1',
-                Kolmogorov_offset=1e3,
-                xlim=[1e1,1e5],
-                )
-
-print(f'fs = {df_tdms_0_0.fs_Hz}')
-print(f'fc/fir{fir_fc_hz}')
-print(f'order/fir{fir_or}')
-print(f'stnd dev raw-sig {np.std(df_tdms_0_0.data_as_Series)}')
-print(f'stnd dev butterw {np.std(df_tdms_0_0.filter(fc_Hz=fir_fc_hz, filter_func=apply_filter).data_as_Series)}')
-print(f'stnd dev fir-out {np.std(Fir_filter(df_tdms_0_0).apply_fir(fc_hz=fir_fc_hz, order_for_filter=fir_or))}')
-#+end_src
-
-#+RESULTS:
-:results:
-: fs = 500000.0000000014
-: fc/fir200
-: order/fir240
-: stnd dev raw-sig 0.006195530830989477
-: stnd dev butterw 0.0008110890548270608
-: stnd dev fir-out 0.0019891950283590313
-[[file:./.ob-jupyter/680dcb8e8db5e61c990cf273ce813c4ca8b831a8.png]]
-:end:
-**** comparing raw and filtered signals with FIR :IIR_FIR_COMPARISON:
-+ plot the fir filter response numtaps as above to double check
-#+begin_src jupyter-python :session py :async yes :results raw drawer
-fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
-FIGSIZE_SQR = (12,6)
-plot_comparative_response(df_tdms_0_0, # cutoff frequency
-                          filter_func=fir_filter_cnstr_xorder ,
-                          response_offset=2e-4,
-                          Kolmogorov_offset = 4e0,
-                          nperseg=NPERSEG*100,
-                          figsize =FIGSIZE_SQR)
-#+end_src
-
-#+RESULTS:
-:results:
-: /usr/lib/python3.10/site-packages/pros_noisefiltering-0.0.4-py3.10.egg/pros_noisefiltering/WT_NoiProc.py:315: UserWarning: Data has no positive values, and therefore cannot be log-scaled.
-:   ax2.semilogy(f, np.sqrt(Pxx_spec), '.', label='raw')
-[[file:./.ob-jupyter/def8a83b62182e2fe969c6d0a057a8f02f1d3c50.png]]
-:end:
-
-* Cross examination of old and new F.F.T. algorithms
-+ Essentially the idea is to produce the same graphs as we did with the old class. This will tell us if Welch's method is effecting the Power Spectral density graphs
-
-#+begin_src jupyter-python :session py  :async yes :results raw drawer
-# Here I test the differencies among Welch's method and the new algorithm for power spectral density estimation
-
-#+end_src
-
-
-
-* testing standard deviation for FIR filtered signal in datasets
-
-#+begin_src jupyter-python :session py :async yes :results raw drawer
-
-# Inverter state 0
-print(f'The standard deviation for the CA set is : \n {np.std(df_tdms_0_0.data)}')
-
-print(f'The standard deviation for the Inverter`s set is : \n {np.std(dfi_i0_w0.data)}')
-
-# Inverter state 1
-print(f'The standard deviation for the CA set is [ON] : \n {np.std(df_tdms_1_0.data)}')
-
-print(f'The standard deviation for the Inverter`s set is [ON] : \n {np.std(dfi_i1_w0.data)}')
-
-# Inverter state 1 WS 5
-print(f'The standard deviation for the CA set is [ON [WS:5]] : \n {np.std(df_tdms_1_5.data)}')
-
-print(f'The standard deviation for the Inverter`s set is [ON[WS:5]] : \n {np.std(dfi_i1_w5.data)}')
-
-# Inverter state 1 WS 10
-print(f'The standard deviation for the CA set is [ON [WS:10]] : \n {np.std(df_tdms_1_10.data)}')
-
-print(f'The standard deviation for the Inverter`s set is [ON[WS:10]] : \n {np.std(dfi_i1_w10.data)}')
-#+end_src
-
-#+RESULTS:
-:results:
-#+begin_example
-The standard deviation for the CA set is :
- 0.006195530830990014
-The standard deviation for the Inverter`s set is :
- 0.007631000516108838
-The standard deviation for the CA set is [ON] :
- 0.03640710377731642
-The standard deviation for the Inverter`s set is [ON] :
- 0.039231610005325684
-The standard deviation for the CA set is [ON [WS:5]] :
- 0.043360563542830126
-The standard deviation for the Inverter`s set is [ON[WS:5]] :
- 0.038539116482425785
-The standard deviation for the CA set is [ON [WS:10]] :
- 0.08411345523399606
-The standard deviation for the Inverter`s set is [ON[WS:10]] :
- 0.04000171217337094
-#+end_example
-:end:
-
-* Lets do the same in rust
-#+begin_src rust :session cargo :tangle no :results raw drawer
-use std::fs::File;
-use std::io::prelude::*;
-
-fn main() {
-    let mut file = File::open("/home/dtos_experiment/info.org").expect("Cant open that SHIT!");
-
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .expect("Fuck!!!!");
-
-    println!("File Contents:\n\n{}", contents);
-
-        }
-
-#+end_src
-
-#+RESULTS:
-:results:
-thread 'main' panicked at 'Cant open that SHIT!: Os { code: 2, kind: NotFound, message: "No such file or directory" }', src/main.rs:6:43
-:end:
-* refile_stuff
-#+begin_src jupyter-python :session py :async yes
-print(df_tdms_0_0.fs_Hz)
-print(fc_Hz)
-print(np.std(df_tdms_0_0.data_as_Series))
-print(np.std(df_tdms_0_0.filter(fc_Hz=2_000, filter_func=apply_filter).data_as_Series))
-print(np.std(Fir_filter(df_tdms_0_0).apply_fir(fc_hz=200)))
-#+end_src
-
-#+RESULTS:
-: 500000.0000000014
-: 10
-: 0.006195530830989477
-: 0.00153298627789367
-: 0.004270508744646167
+* buttons :noexport:
+# <(go to notes)>
+# <(go to document)>
