@@ -14,6 +14,8 @@ from pros_noisefiltering.gen_functions import (spect,plot_spect_comb2,
                                                Fft_Plot_info,Axis_titles,plot_FFT,Signals_for_fft_plot,
                                                fft_calc_sig,fft_sig)
 
+
+from pros_noisefiltering.gen_functions import FFT_new
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 
@@ -93,38 +95,62 @@ dfi_i1_w15 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[4][GROUP_NAME][CHAN_NAME]
 dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=20, 100kHz')
 
-# here the plots are comparing the raw signals.
-# First plot is with the inverter state off and on and ws 0
-f, yin,yout = fft_sig([fft_calc_sig(dfi_i0_w0.data,
-                                            dfi_i1_w0.data, label="inv on")])
+#%%
+# TODO Make this in a class with functions so there is no problem with migrating
+# this fft algorithm to pypkg and remove duplicate code (redundancy)
+# # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
+#
+# class FFT_new:
+#     """Construct an object for handling frequency domain plots of raw data."""
 
-# here the inverter is on and the ws is 5, 10 (1st and 2nd graph respectively)
-f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
-                                            dfi_i1_w10.data, label="inv on")])
+#     def __init__(self, signal, title):
+#         """Initialize the object to manage the raw data in frequency domain."""
+#         self.Title = title
+#         self.sr = signal.fs_Hz
+#         self.sig = signal.data
+#         self.ind = np.array(range(0, len(signal.data_as_Series), 1))
+#         self.dt = 1 / int(self.sr)
+#         self.time_sec = self.ind * self.dt
 
-# here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
-f2, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
-                                            dfi_i1_w20.data, label="inv on")])
+#     def fft_calc_and_plot(self, **kwargs):
+#         """Calculate the fourier transform of a given signal and plot.
+
+#         By default we plot the signal in the time domain with the FFT
+#         representation in a tight layout (in one figure sharing scale).
+#         """
+#         n = len(self.time_sec)
+#         fhat = np.fft.fft(self.sig, n)                      # compute fft
+#         PSD = fhat * np.conj(fhat) / n                  # Power spectrum (p/f)
+#         freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freq)
+#         L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
+
+#         fig, axs = plt.subplots(2, 1,
+#                                 figsize=kwargs.get('figsize',
+#                                                    None))
+
+#         plt.sca(axs[0])
+#         plt.grid(True, which='both')
+#         plt.title(self.Title)
+#         plt.xlabel('Time [s]')
+#         plt.ylabel('Amplitute (Voltage)')
+#         plt.plot(self.time_sec, self.sig)
+#         # plt.loglog(freq[L],(PSD[L]))
+
+#         plt.sca(axs[1])
+#         plt.loglog(freq[L], abs(PSD[L]))
+#         plt.title('Frequency domain')
+#         plt.xlabel('Frequencies [Hz]')
+#         plt.ylabel('Power/Freq')
+#         plt.grid(True, which='both')
+
+#         plt.show()
 
 
-ws0 = [f,yin,yout]
+FFT_new(dfi_i1_w0.decimate(dec=5, offset=0),
+        title='Decimation number 5 CA INV ON').fft_calc_and_plot()
+len(dfi_i1_w0.decimate(dec=5, offset=0).data)
 
-ws5 = [f1,yin1,yout1]
-
-ws10 = [f2,yin2,yout2]
-
-data_list = [ws0,ws5,ws10]
-
-# %%
-ws_list = ['ws-0','ws-5/10','ws-15/20']
-for item,descr_sig in zip(data_list,ws_list):
-    plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
-
-         [Fft_Plot_info(Title="Inverter off/on",
-                       filter_type='',
-                       signal_state=f'raw-{descr_sig}-on')     ],
-
-         [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
-                )
-
-
+FFT_new(dfi_i1_w0,
+        title='Decimation number 1 INV INV ON').fft_calc_and_plot()
+len(dfi_i1_w0.data)
+plt.show()
