@@ -5,15 +5,20 @@
 #                         fft_sig, plot_FFT, plot_response)
 # from lp_firwin_method_ import lp_firwin, filt_sig
 # from file_import_ import data_import
-from functions import (Axis_titles, Fft_Plot_info,
-                        Graph_data_container, Signals_for_fft_plot,
-                        Time_domain_data_cont, fft_calc_sig,
-                        plot_signals, plot_spect_comb2,
-                        spect, fft_sig, plot_FFT)
+# 
+# # Old import style
+# from functions import (Axis_titles, Fft_Plot_info,
+#                         Graph_data_container, Signals_for_fft_plot,
+#                         Time_domain_data_cont, fft_calc_sig,
+#                         plot_signals, plot_spect_comb2,
+#                         spect, fft_sig, plot_FFT)
+# 
+# from func_fir import lp_firwin, filt_sig
+# from functions import data_import
 
-from func_fir import lp_firwin, filt_sig
-from functions import data_import
-
+from pros_noisefiltering.gen_functions import *
+from pros_noisefiltering.Graph_data_container import Graph_data_container
+from pros_noisefiltering.filters import fir
 
 #Constants
 FS = 500_000
@@ -22,10 +27,10 @@ FS = 500_000
 RAW_DATA_ALL, raw_keys, CHUNKED_DATA, file_path, file_name = data_import(file_path='/mnt/data_folder/', file_name_of_raw='noise_reference_raw.h5')
 
 # Construct the desiered FIR filter
-filter_coeff, w, h = lp_firwin(numtaps_2=20, FS=FS, cutoff_Hz=0.0001)
+filter_coeff, w, h = fir.lp_firwin(numtaps_2=20, FS=FS, cutoff_Hz=0.0001)
 
 #filtering of the fignal with the above filter coefficients
-Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=filt_sig(coeff=filter_coeff, order=20, FS=FS, Raw=CHUNKED_DATA)
+Filt, Blank, chunked_time, TIME_NO_SHIFT_chunked=fir.filt_sig(coeff=filter_coeff, order=20, FS=FS, Raw=CHUNKED_DATA)
 
 if __name__=='__main__':
 

@@ -93,38 +93,164 @@ dfi_i1_w15 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[4][GROUP_NAME][CHAN_NAME]
 dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter On, WS=20, 100kHz')
 
-# here the plots are comparing the raw signals.
-# First plot is with the inverter state off and on and ws 0
-f, yin,yout = fft_sig([fft_calc_sig(dfi_i0_w0.data,
-                                            dfi_i1_w0.data, label="inv on")])
-
-# here the inverter is on and the ws is 5, 10 (1st and 2nd graph respectively)
-f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
-                                            dfi_i1_w10.data, label="inv on")])
-
-# here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
-f2, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
-                                            dfi_i1_w20.data, label="inv on")])
-
-
-ws0 = [f,yin,yout]
-
-ws5 = [f1,yin1,yout1]
-
-ws10 = [f2,yin2,yout2]
-
-data_list = [ws0,ws5,ws10]
-
-# %%
-ws_list = ['ws-0','ws-5/10','ws-15/20']
-for item,descr_sig in zip(data_list,ws_list):
-    plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
-
-         [Fft_Plot_info(Title="Inverter off/on",
-                       filter_type='',
-                       signal_state=f'raw-{descr_sig}-on')     ],
-
-         [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
-                )
+#%%
+# TODO Make this in a class with functions so there is no problem with migrating
+# this fft algorithm to pypkg and remove duplicate code (redundancy)
+# # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
+#
+class FFT_new:
+    def __init__(self, signal):
+        self.sr = signal.fs_Hz
+        self.sig = signal.data
+        self.ind = signal.data_as_Series.index
+        self.dt = 1/ int(self.sr)
+        self.time_sec = self.ind * self.dt
 
 
+    def fft_calc_and_plot(self):
+        n= len(self.time_sec)
+        fhat = fft(self.sig,n)                 # compute fft
+        PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
+        freq = (1/(self.dt*n)) * np.arange(n)             # create x-axis (frequencies)
+        L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive)
+
+        fig, axs = plt.subplots(2,1)
+
+        plt.sca(axs[0])
+        plt.grid('both')
+        plt.title('Time domain of raw signal')
+        plt.xlabel('Time [s]')
+        plt.ylabel('Amplitute (Voltage)')
+        plt.plot(self.time_sec ,self.sig)
+        #plt.loglog(freq[L],(PSD[L]))
+
+        plt.sca(axs[1])
+        plt.loglog(freq[L],abs(PSD[L]))
+        plt.title('Frequency domain')
+        plt.xlabel('Frequencies [Hz]')
+        plt.ylabel('Power/Freq')
+        plt.grid('both')
+        plt.show()
+
+# Sample usage for plotting
+FFT_new(dfi_i0_w0).fft_calc_and_plot()
+
+# =====================================================================================================================
+# ============================ THIS SHOULD BE REPLACED WITH THE CLASS ABOVE !!!!!!!!! =================================
+# =====================================================================================================================
+
+# #Here a new algorithm is tested but the results are not promissing
+# # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
+# Sr = dfi_i0_w0.fs_Hz
+# dt = 1 / int(Sr)
+# print (f"The time interval of the measurement is:\n{dt}")
+
+# time_s = dfi_i0_w0.data_as_Series.index * dt               #np.arange(0,7,dt)
+# print(f"The time array is: \n {time_s}")
+
+# plt.rcParams ['figure.figsize'] =[16,12]
+# plt.rcParams.update ({'font.size': 10})
+
+# n= len(time_s)
+# fhat = fft(dfi_i0_w0.data,n)                              # compute fft
+# PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
+# freq = (1/(dt*n)) * np.arange(n)             # create x-axis (frequencies)
+# L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
+
+# fig, axs = plt.subplots(2,1)
+
+# plt.sca(axs[0])
+# plt.grid('both')
+# plt.title('Time domain of raw signal')
+# plt.xlabel('Time [s]')
+# plt.ylabel('Amplitute (Voltage)')
+# plt.plot(dfi_i0_w0.data_as_Series.index * dt,dfi_i0_w0.data)
+# #plt.loglog(freq[L],(PSD[L]))
+
+# plt.sca(axs[1])
+# plt.loglog(freq[L],abs(PSD[L]))
+# plt.title('Frequency domain')
+# plt.xlabel('Frequencies [Hz]')
+# plt.ylabel('Power/Freq')
+# plt.grid('both')
+# #plt.xscale('log')
+# #plt.yscale('log')
+# print (dfi_i0_w0.data_as_Series, dfi_i0_w0.data)
+
+
+
+# #%%
+# # Here the 0 ws is plotted with the inverter on
+# Sr = dfi_i1_w0.fs_Hz
+# dt = 1 / int(Sr)
+# print (f"The time interval of the measurement is:\n{dt}")
+
+# time_s = dfi_i1_w0.data_as_Series.index * dt               #np.arange(0,7,dt)
+# print(f"The time array is: \n {time_s}")
+
+# plt.rcParams ['figure.figsize'] =[16,12]
+# plt.rcParams.update ({'font.size': 10})
+
+# n= len(time_s)
+# fhat = fft(dfi_i1_w0.data,n)                              # compute fft
+# PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
+# freq = (1/(dt*n)) * np.arange(n)             # create x-axis (frequencies)
+# L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
+
+# fig, axs = plt.subplots(2,1)
+
+# plt.sca(axs[0])
+# plt.grid('both')
+# plt.title('Time domain of raw signal')
+# plt.xlabel('Time [s]')
+# plt.ylabel('Amplitute (Voltage)')
+# plt.plot(dfi_i1_w0.data_as_Series.index * dt,dfi_i1_w0.data)
+# #plt.loglog(freq[L],(PSD[L]))
+
+# plt.sca(axs[1])
+# plt.loglog(freq[L],abs(PSD[L]))
+# plt.title('Frequency domain')
+# plt.xlabel('Frequencies [Hz]')
+# plt.ylabel('Power/Freq')
+# plt.grid('both')
+# #plt.xscale('log')
+# #plt.yscale('log')
+# print (dfi_i1_w0.data_as_Series, dfi_i1_w0.data)
+
+
+# # # here the plots are comparing the raw signals.
+# # # First plot is with the inverter state off and on and ws 0
+# # f, yin,yout = fft_sig([fft_calc_sig(dfi_i0_w0.data,
+# #                                             dfi_i1_w0.data, label="inv on")])
+
+# # # here the inverter is on and the ws is 5, 10 (1st and 2nd graph respectively)
+# # f1, yin1,yout1 = fft_sig([fft_calc_sig(dfi_i1_w5.data,
+# #                                             dfi_i1_w10.data, label="inv on")])
+
+# # # here the inverter is on and the ws is 15, 20 (1st and 2nd graph respectively)
+# # f2, yin2,yout2 = fft_sig([fft_calc_sig(dfi_i1_w15.data,
+# #                                             dfi_i1_w20.data, label="inv on")])
+
+
+# # ws0 = [f,yin,yout]
+
+# # ws5 = [f1,yin1,yout1]
+
+# # ws10 = [f2,yin2,yout2]
+
+# # data_list = [ws0,ws5,ws10]
+
+# # # %%
+# # ws_list = ['ws-0','ws-5/10','ws-15/20']
+# # for item,descr_sig in zip(data_list,ws_list):
+# #     plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
+
+# #          [Fft_Plot_info(Title="Inverter off/on",
+# #                        filter_type='',
+# #                        signal_state=f'raw-{descr_sig}-on')     ],
+
+# #          [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
+# #                 )
+
+
+# # plt.show()
