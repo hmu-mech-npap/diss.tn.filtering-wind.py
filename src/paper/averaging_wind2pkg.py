@@ -28,7 +28,7 @@ from nptdms import TdmsFile
 from pros_noisefiltering.gen_functions import spect,  plot_spect_comb2
 from pros_noisefiltering.Graph_data_container import  Graph_data_container
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory, plot_comparative_response
-filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
+filter_Butter_default=filt_butter_factory(filt_order = 2, fc_hz = 100)
 
 
 import logging
@@ -99,14 +99,14 @@ print(in1_0.operations)
 print(in1_0_av100.operations)
 print(in1_0.decimate(1).operations)
 print(in1_0.decimate(1).average(100).operations)
-print(in1_0.filter(fc_Hz=100).average(100).operations)
+print(in1_0.filter(fc_hz=100).average(100).operations)
 # %%
 #TODO should create testing for class
-# print(in1_0.fs_Hz)
+# print(in1_0.fs_hz)
 # print(in1_0.data)
 # print(in1_0.data_as_Series)
-# print(in1_0._filter(fc_Hz=100))
-# print(in1_0.get_spectrum_filt(fc_Hz=100)) # graph obj
+# print(in1_0._filter(fc_hz=100))
+# print(in1_0.get_spectrum_filt(fc_hz=100)) # graph obj
 # print(in1_0.get_spectrum_raw_dec(dec=1)) # graph obj
 
 print(in1_0.decimate(1).operations)
@@ -140,9 +140,9 @@ plot_spect_comb2([in1_0.average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024
 # comparing the signal 
 # when different filters are applied and averaging occurs
 #%%
-plot_spect_comb2([in1_0.filter(fc_Hz = 100).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  in1_0.filter(fc_Hz = 200).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
-                  in1_0.filter(fc_Hz = 2000).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
+plot_spect_comb2([in1_0.filter(fc_hz = 100).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.filter(fc_hz = 200).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024),
+                  in1_0.filter(fc_hz = 2000).average(fr_Hz=100).calc_spectrum_gen(dec=1, nperseg=1024)
                    ],
                 title='Comparison of averaging after different filters are applied ',
                 xlim=[1e0,1e4], ylim = [1e-8,1e-2]

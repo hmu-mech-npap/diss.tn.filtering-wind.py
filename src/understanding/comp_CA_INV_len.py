@@ -30,10 +30,10 @@ from numpy.fft import fft, ifft
 #       - **on/off**
 
 #%% Functions and classes
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 # %%
@@ -165,7 +165,7 @@ print (f'This should be close :\n length of CA :\n {len(df_tdms_1_0.data_as_Seri
 class FFT_new:
     def __init__(self, signal, title):
         self.Title = title
-        self.sr = signal.fs_Hz
+        self.sr = signal.fs_hz
         self.sig = signal.data
         self.ind = signal.data_as_Series.index
         self.dt = 1/ int(self.sr)

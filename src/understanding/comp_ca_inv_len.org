@@ -42,10 +42,10 @@ This file is for comparing the spectrum of a filtered time series
        - **on/off**
 * Extra functions
 #+begin_src jupyter-python :session py :async yes :results raw drawer
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 
@@ -219,7 +219,7 @@ reference : [[https://www.youtube.com/watch?v=s2K1JfNR7Sc][Denoising Data with F
 class FFT_new:
     def __init__(self, signal, title):
         self.Title = title
-        self.sr = signal.fs_Hz
+        self.sr = signal.fs_hz
         self.sig = signal.data
         self.ind = np.array(range(0,len(signal.data_as_Series),1))
         self.dt = 1/ int(self.sr)
@@ -268,9 +268,9 @@ print(x.time_sec)
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/8cbe8816a056f1e3444270fd1bda3ac3666a2967.png]]
-[[file:./.ob-jupyter/7d2e881ae1f36b9ffe2839d1325001f458aba35d.png]]
-[[file:./.ob-jupyter/5863e5eb0a10de55872ea74091d28b7344221485.png]]
+[[file:./.ob-jupyter/5f2d52678bbb7e8bf0022efd4c2a3b839a246b2d.png]]
+[[file:./.ob-jupyter/b370b4494267e881c41aa9a486b729c43fa0bc98.png]]
+[[file:./.ob-jupyter/15ef1b40bd0b5184c0f8119c37435d8797f71d91.png]]
 : [0.000000e+00 2.000000e-06 4.000000e-06 ... 6.999994e+00 6.999996e+00
 :  6.999998e+00]
 :end:
@@ -284,7 +284,7 @@ print(dfi_i1_w0.average(fr_Hz=200).calc_spectrum_gen(dec=1, nperseg=100*1024))
 #+RESULTS:
 :results:
 : [      0       1       2 ... 2649997 2649998 2649999]
-: <pros_noisefiltering.Graph_data_container.Graph_data_container object at 0x7fc813de52d0>
+: <pros_noisefiltering.Graph_data_container.Graph_data_container object at 0x7f355bb2ead0>
 : /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 102400 is greater than input length  = 1080, using nperseg = 1080
 :   warnings.warn('nperseg = {0:d} is greater than input length '
 :end:
@@ -302,7 +302,7 @@ from pros_noisefiltering.WT_NoiProc import(
         filt_butter_factory,
         plot_comparative_response)
 
-filter_Butter_200=filt_butter_factory(filt_order = 2, fc_Hz = 100)
+filter_Butter_200=filt_butter_factory(filt_order = 2, fc_hz = 100)
 
 #+end_src
 
@@ -322,7 +322,7 @@ filter_Butter_200=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 # Estimate the power spectral density of the raw signal
 # Hotwire speed 0 m/s
 NPERSEG=1024<<8
-fc_Hz=200
+fc_hz=200
 fr_HZ = 100
 #%%
 plot_spect_comb2([df_tdms_0_5.calc_spectrum(nperseg=NPERSEG),
@@ -360,9 +360,9 @@ plot_spect_comb2([df_tdms_0_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG
                 fname=None)
 
 #%%
-plot_spect_comb2([df_tdms_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).set_desc('fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec=2, fc:100').average(fr_Hz=fr_HZ).set_desc('dec=2, fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_0_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec=20, fc:100').average(fr_Hz=fr_HZ).set_desc('dec=20, fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4)],
+plot_spect_comb2([df_tdms_0_5.filter(fc_hz=fc_hz).average(fr_Hz=fr_HZ).set_desc('fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4),
+                df_tdms_0_5.decimate(2).filter(fc_hz=fc_hz, desc = 'dec=2, fc:100').average(fr_Hz=fr_HZ).set_desc('dec=2, fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4),
+                df_tdms_0_5.decimate(20).filter(fc_hz=fc_hz,desc = 'dec=20, fc:100').average(fr_Hz=fr_HZ).set_desc('dec=20, fr: 100Hz').calc_spectrum(nperseg=NPERSEG/4)],
                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated, filtered and finally averaged ',
                 xlim =[1e0,3e2], ylim= [1e-5,1e-0],
                 markersize=20,
@@ -380,21 +380,21 @@ plot_spect_comb2([df_tdms_0_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).set_desc(
   warnings.warn('nperseg = {0:d} is greater than input length '
 /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
   warnings.warn('nperseg = {0:d} is greater than input length '
-/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
+/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 73, using nperseg = 73
+  warnings.warn('nperseg = {0:d} is greater than input length '
+/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 8, using nperseg = 8
   warnings.warn('nperseg = {0:d} is greater than input length '
 /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
   warnings.warn('nperseg = {0:d} is greater than input length '
-/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
+/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 365, using nperseg = 365
   warnings.warn('nperseg = {0:d} is greater than input length '
-/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
-  warnings.warn('nperseg = {0:d} is greater than input length '
-/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 730, using nperseg = 730
+/usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 65536 is greater than input length  = 37, using nperseg = 37
   warnings.warn('nperseg = {0:d} is greater than input length '
 #+end_example
-[[file:./.ob-jupyter/083fd13ae5b5914e6b931b44f0bee29fad8e59bf.png]]
-[[file:./.ob-jupyter/e751e810f75555e648fb4d1095bcf56abb504abe.png]]
-[[file:./.ob-jupyter/ea83b405c7420f7144f612e23b17fb812525c297.png]]
-[[file:./.ob-jupyter/59e100f47f5be7f7914ba82c766b71544c640f48.png]]
+[[file:./.ob-jupyter/08fc982022be88664dce1c3d977e3e09c7b177c0.png]]
+[[file:./.ob-jupyter/829707366818fcb4fa143ed48d34ad934f9e8728.png]]
+[[file:./.ob-jupyter/5b1eec2546cfbd72f777f2054dd76bdfe0cd8709.png]]
+[[file:./.ob-jupyter/7eca3eeba7b9d7ae6661951089d6186ea0a814cd.png]]
 :end:
 
 *** plotting inverter ON and WS 5 :plot_spect_comb2:
@@ -425,10 +425,10 @@ plot_spect_comb2([df_tdms_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG
                 Kolmogorov_offset=1e0,
                 fname=None)
 #%%
-fc_Hz = 10
-plot_spect_comb2([df_tdms_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(2).filter(fc_Hz=fc_Hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
-                df_tdms_1_5.decimate(20).filter(fc_Hz=fc_Hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)],
+fc_hz = 10
+plot_spect_comb2([df_tdms_1_5.filter(fc_hz=fc_hz).average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                df_tdms_1_5.decimate(2).filter(fc_hz=fc_hz, desc = 'dec.f:2, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
+                df_tdms_1_5.decimate(20).filter(fc_hz=fc_hz,desc = 'dec.f:20, fc:100').average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4)],
                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated, filtered and finally averaged ',
                 xlim =[1e0,3e2], ylim= [1e-7,6e-1],
                 markersize=20,
@@ -440,20 +440,25 @@ plot_spect_comb2([df_tdms_1_5.filter(fc_Hz=fc_Hz).average(fr_Hz=fr_HZ).calc_spec
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/4d369f253788459559c8fd32bd9759ae70dca10d.png]]
-[[file:./.ob-jupyter/9c26a410dd13bb8139a14b23df7668573ce42beb.png]]
-[[file:./.ob-jupyter/df18b4ab5c5b13fcdf55ab5d331579e0751473eb.png]]
+: /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 256 is greater than input length  = 35, using nperseg = 35
+:   warnings.warn('nperseg = {0:d} is greater than input length '
+: /usr/lib/python3.10/site-packages/scipy/signal/_spectral_py.py:2014: UserWarning: nperseg = 256 is greater than input length  = 35, using nperseg = 35
+:   warnings.warn('nperseg = {0:d} is greater than input length '
+[[file:./.ob-jupyter/73d1f929db8be1b423f053dac9696ac827cc7e86.png]]
+[[file:./.ob-jupyter/3b2a419b8e2766b9a7771edb58d126b58251638b.png]]
+[[file:./.ob-jupyter/67121e14fc739daa3900c620e236dfd67dfe82f6.png]]
 :end:
 
 *** plotting the comparison of butterworth filters 20, 200 and 2000 Hz :plot_comparative_response:
 
 #+begin_src jupyter-python :session py  :async yes :results raw drawer
 
-filter_Butter_20 = filt_butter_factory(filt_order =2, fc_Hz = 20)
-filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_Hz = 200)
-filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+filter_Butter_20 = filt_butter_factory(filt_order =2, fc_hz = 20)
+filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_hz = 200)
+filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_hz = 2000)
 
 
+print(df_tdms_0_0.fs_hz)
 # %% [markdown] ===========================================================================================================
 # # Plots for Presentation
 # Inverter is OFF
@@ -492,9 +497,10 @@ plt.savefig('_temp_fig/s3-PS-WS10-filt200')
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/8d60f6a02e7045fb372f078c1f1e80ae732819c2.png]]
-[[file:./.ob-jupyter/efb5d65a5e995b0c97a51b2301d8713170546ebb.png]]
-[[file:./.ob-jupyter/c28e7160f7ac6a3643a79cd74a7a94d210718188.png]]
+: 500000.0000000014
+[[file:./.ob-jupyter/6997b137a6a99babf1033516631af7c6284af394.png]]
+[[file:./.ob-jupyter/a5493a36e7365a8c5869f7b7c378691b4e05963f.png]]
+[[file:./.ob-jupyter/d65df0219b6f64c58d58dbfdd4232eb881617cfb.png]]
 :end:
 
 *** Demonstration of adverse effect with higher order filters :plot_comparative_response:
@@ -505,7 +511,7 @@ plt.savefig('_temp_fig/s3-PS-WS10-filt200')
 #%%
 FIGSIZE_SQR = (6,6)
 plot_comparative_response(df_tdms_0_10, # cutoff frequency
-        filter_func= filt_butter_factory(filt_order = 6, fc_Hz = 200),
+        filter_func= filt_butter_factory(filt_order = 6, fc_hz = 200),
         response_offset=2e-4,
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
@@ -530,8 +536,8 @@ plt.savefig('_temp_fig/s3-PS-WS10_i1-filt200')
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/9a5567368d7fd7645a0b0aee7b628b6eee2c82cf.png]]
-[[file:./.ob-jupyter/4f6e2fda3688669c8c8cf6dfd38178f6937860b3.png]]
+[[file:./.ob-jupyter/f21a7ad3a9ffbb05fb6c54357857d2760bbb2634.png]]
+[[file:./.ob-jupyter/dbd3fd800d8e6a717e41ebc5c86a1fb67591fce6.png]]
 :end:
 
 *** 200Hz cutoff frequencies with the inverter state OFF :plot_comparative_response:
@@ -554,7 +560,7 @@ plot_comparative_response(df_tdms_0_0, # cutoff frequency
         ,figsize =FIGSIZE_WIDE,
         ylim=[1e-8,1e-2],
         plot_th=False)
-plt.savefig(f'_temp_fig/s4-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-WS00-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #%%
 plot_comparative_response(df_tdms_0_5, # cutoff frequency
         filter_func=filter_Butter_200,
@@ -564,7 +570,7 @@ plot_comparative_response(df_tdms_0_5, # cutoff frequency
         ,figsize =FIGSIZE_WIDE,
         ylim=[1e-8,1e-2],
         plot_th=False)
-plt.savefig(f'_temp_fig/s4-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}')
+plt.savefig(f'_temp_fig/s4-PS-WS05-filt{filter_Butter_200.params.get("fc_hz")}')
         # ,facecolor='white', transparent=False)
 
 # %%
@@ -576,16 +582,16 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         ,figsize =FIGSIZE_WIDE,
         ylim=[1e-8,1e-2],
         plot_th=False)
-plt.savefig(f'_temp_fig/s4-PS-WS10-filt{filter_Butter_200.params.get("fc_Hz")}')
+plt.savefig(f'_temp_fig/s4-PS-WS10-filt{filter_Butter_200.params.get("fc_hz")}')
         # ,facecolor='white', transparent=False)
 # %%
 #+end_src
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/fe5fae078ebf169b01dbeeea3b71cd2ef3080bbc.png]]
-[[file:./.ob-jupyter/54a2f0b8e91f0bfbeeb60759337a1e6650eb6501.png]]
-[[file:./.ob-jupyter/548da56ac581fe0114166ca01d11d38584ebc4e9.png]]
+[[file:./.ob-jupyter/f5baf145affcd25239dbbbf76a02914f7fa5ba0d.png]]
+[[file:./.ob-jupyter/264474be9c6048123be4f09f60f54850cc36b574.png]]
+[[file:./.ob-jupyter/ef68a2c8000356faf21c98f596b4d7992f1e77d6.png]]
 :end:
 
 *** Inverter ON cutoff frequency 2000 Hz :plot_comparative_response:
@@ -600,13 +606,13 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_2000.params.get("fc_Hz")}')
+plt.savefig(f'_temp_fig/s2-PS-WS10-filt{filter_Butter_2000.params.get("fc_hz")}')
 
 #+end_src
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/ddb2d7c66f2626d25c52d24a194d4f7358fa1aab.png]]
+[[file:./.ob-jupyter/c708863a698af58d9cd123afae143d784d0c2db9.png]]
 :end:
 
 *** Inverter state ON and various cutoff frequencies :plot_comparative_response:
@@ -648,9 +654,9 @@ plt.savefig('_temp_fig/s2-PS-i1-WS10-filt2000')
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/ab256c02cb98c726c452a8db32b12423902cd098.png]]
-[[file:./.ob-jupyter/a243af07045a4bda27d2e9efc27bc3e4b7607319.png]]
-[[file:./.ob-jupyter/fabad8f76172c44d0791524b600356677497269f.png]]
+[[file:./.ob-jupyter/a560d2a939280296487570733497a271a28b60ea.png]]
+[[file:./.ob-jupyter/8211de595d49489c94f4a02c8ac760e18289d62f.png]]
+[[file:./.ob-jupyter/b3b59ae595c3244eba6b6ede7e3e9005cd10608d.png]]
 :end:
 
 *** 200 Hz cutoff frequency with Inverter ON and various WS (0, 5, 10 (m/s)) :plot_comparative_response:
@@ -672,7 +678,7 @@ plot_comparative_response(df_tdms_1_0, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-i1-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS00-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 plot_comparative_response(df_tdms_1_5, # cutoff frequency
         filter_func=filter_Butter_200,
@@ -680,7 +686,7 @@ plot_comparative_response(df_tdms_1_5, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 #%%
 plot_comparative_response(df_tdms_1_10, # cutoff frequency
@@ -689,7 +695,7 @@ plot_comparative_response(df_tdms_1_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =(12,8))
-plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 
 
@@ -698,30 +704,30 @@ plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")
 
 #+RESULTS:
 :results:
-[[file:./.ob-jupyter/5ec72f3691531c8f068bef01a7651efdda9d7dfd.png]]
-[[file:./.ob-jupyter/ae4d7f8d10b61c65240c56ca1010e3b3abe2ef5f.png]]
-[[file:./.ob-jupyter/a243af07045a4bda27d2e9efc27bc3e4b7607319.png]]
+[[file:./.ob-jupyter/ae24cb2b96d13065be3b4248bd149e5c146b4f6d.png]]
+[[file:./.ob-jupyter/4c65c5c2da646362510e36e5df8e707e6658655e.png]]
+[[file:./.ob-jupyter/8211de595d49489c94f4a02c8ac760e18289d62f.png]]
 :end:
 ** Recreate situations for FIR filter debugged from pypkg [60%] :debbuged:
-*** DONE build a filter factory without hard coding sampling frequency by number [100%]
+*** DONE build a filter factory without hard coding sampling frequency by number [0%]
 **** Imports
 #+begin_src jupyter-python :session py :async yes :results raw drawer
 
 from scipy import signal
 import numpy as np
 
-# filter_Butter_20 = filt_butter_factory(filt_order =2, fc_Hz = 20)
-# filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_Hz = 200)
-# filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_Hz = 2000)
+# filter_Butter_20 = filt_butter_factory(filt_order =2, fc_hz = 20)
+# filter_Butter_200 = filt_butter_factory(filt_order = 2, fc_hz = 200)
+# filter_Butter_2000 = filt_butter_factory(filt_order = 2, fc_hz = 2000)
 # NPERSEG=1024<<8
-# fc_Hz=200
+# fc_hz=200
 #+end_src
 
 #+RESULTS:
 :results:
 :end:
 
-**** DONE  BETTER CONSTRUCTOR
+**** BETTER CONSTRUCTOR [%]
 :LOGBOOK:
 CLOSED: [2023-02-16 Πεμ 08:21]
 - CLOSING NOTE [2023-02-16 Πεμ 08:21] \\
@@ -739,7 +745,7 @@ CLOSED: [2023-02-16 Πεμ 08:21]
 def fir_factory_constructor(fir_order=32, fc_fir_Hz:float=200):
     """#This is the new way should be working with Papadakis solution above."""
 
-    def fir_filter(ds:np.ndarray,
+    def fir_filter(sig_r:np.ndarray,
                    fs_hz:float, fc_hz:float= fc_fir_Hz,
                    fir_filt_order=fir_order ):
 
@@ -755,14 +761,14 @@ def fir_factory_constructor(fir_order=32, fc_fir_Hz:float=200):
         # make output sos type to ensure normal operation
         # this is crusial for elimination of ending ripples see image above
         sos_fir_mode = signal.tf2sos(fir_filt_coeff, 1)
-        sos_filt_data = signal.sosfilt(sos_fir_mode, ds-ds[0])+ds[0]
+        sos_filt_data = signal.sosfilt(sos_fir_mode, sig_r-sig_r[0])+sig_r[0]
         warmup = fir_filt_order-1
         uncorrupted_output = sos_filt_data[warmup:]
         # filt_sig_time_int = time[warmup:]-((warmup/2)/fs_hz)
         return uncorrupted_output #uncorr_sos_output
 
     #Add the parameter attribute for checking filter response
-    fir_filter.params = {'filter order':fir_order, 'fc_Hz':fc_fir_Hz}
+    fir_filter.params = {'filter order':fir_order, 'fc_hz':fc_fir_Hz}
     return fir_filter
 
 filter_fir_default=fir_factory_constructor(fir_order = 2, fc_fir_Hz= 100)
@@ -777,66 +783,97 @@ class Fir_filter:
         #self.time_int = np.linspace(0, 7, len(self.raw))
         self.description = signals.description
         self._channel_data= signals._channel_data
-        self.fs_Hz = int (1/signals._channel_data.properties['wf_increment'])
+        self.fs_hz = int (1/signals._channel_data.properties['wf_increment'])
         self.channel_name = signals._channel_data.name
-        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_Hz), len(self.raw))
+        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_hz), len(self.raw))
 
     def apply_fir(self, fc_hz, order_for_filter:int):
-        filtered =fir_filter(self.raw, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+        filtered =fir_filter(self.raw, fs_hz=self.fs_hz, fc_hz=fc_hz)
         return pd.Series(filtered, name=f'{self.channel_name}:fir_filt_fc_{fc_hz}')
 
     # def output_time_dur(self, fc_hz):
-    #     filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+    #     filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_hz, fc_hz=fc_hz)
     #     return filt_time_int
 
     # DEPENDS on a BUG (spect() function DO NOT USE!!)
     # def get_spect_fir_output(self, fc_hz, order_for_filter):
-    #     x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz, order_for_filter=108), FS= self.fs_Hz)
-    #     filt_type = 'FIR' return Graph_data_container(x=x_filt,y=y_filt,
+    #     x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz, order_for_filter=108), FS= self.fs_hz)
+    #     filt_type = 'FIR' return Graph_data_container(_x=x_filt, _y=y_filt,
     #                                                   label =  f'{self.description}-{self.channel_name} - filt: {filt_type}-{fc_hz}')
     #              BUG
 
-    def _fir_filter(self, fc_Hz:float=fir_fc_hz, filter_func=filter_fir_default, fs_Hz=None )->pd.Series:
+    def _fir_filter(self, fc_hz:float=fir_fc_hz, filter_func=filter_fir_default, fs_hz=None )->pd.Series:
         """#TODO UPDATE DOCSTRING: return a filtered signal based on
 
         Args:
-            fc_Hz (float): cut off frequency in Hz
-            filter_func (filt_fir_factory, optional): filtering function that thates two arguments (ds, fs_Hz). Defaults to 100, filt_order = 2).
-            fs_Hz (None): sampling frequency in Hz (is None in declaration)
+            fc_hz (float): cut off frequency in Hz
+            filter_func (filt_fir_factory, optional): filtering function that thates two arguments (sig_r, fs_hz). Defaults to 100, filt_order = 2).
+            fs_hz (None): sampling frequency in Hz (is None in declaration)
 
 
         Returns:
             _type_: _description_
         """
-        if fs_Hz is not None:
-            logging.warning(f'issued {fs_Hz} sampling frequency while the default is {self.fs_Hz}')
-        fs_Hz = fs_Hz if fs_Hz is not None else self.fs_Hz
-        filtered = filter_func(ds=self.data, fs_Hz=fs_Hz, fc_Hz=fc_Hz )
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
+        if fs_hz is not None:
+            logging.warning(f'issued {fs_hz} sampling frequency while the default is {self.fs_Hz}')
+        fs_hz = fs_Hz if fs_Hz is not None else self.fs_Hz
+        filtered = filter_func(sig_r=self.data, fs_hz=fs_Hz, fc_hz=fc_Hz )
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
 
-    def fir_nested_filter(self,  fc_Hz:float, filter_func=filter_fir_default, fs_Hz=None, desc=None):
-        ds_filt = self._fir_filter( fc_Hz=fc_Hz, filter_func=filter_func, fs_Hz=fs_Hz )
-        description = desc if desc is not None else self.description + f"_fc:{fc_Hz}"
+    def fir_nested_filter(self,  fc_hz:float, filter_func=filter_fir_default, fs_hz=None, desc=None):
+        sig_r_filt = self._fir_filter( fc_hz=fc_Hz, filter_func=filter_func, fs_hz=fs_Hz )
+        description = desc if desc is not None else self.description + f"_fc:{fc_hz}"
         return WT_NoiseChannelProc.from_obj(self,
             desc = description,
-            data = ds_filt.values,
-            operation = f'pass filter {fc_Hz}'
+            data = sig_r_filt.values,
+            operation = f'pass filter {fc_hz}'
             )
 
 
 # Function needed from WT_NoiseChannelProc objects to apply a butterworth
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz:float = 200, filt_order = 3 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz:float = 200, filt_order = 3 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 #+end_src
 
 #+RESULTS:
 :results:
-:end:
+# [goto error]
+#+begin_example
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Input [0;32mIn [19][0m, in [0;36m<cell line: 33>[0;34m()[0m
+[1;32m     29[0m     [38;5;28;01mreturn[39;00m fir_filter
+[1;32m     31[0m filter_fir_default[38;5;241m=[39mfir_factory_constructor(fir_order [38;5;241m=[39m [38;5;241m2[39m, fc_fir_Hz[38;5;241m=[39m [38;5;241m100[39m)
+[0;32m---> 33[0m [38;5;28;01mclass[39;00m [38;5;21;01mFir_filter[39;00m:
+[1;32m     34[0m [38;5;250m    [39m[38;5;124;03m"""# This class is used to take a signal as a tdms dataframe object (from pypkg funcs).[39;00m
+[1;32m     35[0m [38;5;124;03m    """[39;00m
+[1;32m     37[0m     [38;5;28;01mdef[39;00m [38;5;21m__init__[39m([38;5;28mself[39m,signals) [38;5;241m-[39m[38;5;241m>[39m [38;5;28;01mNone[39;00m:
 
+Input [0;32mIn [19][0m, in [0;36mFir_filter[0;34m()[0m
+[1;32m     49[0m     [38;5;28;01mreturn[39;00m pd[38;5;241m.[39mSeries(filtered, name[38;5;241m=[39m[38;5;124mf[39m[38;5;124m'[39m[38;5;132;01m{[39;00m[38;5;28mself[39m[38;5;241m.[39mchannel_name[38;5;132;01m}[39;00m[38;5;124m:fir_filt_fc_[39m[38;5;132;01m{[39;00mfc_hz[38;5;132;01m}[39;00m[38;5;124m'[39m)
+[1;32m     51[0m [38;5;66;03m# def output_time_dur(self, fc_hz):[39;00m
+[1;32m     52[0m [38;5;66;03m#     filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_hz, fc_hz=fc_hz)[39;00m
+[1;32m     53[0m [38;5;66;03m#     return filt_time_int[39;00m
+[0;32m   (...)[0m
+[1;32m     59[0m [38;5;66;03m#                                                   label =  f'{self.description}-{self.channel_name} - filt: {filt_type}-{fc_hz}')[39;00m
+[1;32m     60[0m [38;5;66;03m#              BUG[39;00m
+[0;32m---> 62[0m [38;5;28;01mdef[39;00m [38;5;21m_fir_filter[39m([38;5;28mself[39m, fc_hz:[38;5;28mfloat[39m[38;5;241m=[39m[43mfir_fc_hz[49m, filter_func[38;5;241m=[39mfilter_fir_default, fs_hz[38;5;241m=[39m[38;5;28;01mNone[39;00m )[38;5;241m-[39m[38;5;241m>[39mpd[38;5;241m.[39mSeries:
+[1;32m     63[0m [38;5;250m    [39m[38;5;124;03m"""#TODO UPDATE DOCSTRING: return a filtered signal based on[39;00m
+[1;32m     64[0m
+[1;32m     65[0m [38;5;124;03m    Args:[39;00m
+[0;32m   (...)[0m
+[1;32m     72[0m [38;5;124;03m        _type_: _description_[39;00m
+[1;32m     73[0m [38;5;124;03m    """[39;00m
+[1;32m     74[0m     [38;5;28;01mif[39;00m fs_hz [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+
+[0;31mNameError[0m: name 'fir_fc_hz' is not defined
+#+end_example
+:end:
+***** TODO de #BUG
 **** comparing raw and filtered signals with FIR :IIR_FIR_COMPARISON:
 + plot the fir filter response numtaps as above to double check
 #+begin_src jupyter-python :session py :async yes :results raw drawer
@@ -860,7 +897,7 @@ plot_comparative_response(df_tdms_1_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 #+end_src
 *** DONE compare wind speeds with constant cutoff freq [100%] :new_filtering_method:
@@ -881,12 +918,15 @@ plot_comparative_response(df_tdms_0_0, # cutoff frequency
                           figsize =FIGSIZE_SQR_L)
 
 plot_comparative_response(df_tdms_0_0, # cutoff frequency
-        filter_func=filter_Butter_200,
-        response_offset=2e-4,
-        Kolmogorov_offset = 4e0,
-        nperseg=NPERSEG*100
-        ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+                          filter_func=filter_Butter_200,
+                          response_offset=2e-4,
+                          Kolmogorov_offset = 4e0,
+                          nperseg=NPERSEG*100
+                          ,figsize =FIGSIZE_SQR_L)
+plt.savefig(
+    f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',
+    facecolor='white',
+    transparent=False)
 #+end_src
 **** DONE inv 0 ws 5 fc=200Hz
 
@@ -909,7 +949,7 @@ plot_comparative_response(df_tdms_0_5, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -942,7 +982,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -974,7 +1014,7 @@ fir_or=104
 
 
 fir_filter_cnstr_xslope=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
-butter_filter_cnstr_xslope=filt_butter_factory(filt_order = 20, fc_Hz = 100)
+butter_filter_cnstr_xslope=filt_butter_factory(filt_order = 20, fc_hz = 100)
 FIGSIZE_SQR_L = (8,10)
 plot_comparative_response(df_tdms_0_10, # cutoff frequency
                           filter_func=fir_filter_cnstr_xorder ,
@@ -989,7 +1029,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1009,7 +1049,7 @@ fir_fc_hz=2000
 fir_or=24
 
 fir_filter_cnstr_xorder = fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
-butter_filter_cnstr_xslope = filt_butter_factory(filt_order=4, fc_Hz=2_000)
+butter_filter_cnstr_xslope = filt_butter_factory(filt_order=4, fc_hz=2_000)
 FIGSIZE_SQR_L = (8,10)
 plot_comparative_response(df_tdms_1_10, # cutoff frequency
                           filter_func=fir_filter_cnstr_xorder ,
@@ -1024,7 +1064,7 @@ plot_comparative_response(df_tdms_1_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1042,7 +1082,7 @@ plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")
 fir_fc_hz=2000
 fir_or=8
 
-butter_filter_cnstr_xslope = filt_butter_factory(filt_order=8, fc_Hz=2_000)
+butter_filter_cnstr_xslope = filt_butter_factory(filt_order=8, fc_hz=2_000)
 fir_filter_cnstr_xorder=fir_factory_constructor(fir_order=fir_or, fc_fir_Hz=fir_fc_hz )
 FIGSIZE_SQR_L = (8,10)
 plot_comparative_response(df_tdms_0_10, # cutoff frequency
@@ -1058,7 +1098,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1088,7 +1128,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1116,7 +1156,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1150,7 +1190,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 
 #+RESULTS:
@@ -1185,7 +1225,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 **** TODO inv 0 ws 10 fc=2000 [Hz]
 
@@ -1208,7 +1248,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 **** TODO inv 0 ws 10 fc=2000 [Hz]
 
@@ -1231,7 +1271,7 @@ plot_comparative_response(df_tdms_0_10, # cutoff frequency
         Kolmogorov_offset = 4e0,
         nperseg=NPERSEG*100
         ,figsize =FIGSIZE_SQR_L)
-plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+plt.savefig(f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 #+end_src
 * TODO [#A] migrate to polars (eliminate indexes)
 ** make a link to the pypkg
@@ -1291,7 +1331,7 @@ dfi_i1_w10                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<..
 dfi_i1_w15                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc827736da0>
 dfi_i1_w20                   WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc827736680>
 dfi_i1_w5                    WT_NoiseChannelProc    <pros_noisefiltering.WT_N<...>object at 0x7fc82753c550>
-fc_Hz                        int                    10
+fc_hz                        int                    10
 fft                          function               <function fft at 0x7fc85c0a4d30>
 fft_calc_sig                 type                   <class 'pros_noisefilteri<...>_functions.fft_calc_sig'>
 fft_sig                      function               <function fft_sig at 0x7fc82771c700>
@@ -1329,13 +1369,13 @@ x                            FFT_new                <__main__.FFT_new object at 
 * refile_stuff :noexport:
 ** junk
 #+begin_src jupyter-python :session py :async yes
-print(df_tdms_0_0.fs_Hz)
-print(fc_Hz)
+print(df_tdms_0_0.fs_hz)
+print(fc_hz)
 print(np.std(df_tdms_0_0.data_as_Series))
-print(np.std(df_tdms_0_0.filter(fc_Hz=2_000, filter_func=apply_filter).data_as_Series))
+print(np.std(df_tdms_0_0.filter(fc_hz=2_000, filter_func=apply_filter).data_as_Series))
 print(np.std(Fir_filter(df_tdms_0_0).apply_fir(fc_hz=2000, order_for_filter=65)))
 
-print(fc_Hz)
+print(fc_hz)
 
 #+end_src
 
@@ -1351,13 +1391,13 @@ print(fc_Hz)
 [0;31mNameError[0m                                 Traceback (most recent call last)
 Input [0;32mIn [50][0m, in [0;36m<cell line: 5>[0;34m()[0m
 [1;32m      3[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd(df_tdms_0_0[38;5;241m.[39mdata_as_Series))
-[1;32m      4[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd(df_tdms_0_0[38;5;241m.[39mfilter(fc_Hz[38;5;241m=[39m[38;5;241m2_000[39m, filter_func[38;5;241m=[39mapply_filter)[38;5;241m.[39mdata_as_Series))
+[1;32m      4[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd(df_tdms_0_0[38;5;241m.[39mfilter(fc_hz[38;5;241m=[39m[38;5;241m2_000[39m, filter_func[38;5;241m=[39mapply_filter)[38;5;241m.[39mdata_as_Series))
 [0;32m----> 5[0m [38;5;28mprint[39m(np[38;5;241m.[39mstd([43mFir_filter[49m[43m([49m[43mdf_tdms_0_0[49m[43m)[49m[38;5;241;43m.[39;49m[43mapply_fir[49m[43m([49m[43mfc_hz[49m[38;5;241;43m=[39;49m[38;5;241;43m2000[39;49m[43m,[49m[43m [49m[43morder_for_filter[49m[38;5;241;43m=[39;49m[38;5;241;43m65[39;49m[43m)[49m))
-[1;32m      7[0m [38;5;28mprint[39m(fc_Hz)
+[1;32m      7[0m [38;5;28mprint[39m(fc_hz)
 
 Input [0;32mIn [42][0m, in [0;36mFir_filter.apply_fir[0;34m(self, fc_hz, order_for_filter)[0m
 [1;32m     47[0m [38;5;28;01mdef[39;00m [38;5;21mapply_fir[39m([38;5;28mself[39m, fc_hz, order_for_filter:[38;5;28mint[39m):
-[0;32m---> 48[0m     filtered [38;5;241m=[39m[43mfir_filter[49m([38;5;28mself[39m[38;5;241m.[39mraw, fs_hz[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mfs_Hz, fc_hz[38;5;241m=[39mfc_hz)
+[0;32m---> 48[0m     filtered [38;5;241m=[39m[43mfir_filter[49m([38;5;28mself[39m[38;5;241m.[39mraw, fs_hz[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mfs_hz, fc_hz[38;5;241m=[39mfc_hz)
 [1;32m     49[0m     [38;5;28;01mreturn[39;00m pd[38;5;241m.[39mSeries(filtered, name[38;5;241m=[39m[38;5;124mf[39m[38;5;124m'[39m[38;5;132;01m{[39;00m[38;5;28mself[39m[38;5;241m.[39mchannel_name[38;5;132;01m}[39;00m[38;5;124m:fir_filt_fc_[39m[38;5;132;01m{[39;00mfc_hz[38;5;132;01m}[39;00m[38;5;124m'[39m)
 
 [0;31mNameError[0m: name 'fir_filter' is not defined
@@ -1434,16 +1474,16 @@ CLOSED: [2023-02-16 Πεμ 08:18]
   this is obsolete and has hardcoded numbers!! Bad practice!
 :END:
 #+begin_src jupyter-python :session none :async yes :results raw drawer
-def filt_fir_factory( numtaps_2: int, fc_Hz:float):
+def filt_fir_factory( numtaps_2: int, fc_hz:float):
     """
 This is a factory method that produces a FIR filter function
     with a filter order and a cutoff frequency
 
     Args:
         filt_order (int, optional)  : Filter order. Defaults to 2.
-        fc_Hz (float, optional)     : cut off frequency in Hz (defaults to 100)
+        fc_hz (float, optional)     : cut off frequency in Hz (defaults to 100)
     """
-    def filt_fir(ds:np.ndarray, fs_Hz:float, fc_Hz:float= fc_Hz, numtaps = numtaps_2):
+    def filt_fir(sig_r:np.ndarray, fs_hz:float, fc_hz:float= fc_Hz, numtaps = numtaps_2):
         """# FIR low-pass filter constructor.
 
         Here the filter is a simple LP FIR filter with the window
@@ -1485,9 +1525,9 @@ This is a factory method that produces a FIR filter function
         return fir_co, w_fir_co, h_fir_co
     # additional decoration sith params dictionary
     # this is used instead of a class
-    filt_fir.params = {'numtaps':numtaps_2, 'fc_Hz':fc_Hz}
+    filt_fir.params = {'numtaps':numtaps_2, 'fc_hz':fc_Hz}
     return filt_fir
-filter_fir_default=filt_fir_factory(numtaps_2=2, fc_Hz=200)
+filter_fir_default=filt_fir_factory(numtaps_2=2, fc_hz=200)
 
 
 #+end_src

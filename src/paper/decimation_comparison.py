@@ -19,7 +19,7 @@ from pros_noisefiltering.gen_functions import spect,  plot_spect_comb2
 from pros_noisefiltering.Graph_data_container import  Graph_data_container
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory, plot_comparative_response
 
-filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
+filter_Butter_default=filt_butter_factory(filt_order = 2, fc_hz = 100)
 
 
 import logging
@@ -90,14 +90,14 @@ print(ca1_0.operations)
 print(in1_0_av100.operations)
 print(ca1_0.decimate(1).operations)
 print(ca1_0.decimate(1).average(100).operations)
-print(ca1_0.filter(fc_Hz=100).average(100).operations)
+print(ca1_0.filter(fc_hz=100).average(100).operations)
 # %%
 #TODO should create testing for class
-# print(in1_0.fs_Hz)
+# print(in1_0.fs_hz)
 # print(in1_0.data)
 # print(in1_0.data_as_Series)
-# print(in1_0._filter(fc_Hz=100))
-# print(in1_0.get_spectrum_filt(fc_Hz=100)) # graph obj
+# print(in1_0._filter(fc_hz=100))
+# print(in1_0.get_spectrum_filt(fc_hz=100)) # graph obj
 # print(in1_0.get_spectrum_raw_dec(dec=1)) # graph obj
 
 print(ca1_0.decimate(1).operations)
@@ -149,16 +149,16 @@ def compare_timehistories(df_ni,df_wi, final_point = 100000,
         df_wi (_type_): data set  with inverter
         final_point (_type_, optional): _description_. Defaults to 100000stitle=''.
     """    
-    final_point2 = int(df_wi.fs_Hz/df_ni.fs_Hz*final_point)
+    final_point2 = int(df_wi.fs_hz/df_ni.fs_Hz*final_point)
     fig, axs = plt.subplots(1,2, sharey=True, figsize= figsize)
      # -1 for 
-    axs[0].plot(df_ni.data_as_Series[:final_point].index/df_ni.fs_Hz, df_ni.data_as_Series[:final_point], '.', alpha=0.3)
+    axs[0].plot(df_ni.data_as_Series[:final_point].index/df_ni.fs_hz, df_ni.data_as_Series[:final_point], '.', alpha=0.3)
     axs[0].set_ylabel('Transducer Voltage')
     axs[0].set_xlabel('Measurement No')
     axs[0].grid('both')
     axs[0].set_title(df_ni.description)
 
-    axs[1].plot(df_wi.data_as_Series[:final_point2].index/df_wi.fs_Hz, df_wi.data_as_Series[:final_point2], '.', alpha=0.3)
+    axs[1].plot(df_wi.data_as_Series[:final_point2].index/df_wi.fs_hz, df_wi.data_as_Series[:final_point2], '.', alpha=0.3)
     axs[1].set_xlabel('Measurement No')
     axs[1].set_ylabel('Transducer Voltage')
     axs[1].grid('both')

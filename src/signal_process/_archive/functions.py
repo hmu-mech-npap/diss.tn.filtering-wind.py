@@ -330,9 +330,9 @@ def plot_signals(time_domain_sig,
 #        y_output_mag_plot(np.ndarray): Amplitude of filtered signal samples
 #     """
 # 
-#     N = int(2_000*(fs/f0)) #TODO what is this N???
+#     N = int(2_000*(fs/f0)) #what is this N???
 #     f= np.linspace (0, (N-1)*(fs/N),N )
-# 
+#
 #     yf_input = np.fft.fft(y1)
 #     y_input_mag_plot = np.abs(yf_input)/N
 #     f_plot = f[0:int(N/2+1)]
@@ -374,14 +374,14 @@ def fft_sig (signals,    f0 = 2_000,fs = 500_000):
 
     """
 
-    N = int(2_000*(fs/f0)) #TODO what is this N???
+    N = int(2_000*(fs/f0)) #what is this N???
     # This N was used in a video which i found on Youtube for computing and
     # plotting the FFT of a signal.
     # Even the guy in the video was not sure why to use this N but
     # fs is the sampling frequency and f0 is the signal frequency.
     # I multiply with 2_000 to eliminate the signal frequency and use it as
     # the sampling frequency for plotting the signal in freq domain (x axis).
-    # #TODO have to find something better couse it's a black box for me
+    # have to find something better couse it's a black box for me
     # and the source is unreliable
 
     f= np.linspace (0, (fs-1), fs)
@@ -495,10 +495,10 @@ def plot_FFT (signals,
         plt.show()
 
 # Adding WT_Noise_ChannelProcessor to use the signal info from nptdms 
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 class WT_Noise_ChannelProcessor():
@@ -512,7 +512,7 @@ class WT_Noise_ChannelProcessor():
         self._channel_data= tdms_channel
         self.set_description(desc=desc)
         # process details
-        self.fs_Hz = 1/self._channel_data.properties['wf_increment']
+        self.fs_hz = 1/self._channel_data.properties['wf_increment']
         self.data = self._channel_data.data
         self.channel_name = self._channel_data.name
         self.group_name = self._channel_data.group_name
@@ -528,29 +528,29 @@ class WT_Noise_ChannelProcessor():
         """        
         return pd.Series(self.data, name=f'{self.channel_name}:raw')
     
-    def filter(self, fc_Hz:float):
+    def filter(self, fc_hz:float):
         """performs 
 
         Args:
-            fc_Hz (float): _description_
+            fc_hz (float): _description_
 
         Returns:
             _type_: _description_
         """        
-        filtered = apply_filter(ds=self.data, fs_Hz=self.fs_Hz, fc_Hz=fc_Hz )
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
+        filtered = apply_filter(sig_r=self.data, fs_hz=self.fs_Hz, fc_hz=fc_Hz )
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
     
     def get_spectrum_raw(self):
-        x_r,y_r = spect(self.data, FS=self.fs_Hz)        
-        return Graph_data_container(x=x_r,y = y_r, label = f'{self.description}-{self.channel_name}')
+        x_r,y_r = spect(self.data, FS=self.fs_hz)        
+        return Graph_data_container(_x=x_r, _y = y_r, label = f'{self.description}-{self.channel_name}')
     
-    def get_spectrum_filt(self, fc_Hz:float):
-        x_f,y_f = spect(self.filter(fc_Hz=fc_Hz), FS=self.fs_Hz)        
-        return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
+    def get_spectrum_filt(self, fc_hz:float):
+        x_f,y_f = spect(self.filter(fc_hz=fc_Hz), FS=self.fs_hz)        
+        return Graph_data_container(_x=x_f, _y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_hz}')
     
-    def plot_filtered_th(self,fc_Hz):
+    def plot_filtered_th(self,fc_hz):
         plt.plot(self.data, label = 'raw')
-        plt.plot(self.filter(fc_Hz=fc_Hz), label = f'filtered: {fc_Hz}')
+        plt.plot(self.filter(fc_hz=fc_Hz), label = f'filtered: {fc_Hz}')
 
 
 # %%
@@ -615,7 +615,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         figsize=(16,9),
         nperseg = 1024,
         plot_th = False):
-    #TODO make this part of WT_NoiProc 
+    # make this part of WT_NoiProc
     """plotting a comparison of raw filtered and 
 
     Args:
@@ -624,22 +624,22 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         figsize (tuple, optional): _description_. Defaults to (16,9).
     """    
     sig = wt_obj.data
-    fs_Hz= wt_obj.fs_Hz
+    fs_hz= wt_obj.fs_Hz
     
     filt_p = filter_func.params 
-    sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_Hz'], 
-            btype= 'lp', fs=fs_Hz, output='sos')
+    sos = signal.butter(N=filt_p['filter order'], Wn=filt_p['fc_hz'], 
+            btype= 'lp', fs=fs_hz, output='sos')
 
     
-    filtered = filter_func(sig, fs_Hz)
+    filtered = filter_func(sig, fs_hz)
     
     # calculate spectrum 
-    f, Pxx_spec = signal.welch(sig, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
-    f, Pxx_spec_filt = signal.welch(filtered, fs_Hz, window='flattop', nperseg=nperseg, scaling='spectrum')
+    f, Pxx_spec = signal.welch(sig, fs_hz, window='flattop', nperseg=nperseg, scaling='spectrum')
+    f, Pxx_spec_filt = signal.welch(filtered, fs_hz, window='flattop', nperseg=nperseg, scaling='spectrum')
 
     wb, hb = signal.sosfreqz(sos)
     fb = wb/(2*np.pi)
-    t = np.arange(0, len(sig),1, dtype='int')/fs_Hz
+    t = np.arange(0, len(sig),1, dtype='int')/fs_hz
     
     if plot_th:
         # plot time domain 
@@ -655,7 +655,7 @@ def plot_comparative_response(wt_obj, # cutoff frequency
         plt.tight_layout()
     
     fig2, ax2 = plt.subplots(1, 1, sharex=True,figsize=figsize)
-    ax2.plot(fb*fs_Hz, response_offset*abs(np.array(hb)), '--', lw=3, label='filter response')
+    ax2.plot(fb*fs_hz, response_offset*abs(np.array(hb)), '--', lw=3, label='filter response')
     ax2.semilogy(f, np.sqrt(Pxx_spec), '.', label='raw')
     ax2.semilogy(f, np.sqrt(Pxx_spec_filt), '.', label='filtered')
     if Kolmogorov_offset is not None:

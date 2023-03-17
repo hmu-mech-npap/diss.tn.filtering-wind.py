@@ -27,10 +27,10 @@ from numpy.fft import fft, ifft
 #       - **on/off**
 
 #%% Functions and classes
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 # %%
@@ -100,7 +100,7 @@ dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
 #
 class FFT_new:
     def __init__(self, signal):
-        self.sr = signal.fs_Hz
+        self.sr = signal.fs_hz
         self.sig = signal.data
         self.ind = signal.data_as_Series.index
         self.dt = 1/ int(self.sr)
@@ -141,7 +141,7 @@ FFT_new(dfi_i0_w0).fft_calc_and_plot()
 
 # #Here a new algorithm is tested but the results are not promissing
 # # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
-# Sr = dfi_i0_w0.fs_Hz
+# Sr = dfi_i0_w0.fs_hz
 # dt = 1 / int(Sr)
 # print (f"The time interval of the measurement is:\n{dt}")
 
@@ -181,7 +181,7 @@ FFT_new(dfi_i0_w0).fft_calc_and_plot()
 
 # #%%
 # # Here the 0 ws is plotted with the inverter on
-# Sr = dfi_i1_w0.fs_Hz
+# Sr = dfi_i1_w0.fs_hz
 # dt = 1 / int(Sr)
 # print (f"The time interval of the measurement is:\n{dt}")
 

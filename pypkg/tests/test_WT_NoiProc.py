@@ -7,7 +7,7 @@ def test_one():
 
 @pytest.fixture
 def example_wtncp()->WT_NoiseChannelProc:
-    return WT_NoiseChannelProc(desc='description sample', fs_Hz=100, 
+    return WT_NoiseChannelProc(desc='description sample', fs_hz=100, 
             data = np.zeros((100,)), 
             channel_name= 'Torque',
             group_name = 'Wind Measurement',
@@ -21,7 +21,7 @@ def test_create_init(example_wtncp):
     assert example_wtncp._channel_data is None
     np.testing.assert_equal(example_wtncp.data, np.zeros((100,)))
     assert example_wtncp.description =='description sample'
-    assert example_wtncp.fs_Hz == 100    
+    assert example_wtncp.fs_hz == 100    
     
 def test_create_from_obj(example_wtncp):
     new_obj = WT_NoiseChannelProc.from_obj(example_wtncp,operation = 'copy ')
@@ -30,7 +30,7 @@ def test_create_from_obj(example_wtncp):
     assert new_obj._channel_data is None
     np.testing.assert_equal(new_obj.data, np.zeros((100,)))
     assert new_obj.description =='description sample'
-    assert new_obj.fs_Hz == 100
+    assert new_obj.fs_hz == 100
     assert len(new_obj.operations) == (len(example_wtncp.operations)+1)
     assert new_obj.operations[-1] == 'copy '
     
@@ -41,17 +41,17 @@ def test_decimate(example_wtncp):
     assert new_obj._channel_data is None
     np.testing.assert_equal(new_obj.data, np.zeros((50,)))
     assert new_obj.description =='description sample'
-    assert new_obj.fs_Hz == 100/2
+    assert new_obj.fs_hz == 100/2
     assert len(new_obj.operations) == (len(example_wtncp.operations)+1)
-    assert new_obj.operations[-1] == 'Decimation factor:2, Offset:0, new fs_Hz:50.0'
+    assert new_obj.operations[-1] == 'Decimation factor:2, Offset:0, new fs_hz:50.0'
     
 def test_filter(example_wtncp):
-    new_obj = example_wtncp.filter(fc_Hz=10)
+    new_obj = example_wtncp.filter(fc_hz=10)
     assert new_obj.group_name == 'Wind Measurement'
     assert new_obj.channel_name == 'Torque'
     assert new_obj._channel_data is None
     np.testing.assert_equal(new_obj.data, np.zeros((100,)))
     assert new_obj.description =='description sample_fc:10'
-    assert new_obj.fs_Hz == 100
+    assert new_obj.fs_hz == 100
     assert len(new_obj.operations) == (len(example_wtncp.operations)+1)
     assert new_obj.operations[-1] == 'pass filter 10'

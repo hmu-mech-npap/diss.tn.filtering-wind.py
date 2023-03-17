@@ -16,7 +16,7 @@ from nptdms import TdmsFile
 from pros_noisefiltering.gen_functions import spect, plot_spect_comb2
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory, plot_comparative_response
-# filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
+# filter_Butter_default=filt_butter_factory(filt_order = 2, fc_hz = 100)
 
 import logging
 logging.basicConfig( level=logging.WARNING)
@@ -92,7 +92,7 @@ dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
 
 # %%
 NPERSEG = 1024
-filter_Butter_200=filt_butter_factory(filt_order = 2, fc_Hz = 200)
+filter_Butter_200=filt_butter_factory(filt_order = 2, fc_hz = 200)
 xlims=  [1e0,1e5]
 
 
@@ -104,7 +104,7 @@ plot_comparative_response(dfi_i0_w0, # cutoff frequency
         nperseg=NPERSEG*100
         , xlim=xlims
         ,figsize =(12,8))
-# plt.savefig(f'_temp_fig/s6-PS-WS00-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+# plt.savefig(f'_temp_fig/s6-PS-WS00-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 #%%
 plot_comparative_response(dfi_i1_w0, # cutoff frequency
@@ -114,7 +114,7 @@ plot_comparative_response(dfi_i1_w0, # cutoff frequency
         nperseg=NPERSEG*100
         , xlim=xlims
         ,figsize =(12,8))
-# plt.savefig(f'_temp_fig/s6-PS-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',facecolor='white', transparent=False)
+# plt.savefig(f'_temp_fig/s6-PS-WS05-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 #%%
 plot_comparative_response(dfi_i1_w5, # cutoff frequency
