@@ -114,7 +114,7 @@ ca_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
 # Estimate the power spectral density of the raw signal
 # Hotwire speed 0 m/s
 NPERSEG=1024<<8
-fc_hz=200
+fc_Hz=200
 fr_HZ = 100
 #%%
 plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG),
@@ -391,5 +391,5 @@ plot_comparative_response(ca_1_10, # cutoff frequency
 plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_hz")}',facecolor='white', transparent=False)
 
 
-
+plt.show()
 # %%

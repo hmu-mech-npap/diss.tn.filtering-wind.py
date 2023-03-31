@@ -32,7 +32,7 @@ logging.basicConfig( level=logging.WARNING)
 #%%
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
+FOLDER_FOR_DATA = Path('/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
@@ -149,7 +149,7 @@ def compare_timehistories(df_ni,df_wi, final_point = 100000,
         df_wi (_type_): data set  with inverter
         final_point (_type_, optional): _description_. Defaults to 100000stitle=''.
     """    
-    final_point2 = int(df_wi.fs_hz/df_ni.fs_Hz*final_point)
+    final_point2 = int(df_wi.fs_hz/df_ni.fs_hz*final_point)
     fig, axs = plt.subplots(1,2, sharey=True, figsize= figsize)
      # -1 for 
     axs[0].plot(df_ni.data_as_Series[:final_point].index/df_ni.fs_hz, df_ni.data_as_Series[:final_point], '.', alpha=0.3)
@@ -171,3 +171,4 @@ def compare_timehistories(df_ni,df_wi, final_point = 100000,
 compare_timehistories(ca1_0,dec_5kHz, stitle='Time history comparison:  WS=0 m/s',fname='s1_Comp_th-ws0.png')
 
 #%%
+plt.show()
