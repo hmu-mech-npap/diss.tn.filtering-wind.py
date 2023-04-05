@@ -1,6 +1,7 @@
 #The folder which I store the .h5 files on my computer for the data
 data_folder
 *.h5
+comp_ca_*.org
 measurements_12_05_22
 src/understanding/.ob-jupyter
 # Byte-compiled / optimized / DLL files
