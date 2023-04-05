@@ -1,23 +1,18 @@
-'''This is a version that uses the new package pros_noisefiltering.'''
+"""This is a version that uses the new package pros_noisefiltering."""
 # %%
 from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
 import numpy as np
-import pandas as pd
 
 from nptdms import TdmsFile
-import nptdms
-
-
-import pros_noisefiltering as pnf 
-from pros_noisefiltering.gen_functions import spect,plot_spect_comb2
 
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
-from pros_noisefiltering.Graph_data_container import Graph_data_container
+from pros_noisefiltering.gen_functions import plot_spect_comb2
 
 
-# %% [markdown]
+# %%
+# [markdown]
 # This file is for comparing the spectrum of a filtered time series
 #
 #  ### The first 3 plots are a comparison between the signals
@@ -38,7 +33,7 @@ def apply_filter(sig_r: np.ndarray, fs_hz: float, fc_hz=100, filt_order=2):
 
 # Update for automated path detection
 FOLDER_FOR_DATA = Path(
-    '/home/dtos_experiment/Documents/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
+    '/mnt/data_folder/')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 

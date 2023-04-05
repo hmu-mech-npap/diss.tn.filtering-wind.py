@@ -165,7 +165,8 @@ plot_spect_comb2([in1_0.filter(fc_hz=100)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024)
                   ],
-                 title='Comparison of averaging after different filters are applied ',
+                 title='Comparison of averaging after \
+                        different filters are applied ',
                  xlim=[1e0, 1e4], ylim=[1e-8, 1e-2]
                  )
 # %% [markdown]
@@ -260,7 +261,8 @@ plot_spect_comb2([ca_0_5.calc_spectrum(nperseg=NPERSEG*100),
                   .calc_spectrum(nperseg=NPERSEG*10),
                   ca_0_5.decimate(20)
                   .calc_spectrum(nperseg=NPERSEG)],
-                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated ',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        Off \n decimated ',
                  xlim=[1e2, 3e5], ylim=[1e-7, 1e-2],
                  Kolmogorov_offset=1e3, to_disk=True)
 
@@ -274,7 +276,8 @@ plot_spect_comb2([ca_0_5.average(fr_Hz=fr_HZ)
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)
                   ],
-                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated  and averaged',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        Off \n decimated  and averaged',
                  xlim=[1e0, 3e2], ylim=[1e-4, 1e-0],
                  markersize=20,
                  Kolmogorov_offset=1e-0, to_disk=True)
@@ -290,7 +293,8 @@ plot_spect_comb2([ca_0_5.filter(fc_hz=fc_hz)
                   .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
-                 title='Comparison of spectra for signals at WS=5 for inverter Off \n decimated, filtered and finally averaged ',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        Off \n decimated, filtered and finally averaged ',
                  xlim=[1e0, 3e2], ylim=[4e-4, 1e-0],
                  Kolmogorov_offset=1e-0, to_disk=True)
 
@@ -305,7 +309,8 @@ plot_spect_comb2([ca_1_5.calc_spectrum(nperseg=NPERSEG*100),
                   .calc_spectrum(nperseg=NPERSEG*10),
                   ca_1_5.decimate(100)
                   .calc_spectrum(nperseg=NPERSEG)],
-                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated ',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        On \n decimated ',
                  xlim=[1e1, 3e5], ylim=[1e-5, 1e-1],
                  Kolmogorov_offset=1e0, to_disk=True)
 # %%
@@ -315,21 +320,24 @@ plot_spect_comb2([ca_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                   .calc_spectrum(nperseg=NPERSEG/4),
                   ca_1_5.decimate(20).average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
-                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated  and averaged',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        On \n decimated  and averaged',
                  xlim=[1e0, 3e2], ylim=[1e-4, 1e-1],
                  Kolmogorov_offset=5e-1, to_disk=True)
 # %%
 fc_hz = 10
 plot_spect_comb2([ca_1_5.filter(fc_hz=fc_hz).average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
-                  ca_1_5.decimate(2).filter(fc_hz=fc_hz, desc='dec.f:2, fc:100')
+                  ca_1_5.decimate(2).filter(fc_hz=fc_hz,
+                                            desc='dec.f:2, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   ca_1_5.decimate(20)
                   .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
-                 title='Comparison of spectra for signals at WS=5 for inverter On \n decimated, filtered and finally averaged ',
+                 title='Comparison of spectra for signals at WS=5 for inverter \
+                        On \n decimated, filtered and finally averaged ',
                  xlim=[1e0, 3e2], ylim=[1e-7, 1e-2],
                  Kolmogorov_offset=2e-2, to_disk=True)
 # %%
