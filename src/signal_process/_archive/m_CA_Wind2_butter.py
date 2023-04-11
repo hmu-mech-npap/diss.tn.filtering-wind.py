@@ -19,10 +19,10 @@ from functions import spect, plot_spect_comb2, Graph_data_container
 #       - **on/off**
 
 #%% Functions and classes
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 
@@ -38,7 +38,7 @@ class WT_Noise_ChannelProcessor():
         self._channel_data= tdms_channel
         self.set_description(desc=desc)
         # process details
-        self.fs_Hz = 1/self._channel_data.properties['wf_increment']
+        self.fs_hz = 1/self._channel_data.properties['wf_increment']
         self.data = self._channel_data.data
         self.channel_name = self._channel_data.name
         self.group_name = self._channel_data.group_name
@@ -54,29 +54,29 @@ class WT_Noise_ChannelProcessor():
         """        
         return pd.Series(self.data, name=f'{self.channel_name}:raw')
     
-    def filter(self, fc_Hz:float):
+    def filter(self, fc_hz:float):
         """performs 
 
         Args:
-            fc_Hz (float): _description_
+            fc_hz (float): _description_
 
         Returns:
             _type_: _description_
         """        
-        filtered = apply_filter(ds=self.data, fs_Hz=self.fs_Hz, fc_Hz=fc_Hz )
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
+        filtered = apply_filter(sig_r=self.data, fs_hz=self.fs_Hz, fc_hz=fc_Hz )
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
     
     def get_spectrum_raw(self):
-        x_r,y_r = spect(self.data, FS=self.fs_Hz)        
-        return Graph_data_container(x=x_r,y = y_r, label = f'{self.description}-{self.channel_name}')
+        x_r,y_r = spect(self.data, FS=self.fs_hz)        
+        return Graph_data_container(_x=x_r, _y = y_r, label = f'{self.description}-{self.channel_name}')
     
-    def get_spectrum_filt(self, fc_Hz:float):
-        x_f,y_f = spect(self.filter(fc_Hz=fc_Hz), FS=self.fs_Hz)        
-        return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
+    def get_spectrum_filt(self, fc_hz:float):
+        x_f,y_f = spect(self.filter(fc_hz=fc_Hz), FS=self.fs_hz)        
+        return Graph_data_container(_x=x_f, _y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_hz}')
     
-    def plot_filtered_th(self,fc_Hz):
+    def plot_filtered_th(self,fc_hz):
         plt.plot(self.data, label = 'raw')
-        plt.plot(self.filter(fc_Hz=fc_Hz), label = f'filtered: {fc_Hz}')
+        plt.plot(self.filter(fc_hz=fc_Hz), label = f'filtered: {fc_Hz}')
 
 # %%
 #CONSTANTS
@@ -179,7 +179,7 @@ df_tdms_1_10 = WT_Noise_ChannelProcessor(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter on, WS=10')
 
 #%%
-#TODO consider renaming df_tdms_0_0 to df_tdms_i0_w0
+# consider renaming df_tdms_0_0 to df_tdms_i0_w0
 # where i: inverter state
 # where w: wind speed
 
@@ -187,10 +187,10 @@ df_tdms_1_10 = WT_Noise_ChannelProcessor(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
 # Estimate the power spectral density of the raw signal
 # Hotwire speed 0 m/s
 
-fc_Hz=2000
+fc_hz=2000
 plot_spect_comb2([df_tdms_0_0.get_spectrum_raw(),
                 df_tdms_1_0.get_spectrum_raw(),
-                df_tdms_1_0.get_spectrum_filt(fc_Hz),], 
+                df_tdms_1_0.get_spectrum_filt(fc_hz),], 
                  title='Comparison between power spectra at WS=0 ',
                      xlim =[1e2,1e5], ylim= [1e-7,1e-2],
                 Kolmogorov_offset=1e3, to_disk=True)
@@ -204,7 +204,7 @@ plot_spect_comb2([df_tdms_0_0.get_spectrum_raw(),
 plot_spect_comb2([
                 df_tdms_0_5.get_spectrum_raw(),
                 df_tdms_1_5.get_spectrum_raw(),
-                df_tdms_1_5.get_spectrum_filt(fc_Hz=fc_Hz),], 
+                df_tdms_1_5.get_spectrum_filt(fc_hz=fc_Hz),], 
                 title='Comparison between power spectra at WS=5 m/s ',
                 xlim =[1e1,1e5], ylim= [1e-7, 1e-2],
                 Kolmogorov_offset=1e2, to_disk=True)
@@ -216,7 +216,7 @@ plot_spect_comb2([
 
 plot_spect_comb2([df_tdms_0_11.get_spectrum_raw(),
                 df_tdms_1_10.get_spectrum_raw(),
-                df_tdms_1_10.get_spectrum_filt(fc_Hz=fc_Hz),], 
+                df_tdms_1_10.get_spectrum_filt(fc_hz=fc_Hz),], 
                 title='Comparison between power spectra at WS=10 m/s ',
                      xlim =[1e1,1e5],
                 Kolmogorov_offset=1e2, to_disk=True)
@@ -226,25 +226,25 @@ plot_spect_comb2([df_tdms_0_11.get_spectrum_raw(),
 # ============================================================
 
 # DATASET_NO = 2
-# fc_Hz = 100
+# fc_hz = 100
 
 # # channel_data = tdms_raw_CA[DATASET_NO ]['Wind Measurement']['Torque']
 
-# # fs_Hz= 1/channel_data.properties['wf_increment']
-# # # fs_Hz= 1e5
+# # fs_hz= 1/channel_data.properties['wf_increment']
+# # # fs_hz= 1e5
 
-# # ds1 = tdms_raw_CA[DATASET_NO].as_dataframe().iloc[:, 1].values
-# # ds1 = channel_data.data 
-# # filtered = apply_filter(ds=ds1,fs_Hz=fs_Hz, fc_Hz=fc_Hz )
+# # sig_r1 = tdms_raw_CA[DATASET_NO].as_dataframe().iloc[:, 1].values
+# # sig_r1 = channel_data.data 
+# # filtered = apply_filter(sig_r=sig_r1,fs_hz=fs_Hz, fc_hz=fc_Hz )
 
 
-# # df_tmp = pd.DataFrame({'raw': ds1, 'filt': filtered})
+# # df_tmp = pd.DataFrame({'raw': sig_r1, 'filt': filtered})
 # # # %%
-# # x_r,y_r = spect(df_tmp.iloc[:, 0].values, FS=fs_Hz)
-# # x_f,y_f = spect(df_tmp.iloc[:, 1].values, FS=fs_Hz)
+# # x_r,y_r = spect(df_tmp.iloc[:, 0].values, FS=fs_hz)
+# # x_f,y_f = spect(df_tmp.iloc[:, 1].values, FS=fs_hz)
 # # # %%
-# # gc_r = Graph_data_container(x=x_r,y = y_r, label = 'raw')
-# # gc_f = Graph_data_container(x=x_f,y = y_f, label = df_tmp.iloc[:,1].name)
+# # gc_r = Graph_data_container(_x=x_r, _y = y_r, label = 'raw')
+# # gc_f = Graph_data_container(_x=x_f, _y = y_f, label = df_tmp.iloc[:,1].name)
 
 # # plot_spect_comb2([gc_r, gc_f], title='first attempt to show filter',
 # #                      xlim =[1e1,1e5],
@@ -255,7 +255,7 @@ plot_spect_comb2([df_tdms_0_11.get_spectrum_raw(),
 # #                 Kolmogorov_offset=1e2, to_disk=True)
 
 # # # %%
-# # plot_spect_comb2([gc_f], title=f'first attempt to show filter (cutoff: {fc_Hz}Hz)',
+# # plot_spect_comb2([gc_f], title=f'first attempt to show filter (cutoff: {fc_hz}Hz)',
 # #                      xlim =[1e1,1e5],
 # #                 Kolmogorov_offset=5e0, to_disk=True)
 
@@ -263,18 +263,18 @@ plot_spect_comb2([df_tdms_0_11.get_spectrum_raw(),
 
 # #%%
 # DATASET_NO = 2
-# fc_Hz = 100
+# fc_hz = 100
 # %matplotlib qt
 # wt =  WT_Noise_ChannelProcessor(tdms_channel=tdms_raw_CA[DATASET_NO ]['Wind Measurement']['Torque'])
 
 # #%%
 # wt.plot_filtered_th(100)
 # #%%
-# # gc_r = Graph_data_container(x=x_r,y = y_r, label = 'raw')
-# # gc_f = Graph_data_container(x=x_f,y = y_f, label = df_tmp.iloc[:,1].name)
+# # gc_r = Graph_data_container(_x=x_r, _y = y_r, label = 'raw')
+# # gc_f = Graph_data_container(_x=x_f, _y = y_f, label = df_tmp.iloc[:,1].name)
 
 
-# plot_spect_comb2([wt.get_spectrum_raw(), wt.get_spectrum_filt(fc_Hz)], title='first attempt to show filter',
+# plot_spect_comb2([wt.get_spectrum_raw(), wt.get_spectrum_filt(fc_hz)], title='first attempt to show filter',
 #                      xlim =[1e1,1e5],
 #                 Kolmogorov_offset=1e2, to_disk=True)
 # # # %%
@@ -283,7 +283,7 @@ plot_spect_comb2([df_tdms_0_11.get_spectrum_raw(),
 # #                 Kolmogorov_offset=1e2, to_disk=True)
 
 # # # %%
-# # plot_spect_comb2([gc_f], title=f'first attempt to show filter (cutoff: {fc_Hz}Hz)',
+# # plot_spect_comb2([gc_f], title=f'first attempt to show filter (cutoff: {fc_hz}Hz)',
 # #                      xlim =[1e1,1e5],
 # #                 Kolmogorov_offset=5e0, to_disk=True)
 # # %%

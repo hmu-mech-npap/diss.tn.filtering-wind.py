@@ -1,3 +1,4 @@
+TODO TRY TO UPDATE AS SOON AS POSSIBLE TO MATCH 
 # 1.3. Contents of FIR_LP_filter folder
 
 This folder contains 5 files for processing the signal, plotting the raw and filtered signal and generate a dataframe in .h5 file format with the results.
@@ -81,7 +82,8 @@ All files bellow use the compressed air measurements and the goal is to compare 
 
 - **Torque_fir.py**
   - Here the processed channel is from the torque sensor of the system.
-- Both files are using an **FIR lowpass filter** for filtering the original signal. The cutoff frequency is around 4000 Hz. #TODO
+- Both files are using an **FIR lowpass filter** for filtering the original signal. The cutoff 
+frequency is around 4000 Hz.
 
 - **Drag_butter.py**
   - Here the filter used is a **buterworth IIR** and a cutoff frequency at 2000 Hz 
