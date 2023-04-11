@@ -34,7 +34,7 @@ from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
                                             plot_comparative_response)
 
 filter_Butter_default = filt_butter_factory(filt_order=2,
-                                            fc_hz=100)
+                                            fc_Hz=100)
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -109,7 +109,7 @@ print(in1_0.operations)
 print(in1_0_av100.operations)
 print(in1_0.decimate(1).operations)
 print(in1_0.decimate(1).average(100).operations)
-print(in1_0.filter(fc_hz=100).average(100).operations)
+print(in1_0.filter(fc_Hz=100).average(100).operations)
 # %%
 # should create testing for class
 # print(in1_0.fs_hz)
@@ -155,13 +155,13 @@ plot_spect_comb2([in1_0.average(fr_Hz=100)
 # comparing the signal
 # when different filters are applied and averaging occurs
 # %%
-plot_spect_comb2([in1_0.filter(fc_hz=100)
+plot_spect_comb2([in1_0.filter(fc_Hz=100)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024),
-                  in1_0.filter(fc_hz=200)
+                  in1_0.filter(fc_Hz=200)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024),
-                  in1_0.filter(fc_hz=2000)
+                  in1_0.filter(fc_Hz=2000)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024)
                   ],
@@ -282,15 +282,15 @@ plot_spect_comb2([ca_0_5.average(fr_Hz=fr_HZ)
                  markersize=20,
                  Kolmogorov_offset=1e-0, to_disk=True)
 # %%
-plot_spect_comb2([ca_0_5.filter(fc_hz=fc_hz)
+plot_spect_comb2([ca_0_5.filter(fc_Hz=fc_hz)
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   ca_0_5.decimate(2)
-                  .filter(fc_hz=fc_hz, desc='dec.f:2, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:2, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   ca_0_5.decimate(20)
-                  .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
                  title='Comparison of spectra for signals at WS=5 for inverter \
@@ -326,14 +326,14 @@ plot_spect_comb2([ca_1_5.average(fr_Hz=fr_HZ).calc_spectrum(nperseg=NPERSEG/4),
                  Kolmogorov_offset=5e-1, to_disk=True)
 # %%
 fc_hz = 10
-plot_spect_comb2([ca_1_5.filter(fc_hz=fc_hz).average(fr_Hz=fr_HZ)
+plot_spect_comb2([ca_1_5.filter(fc_Hz=fc_hz).average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
-                  ca_1_5.decimate(2).filter(fc_hz=fc_hz,
+                  ca_1_5.decimate(2).filter(fc_Hz=fc_hz,
                                             desc='dec.f:2, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   ca_1_5.decimate(20)
-                  .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
                  title='Comparison of spectra for signals at WS=5 for inverter \
@@ -342,7 +342,7 @@ plot_spect_comb2([ca_1_5.filter(fc_hz=fc_hz).average(fr_Hz=fr_HZ)
                  Kolmogorov_offset=2e-2, to_disk=True)
 # %%
 
-filter_Butter_default = filt_butter_factory(filt_order=2, fc_hz=200)
+filter_Butter_default = filt_butter_factory(filt_order=2, fc_Hz=200)
 
 # %%
 plot_comparative_response(ca_0_0,    # cutoff frequency

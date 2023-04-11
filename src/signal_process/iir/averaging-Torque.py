@@ -46,7 +46,7 @@ from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
                                             plot_comparative_response)
 
 # Constract a butterworth default
-filter_Butter_default = filt_butter_factory(filt_order=2, fc_hz=100)
+filter_Butter_default = filt_butter_factory(filt_order=2, fc_Hz=100)
 
 
 logging.basicConfig(level=logging.WARNING)
@@ -142,7 +142,7 @@ print(df_tdms_inv_meas_1_0.operations)
 print(df_tdms_inv_meas_1_0_av100.operations)
 print(df_tdms_inv_meas_1_0.decimate(1).operations)
 print(df_tdms_inv_meas_1_0.decimate(1).average(100).operations)
-print(df_tdms_inv_meas_1_0.filter(fc_hz=100).average(100).operations)
+print(df_tdms_inv_meas_1_0.filter(fc_Hz=100).average(100).operations)
 # %%
 # should create testing for class
 # print(df_tdms_inv_meas_1_0.fs_hz)
@@ -196,15 +196,15 @@ plot_spect_comb2([df_tdms_inv_meas_1_0
 # when different filters are applied and averaging occurs
 # %%
 plot_spect_comb2([df_tdms_inv_meas_1_0
-                  .filter(fc_hz=100)
+                  .filter(fc_Hz=100)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024),
                   df_tdms_inv_meas_1_0
-                  .filter(fc_hz=200)
+                  .filter(fc_Hz=200)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024),
                   df_tdms_inv_meas_1_0
-                  .filter(fc_hz=2000)
+                  .filter(fc_Hz=2000)
                   .average(fr_Hz=100)
                   .calc_spectrum_gen(dec=1, nperseg=1024)
                   ],
@@ -319,15 +319,15 @@ plot_spect_comb2([df_tdms_0_5.average(fr_Hz=fr_HZ)
                  xlim=[1e0, 3e2], ylim=[1e-7, 1e-2],
                  Kolmogorov_offset=2e-2, to_disk=True)
 # %%
-plot_spect_comb2([df_tdms_0_5.filter(fc_hz=fc_hz)
+plot_spect_comb2([df_tdms_0_5.filter(fc_Hz=fc_hz)
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   df_tdms_0_5.decimate(2)
-                  .filter(fc_hz=fc_hz, desc='dec.f:2, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:2, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   df_tdms_0_5.decimate(20)
-                  .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
                  title='Comparison of spectra for signals at WS=5 inv=Off \n\
@@ -364,15 +364,15 @@ plot_spect_comb2([df_tdms_1_5.average(fr_Hz=fr_HZ)
                  Kolmogorov_offset=2e-2, to_disk=True)
 # %%
 fc_hz = 10
-plot_spect_comb2([df_tdms_1_5.filter(fc_hz=fc_hz)
+plot_spect_comb2([df_tdms_1_5.filter(fc_Hz=fc_hz)
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   df_tdms_1_5.decimate(2)
-                  .filter(fc_hz=fc_hz, desc='dec.f:2, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:2, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4),
                   df_tdms_1_5.decimate(20)
-                  .filter(fc_hz=fc_hz, desc='dec.f:20, fc:100')
+                  .filter(fc_Hz=fc_hz, desc='dec.f:20, fc:100')
                   .average(fr_Hz=fr_HZ)
                   .calc_spectrum(nperseg=NPERSEG/4)],
                  title='Averaged filtered spectra on dec. signals WS=5 inv=On',
@@ -382,7 +382,7 @@ plot_spect_comb2([df_tdms_1_5.filter(fc_hz=fc_hz)
 
 # %%
 
-filter_Butter_default = filt_butter_factory(filt_order=2, fc_hz=200)
+filter_Butter_default = filt_butter_factory(filt_order=2, fc_Hz=200)
 
 plot_comparative_response(df_tdms_0_0,    # cutoff frequency
                           filter_func=filter_Butter_default,
@@ -397,7 +397,7 @@ plot_comparative_response(df_tdms_0_0,    # cutoff frequency
 #         Kolmogorov_offset = 1e3
 #         ,figsize =(12,8),
 #         plot_th=False)
-# plt.savefig(f'_temp_fig/_s3_filter_i0_w5_B{filter_Butter_default.params["fc_hz"]}.png')
+# plt.savefig(f'_temp_fig/_s3_filter_i0_w5_B{filter_Butter_default.params["fc_Hz"]}.png')
 
 plot_comparative_response(df_tdms_1_5,   # cutoff frequency
                           filter_func=filter_Butter_default,
@@ -407,7 +407,7 @@ plot_comparative_response(df_tdms_1_5,   # cutoff frequency
                           figsize=(12, 8),
                           plot_th=False)
 plt.savefig(
-    f'_temp_fig/_s3_filt_i1_w5_B{filter_Butter_default.params["fc_hz"]}.png')
+    f'_temp_fig/_s3_filt_i1_w5_B{filter_Butter_default.params["fc_Hz"]}.png')
 
 # %%
 plot_comparative_response(df_tdms_0_11,   # cutoff frequency

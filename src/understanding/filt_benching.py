@@ -13,7 +13,7 @@ from pros_noisefiltering.WT_NoiProc import (filt_butter_factory,
                                             plot_comparative_response)
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 
-filter_Butter_200 = filt_butter_factory(filt_order=2, fc_hz=100)
+filter_Butter_200 = filt_butter_factory(filt_order=2, fc_Hz=100)
 
 # from pros_noisefiltering.gen_functions import (Fft_Plot_info,
 #                                                Axis_titles,
@@ -158,78 +158,14 @@ dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(
 fc_hz = 200
 
 
-class FFT_new:
-    """Construct an object for handling frequency domain plots of raw data."""
-
-    def __init__(self, signal, title):
-        """Initialize the object to manage the raw data in frequency domain."""
-        self.Title = title
-        self.sr = signal.fs_hz
-        self.sig = signal.data
-        self.ind = np.array(range(0, len(signal.data_as_Series), 1))
-        self.dt = 1 / int(self.sr)
-        self.time_sec = self.ind * self.dt
-
-    def fft_calc_and_plot(self, **kwargs):
-        """Calculate the fourier transform of a given signal and plot.
-
-        By default we plot the signal in the time domain with the FFT
-        representation in a tight layout (in one figure sharing scale).
-        """
-        n = len(self.time_sec)
-        fhat = np.fft.fft(self.sig, n)                      # compute fft
-        PSD = fhat * np.conj(fhat) / n                  # Power spectrum (p/f)
-        freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freq)
-        L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
-
-        fig, axs = plt.subplots(2, 1,
-                                figsize=kwargs.get('figsize',
-                                                   None))
-
-        plt.sca(axs[0])
-        plt.grid(True, which='both')
-        plt.title(self.Title)
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitute (Voltage)')
-        plt.plot(self.time_sec, self.sig)
-        # plt.loglog(freq[L],(PSD[L]))
-
-        plt.sca(axs[1])
-        plt.loglog(freq[L], abs(PSD[L]))
-        plt.title('Frequency domain')
-        plt.xlabel('Frequencies [Hz]')
-        plt.ylabel('Power/Freq')
-        plt.grid(True, which='both')
-
-
-FFT_new(df_tdms_1_0.decimate(dec=5, offset=0),
-        title='Decimation number 5 CA INV ON').fft_calc_and_plot(
-            figsize=(12, 9))
-len(df_tdms_1_0.decimate(dec=5, offset=0).data)
-
-FFT_new(dfi_i1_w0,
-        title='Decimation number 1 INV INV ON').fft_calc_and_plot(
-            figsize=(12, 9))
-len(dfi_i1_w0.data)
-
-FFT_new(df_tdms_1_0,
-        title='Decimation None CA INV ON').fft_calc_and_plot(
-            figsize=(12, 9))
-len(df_tdms_1_0.data)
 # This addition is for the inferior python shell
 # for plotting the graphs using gtk app
 
-plt.show()
-
-x = FFT_new(df_tdms_1_5, title="None")
-print(x.time_sec)
-
-
 # Define a class for FIR operations like
-def fir_factory_constructor(fir_order=32, fc_hz: float = 200):
+def fir_factory_constructor(fir_order=32, fc_Hz: float = 200):
     """Mimicing so this is working with Papadakis solution above."""
     def fir_filter(sig_r: np.ndarray,
-                   fs_hz: float, fc_hz_real: float = fc_hz,
+                   fs_hz: float, fc_hz_real: float = fc_Hz,
                    fir_filt_order=fir_order):
 
         fir_filt_coeff = signal.firwin(numtaps=fir_filt_order,
@@ -253,11 +189,11 @@ def fir_factory_constructor(fir_order=32, fc_hz: float = 200):
         return uncorrupted_output           # uncorr_sos_output
 
     # Add the parameter attribute for checking filter response
-    fir_filter.params = {'filter order': fir_order, 'fc_hz': fc_hz}
+    fir_filter.params = {'filter order': fir_order, 'fc_Hz': fc_Hz}
     return fir_filter
 
 
-filter_fir_default = fir_factory_constructor(fir_order=2, fc_hz=100)
+filter_fir_default = fir_factory_constructor(fir_order=2, fc_Hz=100)
 
 
 class Fir_filter:
@@ -278,13 +214,13 @@ class Fir_filter:
                                     len(self.raw) / int(self.fs_hz),
                                     len(self.raw))
 
-    def _fir_filter(self, fc_hz: float = fc_hz,
+    def _fir_filter(self, fc_Hz: float = fc_hz,
                     filter_func=filter_fir_default,
                     fs_hz=None) -> pd.Series:
         """#TODO UPDATE DOCSTRING: return a filtered signal based on.
 
         Args:
-            fc_hz (float): cut off frequency in Hz
+            fc_Hz (float): cut off frequency in Hz
             filter_func : filtering function that
                           takes two arguments (sig_r, fs_hz).
                           Defaults to 100, filt_order = 2).
@@ -299,23 +235,23 @@ class Fir_filter:
                 f'issued {fs_hz} sampling frequency \
                 while the default is {self.fs_Hz}')
         fs_hz = fs_hz if fs_hz is not None else self.fs_hz
-        filtered = filter_func(sig_r=self.data, fs_hz=fs_hz, fc_hz=fc_hz)
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
+        filtered = filter_func(sig_r=self.data, fs_hz=fs_hz, fc_Hz=fc_hz)
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
 
-    def fir_nested_filter(self,  fc_hz: float,
+    def fir_nested_filter(self,  fc_Hz: float,
                           filter_func=filter_fir_default, fs_hz=None,
                           desc=None):
         """Construct a Wrapper for applying a filter."""
-        sig_r_filt = self._fir_filter(fc_hz=fc_hz,
+        sig_r_filt = self._fir_filter(fc_Hz=fc_hz,
                                       filter_func=filter_func,
                                       fs_hz=fs_hz)
         description = (
-            desc if desc is not None else self.description + f'_fc:{fc_hz}')
+            desc if desc is not None else self.description + f'_fc:{fc_Hz}')
 
         return WT_NoiseChannelProc.from_obj(self,
                                             desc=description,
                                             data=sig_r_filt.values,
-                                            operation=f'pass filter {fc_hz}'
+                                            operation=f'pass filter {fc_Hz}'
                                             )
 
     # def apply_fir(self, fc_hz, order_for_filter: int):
@@ -324,11 +260,11 @@ class Fir_filter:
     #                      name=f'{self.channel_name}:fir_filt_fc_{fc_hz}')
 
 
-fc_hz = 200
+fc_Hz = 200
 fir_or = 65
 
 fir_filter_cnstr_xorder = fir_factory_constructor(fir_order=fir_or,
-                                                  fc_hz=fc_hz)
+                                                  fc_Hz=fc_Hz)
 FIGSIZE_SQR_L = (8, 10)
 plot_comparative_response(df_tdms_1_10,       # cutoff frequency
                           filter_func=fir_filter_cnstr_xorder,
@@ -345,7 +281,7 @@ plot_comparative_response(df_tdms_1_10,             # cutoff frequency
                           nperseg=NPERSEG*100,
                           figsize=FIGSIZE_SQR_L)
 plt.savefig(
-    f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_hz")}',
+    f'_temp_fig/s4-PS-i1-WS05-filt{filter_Butter_200.params.get("fc_Hz")}',
     facecolor='white',
     transparent=False)
 

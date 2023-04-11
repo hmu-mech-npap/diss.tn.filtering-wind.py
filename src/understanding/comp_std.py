@@ -24,13 +24,13 @@ from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 # %% Functions and classes
 
 
-def apply_filter(sig_r: np.ndarray, fs_hz: float,
-                 fc_hz=100, filt_order=2):
+def apply_filter(ds: np.ndarray, fs_hz: float,
+                 fc_Hz=100, filt_order=2):
     """Documented from papadaki."""
-    sos = signal.butter(filt_order, fc_hz,
+    sos = signal.butter(filt_order, fc_Hz,
                         'lp', fs=fs_hz,
                         output='sos')
-    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
+    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
     return filtered
 
 
@@ -188,7 +188,7 @@ class FFT_new:
         We should be able to integrate this in WT_Noi_proc.
         """
         self.Title = title
-        self.sr = signal.fs_hz
+        self.sr = signal.fs_Hz
         self.sig = signal.data
         self.ind = signal.data_as_Series.index
         self.dt = 1 / int(self.sr)

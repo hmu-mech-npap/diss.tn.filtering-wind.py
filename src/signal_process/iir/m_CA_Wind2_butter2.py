@@ -21,10 +21,10 @@ from pros_noisefiltering.gen_functions import plot_spect_comb2
 #       - **on/off**
 
 # %% Functions and classes
-def apply_filter(sig_r: np.ndarray, fs_hz: float, fc_hz=100, filt_order=2):
+def apply_filter(ds: np.ndarray, fs_Hz: float, fc_Hz=100, filt_order=2):
     """Apply a butterworth filter with sos output."""
-    sos = signal.butter(filt_order, fc_hz, 'lp', fs=fs_hz, output='sos')
-    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
+    sos = signal.butter(filt_order, fc_Hz, 'lp', fs=fs_Hz, output='sos')
+    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
     return filtered
 
 
@@ -104,7 +104,7 @@ df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(tdms_raw_CA[5]
 fc_hz = 2000
 plot_spect_comb2([df_tdms_0_0.calc_spectrum(),
                   df_tdms_1_0.calc_spectrum(),
-                  df_tdms_1_0.filter(fc_hz=fc_hz,
+                  df_tdms_1_0.filter(fc_Hz=fc_hz,
                                      filter_func=apply_filter)
                   .calc_spectrum(), ],
                  title='Comparison between power spectra at WS=0 ',
@@ -119,7 +119,7 @@ plot_spect_comb2([df_tdms_0_0.calc_spectrum(),
 
 plot_spect_comb2([df_tdms_0_5.calc_spectrum(),
                   df_tdms_1_5.calc_spectrum(),
-                  df_tdms_1_5.filter(fc_hz=fc_hz,
+                  df_tdms_1_5.filter(fc_Hz=fc_hz,
                                      filter_func=apply_filter)
                   .calc_spectrum(), ],
                  title='Comparison between power spectra at WS=5 m/s ',
@@ -133,7 +133,7 @@ plot_spect_comb2([df_tdms_0_5.calc_spectrum(),
 
 # plot_spect_comb2([df_tdms_0_10.calc_spectrum(),
 #                   df_tdms_1_10.calc_spectrum(),
-#                   df_tdms_1_10.filter(fc_hz=fc_hz, filter_func=apply_filter)
+#                   df_tdms_1_10.filter(fc_Hz=fc_hz, filter_func=apply_filter)
 #                   .calc_spectrum(), ],
 #                  title='Comparison between power spectra at WS=10 m/s ',
 #                  xlim=[1e1, 1e5],

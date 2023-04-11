@@ -185,13 +185,13 @@ medec = 100
 print(f"custom decim length: {len(ca1_0.decimate(dec=medec, offset=0).data)}")
 y = signal.decimate(ca1_0.data, medec, ftype='fir')
 z, f = signal.welch(y,
-                    fs=ca1_0.fs_hz/medec,
+                    fs=ca1_0.fs_Hz/medec,
                     window='flattop',
                     nperseg=NPERSEG/medec,
                     scaling='density')
 print(f"decimate with scipy lenght: {len(y)}")
-sign = Graph_data_container(_x=z,
-                            _y=f,
+sign = Graph_data_container(x=z,
+                            y=f,
                             label="dec=100, antialiasing=fir")
 
 plot_spect_comb2([
