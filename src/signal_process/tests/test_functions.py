@@ -1,63 +1,68 @@
-# DO I REALLY NEED THEM
-# Example of pytest for functions
-from re import X
+from unittest.mock import patch
 import pytest
-from functions import (Axis_titles, Fft_Plot_info, 
-                        data_import)
+from nptdms import TdmsFile
+from pros_noisefiltering.WT_NoiProc import (Fir_filter,
+                                            WT_NoiseChannelProc)
+
+from pros_noisefiltering.gen_functions import FFT_new
+from pathlib import Path
+
+FOLDER_FOR_DATA = Path(
+    '/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
+if not FOLDER_FOR_DATA.exists():
+    FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+TDMS_FNAME = 'Data.tdms'
+GROUP_NAME = 'Wind Measurement'
+CHAN_NAME = 'Wind2'
+
+inv_meas_dir = 'inverter'
+# Inverter measurements of interest
+data_inv_inv_0_WS_0 = 'in0_0.1'
 
 
-def test_first_():
-    pass
+path_comp = FOLDER_FOR_DATA / inv_meas_dir
+
+raw_signal_CA = [data_inv_inv_0_WS_0]
+
+l_tdms_Inv = []
+for item in raw_signal_CA:
+    x = TdmsFile(Path(f'{path_comp}/{item}', TDMS_FNAME))
+    l_tdms_Inv.append(x)
+
+# %%
+# [print(x) for x in l_tdms_Inv[0][GROUP_NAME].channels()]
+# %%
+dfi_i0_w0 = WT_NoiseChannelProc.from_tdms(
+    l_tdms_Inv[0][GROUP_NAME][CHAN_NAME],
+    desc='Inverter Off, WS=0, 100kHz')
+
+
+fc_hz = 200
+
 
 @pytest.fixture
-def example_ax_titles() ->Axis_titles:
-# Edge case 
-# (should not take intergers but the Axis titles class will plot them as titles)
-    return Axis_titles(x_title= 5, y_title=7)
-    
+def fir_func() -> Fir_filter:
+    filt = Fir_filter(dfi_i0_w0)
+    return(filt)
 
-def test_init_func(example_ax_titles):
-    assert example_ax_titles.x_title == 5
-    assert example_ax_titles.y_title == 7 
 
-@pytest.fixture
-def example_fft_informations()-> Fft_Plot_info: 
-    return(Fft_Plot_info(Title=['1','2','1'],filter_type='FIR', signal_state='processed'))
-
-def test_fft_info_init_func(example_fft_informations):
-    # Use case
-    # information constructor for frequency domain plots
-    assert example_fft_informations.title == ['1','2','1']
-    assert example_fft_informations.filt_type == 'FIR'
-    assert example_fft_informations.sig_state == 'processed'
-
-def test_fft_info_change(example_fft_informations):
-    # Test for possibility of editing the information of fft plot
-    # after a resulted conclusion for the signal (corrupted from some process)
-    assert example_fft_informations.filt_type.replace ('FIR', "butter")
-    assert example_fft_informations.sig_state.replace ('processed', 'corrupted')
+def test_fft_info_init_func(fir_func):
+    assert fir_func.channel_name == "Wind2"
+    assert len(fir_func.time_int) == len(fir_func.data)
+    assert fir_func.description == dfi_i0_w0.description
 
 
 @pytest.fixture
-def ex_data_import()-> data_import:
-    file_path = '/mnt/data_folder/'
-    file_name = 'noise_reference_'
-    file_type = '.h5'
-    signal_process = 'raw'
-
-    file_name_h5 = f'{file_name}{signal_process}{file_type}'
-    return(data_import(file_path=f'{file_path}',file_name_of_raw=file_name_h5))
-
-def test_f_string_import(ex_data_import):
-    # test the new folder path for the data folder
-    list1, list2, list3,f_path, f_name = ex_data_import
-    assert type(list1)==list
-    assert type(list2)==list
-    assert type(list3)==list
-
-    assert f_path == '/mnt/data_folder/'
-    assert f_name == 'noise_reference_raw.h5'
-
-    
+def fft_func() -> FFT_new:
+    return FFT_new(dfi_i0_w0, title=None)
 
 
+def test_init_fft(fft_func):
+    assert len(fft_func.time_sec) == len(dfi_i0_w0.data_as_Series.index *
+                                         (1.0 / dfi_i0_w0.fs_Hz))
+
+
+@patch("matplotlib.pyplot.show")
+def test_plot_operation(mock_show):
+    FFT_new(dfi_i0_w0, title=None).fft_calc_and_plot()
