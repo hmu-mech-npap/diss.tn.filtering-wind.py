@@ -2,13 +2,10 @@
 name: Testing
 
 on:
-  workflow_dispatch:
-    push:
-      paths:
-        - "diss.tn.filtering-wind/**"
-        - "pypkg/**"
-
-  - pull_request
+  push:
+    paths:
+      - "diss.tn.filtering-wind/**"
+      - "pypkg/**"
 
 jobs:
   build:
