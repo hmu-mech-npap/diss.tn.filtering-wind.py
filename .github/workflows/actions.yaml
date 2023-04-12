@@ -2,10 +2,8 @@
 name: Testing
 
 on:
-  push:
-    paths:
-      - "diss.tn.filtering-wind/**"
-      - "pypkg/**"
+  - pull_request
+  - push
 
 jobs:
   build:
