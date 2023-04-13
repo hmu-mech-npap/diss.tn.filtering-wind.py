@@ -1,4 +1,4 @@
-#%%
+# %%
 from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
@@ -10,19 +10,19 @@ from nptdms import TdmsFile
 
 from functions import spect, plot_spect_comb2, Graph_data_container
 
+#%% Imported from raw_signal_Comp2
 
 
 #%% Functions and classes
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 
 
 class WT_Noise_ChannelProcessor():
-    #TODO Consider using class methods to implement factory methods. (from tdms or ) 
     def __init__(self, tdms_channel:nptdms.tdms.TdmsChannel, desc:str) -> None:
         """_summary_
 
@@ -33,7 +33,7 @@ class WT_Noise_ChannelProcessor():
         self._channel_data= tdms_channel
         self.set_description(desc=desc)
         # process details
-        self.fs_Hz = 1/self._channel_data.properties['wf_increment']
+        self.fs_hz = 1/self._channel_data.properties['wf_increment']
         self.data = self._channel_data.data
         self.channel_name = self._channel_data.name
         self.group_name = self._channel_data.group_name
@@ -49,19 +49,19 @@ class WT_Noise_ChannelProcessor():
         """        
         return pd.Series(self.data, name=f'{self.channel_name}:raw')
     
-    def filter(self, fc_Hz:float, fs_Hz:None):
+    def filter(self, fc_hz:float, fs_hz:None):
         """performs 
 
         Args:
-            fc_Hz (float): cutoff frequency in Hz
-            fs_Hz (float): sampling frequency in Hz
+            fc_hz (float): cutoff frequency in Hz
+            fs_hz (float): sampling frequency in Hz
 
         Returns:
             _type_: _description_
         """        
-        fs_Hz = fs_Hz if fs_Hz is not None else self.fs_Hz
-        filtered = apply_filter(ds=self.data, fs_Hz=fs_Hz, fc_Hz=fc_Hz )
-        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_Hz}')
+        fs_hz = fs_Hz if fs_Hz is not None else self.fs_Hz
+        filtered = apply_filter(sig_r=self.data, fs_hz=fs_Hz, fc_hz=fc_Hz )
+        return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
     
     def get_spectrum_raw(self)->Graph_data_container:
         """returns a Graph_data_container object with the power spectrum of the data. 
@@ -69,8 +69,8 @@ class WT_Noise_ChannelProcessor():
         Returns:
             _type_: _description_
         """        
-        x_r,y_r = spect(self.data, FS=self.fs_Hz)        
-        return Graph_data_container(x=x_r,y = y_r, label = f'{self.description}-{self.channel_name}')
+        x_r,y_r = spect(self.data, FS=self.fs_hz)        
+        return Graph_data_container(_x=x_r, _y = y_r, label = f'{self.description}-{self.channel_name}')
     
     
     def get_spectrum_raw_dec(self, dec:int, offset:int=0)->Graph_data_container:
@@ -83,27 +83,27 @@ class WT_Noise_ChannelProcessor():
         Returns:
             Graph_data_container: _description_
         """        
-        decimated_fs_Hz = self.fs_Hz/dec
-        x_r,y_r = spect(self.data[offset::dec], FS=decimated_fs_Hz)        
-        return Graph_data_container(x=x_r,y = y_r, 
-            label = f'{self.description}-{self.channel_name}-fs:{decimated_fs_Hz/1000:.1f}kHz ')
+        decimated_fs_hz = self.fs_hz/dec
+        x_r,y_r = spect(self.data[offset::dec], FS=decimated_fs_hz)        
+        return Graph_data_container(_x=x_r, _y = y_r, 
+            label = f'{self.description}-{self.channel_name}-fs:{decimated_fs_hz/1000:.1f}kHz ')
     
     
-    def get_spectrum_filt(self, fc_Hz:float)->Graph_data_container:
+    def get_spectrum_filt(self, fc_hz:float)->Graph_data_container:
         """returns a Graph_data_container object with the power spectrum of the data. 
 
         Args:
-            fc_Hz (float): _description_
+            fc_hz (float): _description_
 
         Returns:
             Graph_data_container: _description_
         """        
-        x_f,y_f = spect(self.filter(fc_Hz=fc_Hz), FS=self.fs_Hz)        
-        return Graph_data_container(x=x_f,y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_Hz}')
+        x_f,y_f = spect(self.filter(fc_hz=fc_Hz), FS=self.fs_hz)        
+        return Graph_data_container(_x=x_f, _y = y_f, label = f'{self.description}-{self.channel_name} - filt: {fc_hz}')
     
-    def plot_filtered_th(self,fc_Hz):
+    def plot_filtered_th(self,fc_hz):
         plt.plot(self.data, label = 'raw')
-        plt.plot(self.filter(fc_Hz=fc_Hz), label = f'filtered: {fc_Hz}')
+        plt.plot(self.filter(fc_hz=fc_Hz), label = f'filtered: {fc_Hz}')
 
 
 
@@ -118,15 +118,27 @@ class WT_Noise_ChannelProcessor():
 #       - Comparison between signals at 5 kHz from original, 50 kHz and the measurment at 5 kHz
 # 
 
-#%%
+
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
 #FOLDER_FOR_DATA = Path.cwd()
 
 # FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22'
+#FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
 if not FOLDER_FOR_DATA.exists():   
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
+# If you prefear another folder for storing the data use this
+# the last line will join the names like a path from the system
+#  
+# home_folder = Path.home()
+# dir_no_1 = 'folder name as a string'
+# dir_no_2 = '.....'
+# dir_no_3 = '.....' 
+# dir_no_4 = '.....'
+#
+#FOLDER_FOR_DATA = home_folder / dir_no_1 / dir_no_2 / dir_no_3 / dir_no_4 / ..... / .....
 
 #%%
 
@@ -145,21 +157,28 @@ tdms_folder_id = 'WTmeas20220512-'
 #   
 
 GROUP_NAME = 'Wind Measurement'
-CHAN_NAME = 'Drag'
+# Old name
+# CHAN_NAME = 'Torque'
+CHAN_NAME = 'Wind2'
 
 #%%
 # Inverter measurments 
 # Dir name 
 inv_meas_dir = 'Inverter'
 
-WT_inv_1_WS_0 = '115754'
+# Old file id 
+#WT_inv_1_WS_0 = '115754'
+
+# New measurements proper channel
+WT_inv_1_WS_0 = 'in1_0.1'
+
 # contains the following channels
 # [<TdmsChannel with path /'Wind Measurement'/'Torque'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Drag'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind1'>,
 #  <TdmsChannel with path /'Wind Measurement'/'Wind2'>]
 
-path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{tdms_folder_id}{WT_inv_1_WS_0}' / tdms_f_name
+path_inv_meas = FOLDER_FOR_DATA / inv_meas_dir / f'{WT_inv_1_WS_0}' / tdms_f_name
 
 tdms_raw_WT =TdmsFile(path_inv_meas)
 
@@ -170,11 +189,15 @@ df_tdms_inv_meas_1_0 = WT_Noise_ChannelProcessor(tdms_raw_WT[GROUP_NAME][CHAN_NA
 
 # Decimation folder measurments 
 dec_meas_dir = 'Decimation'
-dec_at_50_kHz = '121419'
-dec_at_5_kHz = '121435'
-path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_50_kHz}' / tdms_f_name
+# dec_at_50_kHz = '121419'
+# dec_at_5_kHz = '121435'
 
-path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{tdms_folder_id}{dec_at_5_kHz}' / tdms_f_name
+#New folder names
+dec_at_50_kHz = 'de50.1'
+dec_at_5_kHz = 'de5.1'
+path_dec_meas_50_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_50_kHz}' / tdms_f_name
+
+path_dec_meas_5_kHz = FOLDER_FOR_DATA / dec_meas_dir / f'{dec_at_5_kHz}' / tdms_f_name
 
 tdms_raw_WT_50kHz =TdmsFile(path_dec_meas_50_kHz)
 tdms_raw_WT_5kHz =TdmsFile(path_dec_meas_5_kHz)
@@ -188,9 +211,6 @@ df_tdms_dec_5kHz = WT_Noise_ChannelProcessor(tdms_raw_WT_5kHz[GROUP_NAME][CHAN_N
 
 
 #%%
-# %matplotlib inline
-# %matplotlib qt
-# plot original raw signal with fs= 100kHz
 plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=1)],
                 title='Raw signal at 100kHz',
                 xlim=[1e1,1e5], ylim = [1e-4,1e-2])
@@ -208,9 +228,6 @@ plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=2, offset=1),
 
 
 #%%
-# %matplotlib inline
-# %matplotlib qt
-
 # plot 5 kHz signals
 plot_spect_comb2([df_tdms_inv_meas_1_0.get_spectrum_raw_dec(dec=20),
                   df_tdms_dec_50kHz.get_spectrum_raw_dec(dec=10),

@@ -155,3 +155,5 @@ plot_comparative_response(dfi_i1_w20, # cutoff frequency
 
 
 # %%
+
+plt.show()

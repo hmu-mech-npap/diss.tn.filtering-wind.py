@@ -393,3 +393,4 @@ plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")
 
 
 # %%
+plt.show()

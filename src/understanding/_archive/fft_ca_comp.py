@@ -27,10 +27,10 @@ from numpy.fft import fft, ifft
 #       - **on/off**
 
 #%% Functions and classes
-def apply_filter(ds:np.ndarray, fs_Hz:float, fc_Hz = 100, filt_order = 2 ):
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
                  # filter cutoff frequency
-    sos = signal.butter(filt_order , fc_Hz, 'lp', fs=fs_Hz, output='sos')
-    filtered = signal.sosfilt(sos, ds-ds[0])+ds[0]
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
     return filtered
 
 # %%
@@ -98,7 +98,7 @@ df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[5][GROUP_NAME][CHAN_NAME]
 #%%
 #Here a new algorithm is tested but the results are not promissing
 # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
-Sr = df_tdms_1_0.fs_Hz
+Sr = df_tdms_1_0.fs_hz
 dt = 1 / int(Sr)
 print (f"The time interval of the measurement is:\n{dt}")
 
