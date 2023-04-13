@@ -382,8 +382,8 @@ class Fir_filter:
         # self.time_int = np.linspace(0, 7, len(self.raw))
         self.description = signals.description
         self._channel_data = signals._channel_data
-        self.fs_Hz = int(1/signals._channel_data.properties['wf_increment'])
-        self.channel_name = signals._channel_data.name
+        self.fs_Hz = int(1/signals.fs_Hz)
+        # self.channel_name = signals._channel_data.name
         self.time_int = np.linspace(0,
                                     len(self.data) / int(self.fs_Hz),
                                     len(self.data))

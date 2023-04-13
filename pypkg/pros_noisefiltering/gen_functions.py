@@ -373,6 +373,8 @@ class FFT_new:
         self.dt = 1 / int(self.sr)
         self.time_sec = self.ind * self.dt
 
+        self._channel_data = signal._channel_data
+
     def fft_calc_and_plot(self):
         """Func body for calculation of the frequency domain of raw data."""
         n = len(self.time_sec)
@@ -397,3 +399,4 @@ class FFT_new:
         plt.xlabel('Frequencies [Hz]')
         plt.ylabel('Power/Freq')
         plt.grid('both')
+        plt.show()

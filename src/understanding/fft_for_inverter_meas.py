@@ -14,6 +14,8 @@ from pros_noisefiltering.gen_functions import (spect,plot_spect_comb2,
                                                Fft_Plot_info,Axis_titles,plot_FFT,Signals_for_fft_plot,
                                                fft_calc_sig,fft_sig)
 
+
+from pros_noisefiltering.gen_functions import FFT_new
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 from pros_noisefiltering.Graph_data_container import Graph_data_container
 
@@ -98,59 +100,57 @@ dfi_i1_w20 = WT_NoiseChannelProc.from_tdms(l_tdms_Inv[5][GROUP_NAME][CHAN_NAME]
 # this fft algorithm to pypkg and remove duplicate code (redundancy)
 # # reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
 #
-class FFT_new:
-    """Construct an object for handling frequency domain plots of raw data."""
+# class FFT_new:
+#     """Construct an object for handling frequency domain plots of raw data."""
 
-    def __init__(self, signal, title):
-        """Initialize the object to manage the raw data in frequency domain."""
-        self.Title = title
-        self.sr = signal.fs_Hz
-        self.sig = signal.data
-        self.ind = np.array(range(0, len(signal.data_as_Series), 1))
-        self.dt = 1 / int(self.sr)
-        self.time_sec = self.ind * self.dt
+#     def __init__(self, signal, title):
+#         """Initialize the object to manage the raw data in frequency domain."""
+#         self.Title = title
+#         self.sr = signal.fs_Hz
+#         self.sig = signal.data
+#         self.ind = np.array(range(0, len(signal.data_as_Series), 1))
+#         self.dt = 1 / int(self.sr)
+#         self.time_sec = self.ind * self.dt
 
-    def fft_calc_and_plot(self, **kwargs):
-        """Calculate the fourier transform of a given signal and plot.
+#     def fft_calc_and_plot(self, **kwargs):
+#         """Calculate the fourier transform of a given signal and plot.
 
-        By default we plot the signal in the time domain with the FFT
-        representation in a tight layout (in one figure sharing scale).
-        """
-        n = len(self.time_sec)
-        fhat = np.fft.fft(self.sig, n)                      # compute fft
-        PSD = fhat * np.conj(fhat) / n                  # Power spectrum (p/f)
-        freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freq)
-        L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
+#         By default we plot the signal in the time domain with the FFT
+#         representation in a tight layout (in one figure sharing scale).
+#         """
+#         n = len(self.time_sec)
+#         fhat = np.fft.fft(self.sig, n)                      # compute fft
+#         PSD = fhat * np.conj(fhat) / n                  # Power spectrum (p/f)
+#         freq = (1/(self.dt*n)) * np.arange(n)           # create x-axis (freq)
+#         L = np.arange(1, np.floor(n/2), dtype=int)      # plot only first half
 
-        fig, axs = plt.subplots(2, 1,
-                                figsize=kwargs.get('figsize',
-                                                   None))
+#         fig, axs = plt.subplots(2, 1,
+#                                 figsize=kwargs.get('figsize',
+#                                                    None))
 
-        plt.sca(axs[0])
-        plt.grid(True, which='both')
-        plt.title(self.Title)
-        plt.xlabel('Time [s]')
-        plt.ylabel('Amplitute (Voltage)')
-        plt.plot(self.time_sec, self.sig)
-        # plt.loglog(freq[L],(PSD[L]))
+#         plt.sca(axs[0])
+#         plt.grid(True, which='both')
+#         plt.title(self.Title)
+#         plt.xlabel('Time [s]')
+#         plt.ylabel('Amplitute (Voltage)')
+#         plt.plot(self.time_sec, self.sig)
+#         # plt.loglog(freq[L],(PSD[L]))
 
-        plt.sca(axs[1])
-        plt.loglog(freq[L], abs(PSD[L]))
-        plt.title('Frequency domain')
-        plt.xlabel('Frequencies [Hz]')
-        plt.ylabel('Power/Freq')
-        plt.grid(True, which='both')
+#         plt.sca(axs[1])
+#         plt.loglog(freq[L], abs(PSD[L]))
+#         plt.title('Frequency domain')
+#         plt.xlabel('Frequencies [Hz]')
+#         plt.ylabel('Power/Freq')
+#         plt.grid(True, which='both')
 
-        plt.show()
+#         plt.show()
 
 
 FFT_new(dfi_i1_w0.decimate(dec=5, offset=0),
-        title='Decimation number 5 CA INV ON').fft_calc_and_plot(
-            figsize=(12, 9))
+        title='Decimation number 5 CA INV ON').fft_calc_and_plot()
 len(dfi_i1_w0.decimate(dec=5, offset=0).data)
 
 FFT_new(dfi_i1_w0,
-        title='Decimation number 1 INV INV ON').fft_calc_and_plot(
-            figsize=(12, 9))
+        title='Decimation number 1 INV INV ON').fft_calc_and_plot()
 len(dfi_i1_w0.data)
-
+plt.show()
