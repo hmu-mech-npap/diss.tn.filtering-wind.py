@@ -1,6 +1,6 @@
+
 #%%
 # File for looking at FIR filtering options
-#  
 #
 # %%
 # Functions and variables to be imported
@@ -217,14 +217,14 @@ df_tdms_i1_w10 = WT_Noise_ChannelProcessor(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
                 , desc= 'Inverter on, WS=10')
 
 
-#TODO Find a way to take information of time interval from tdms object
+# Find a way to take information of time interval from tdms object
 # BAD practice
 # num_samp = 2_500_000
 # time_int = np.linspace(0,7,num_samp)
 # 
-# def fir_filter(ds:np.ndarray, fs_hz:float, fc_hz = 0.0002, filt_order = 20):
+# def fir_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 0.0002, filt_order = 20):
 #     filt_coeff, w, h = lp_firwin(filt_order,fs_hz,fc_hz)
-#     filt_data = signal.lfilter(filt_coeff, 1.0, ds)
+#     filt_data = signal.lfilter(filt_coeff, 1.0, sig_r)
 #     warmup = filt_order-1
 #     uncorrupted_output = filt_data[warmup:]
 #     filt_sig_time_int = time_int[warmup:]-((warmup/2)/fs_hz)
@@ -238,17 +238,17 @@ df_tdms_i1_w10 = WT_Noise_ChannelProcessor(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
 #         self.time_int = np.linspace(0, 7, len(self.raw))
 #         self.description = signals.description
 #         self._channel_data= signals._channel_data
-#         self.fs_Hz = int (1/signals._channel_data.properties['wf_increment'])
+#         self.fs_hz = int (1/signals._channel_data.properties['wf_increment'])
 #         self.channel_name = signals._channel_data.name
 #     
 #     def apply_fir(self, fc_hz):
-#         filtered, filt_time_int = fir_filter(self.raw, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+#         filtered, filt_time_int = fir_filter(self.raw, fs_hz=self.fs_hz, fc_hz=fc_hz)
 #         return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
 #     
 #     def get_spect_fir_output(self, fc_hz):
-#         x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz), FS= self.fs_Hz)
+#         x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz), FS= self.fs_hz)
 #         filt_type = 'FIR'
-#         return Graph_data_container(x=x_filt,y=y_filt,
+#         return Graph_data_container(_x=x_filt, _y=y_filt,
 #                                     label =  f'{self.description}-{self.channel_name} - filt: {filt_type}'
 #                                     )
 
@@ -263,10 +263,10 @@ df_tdms_i1_w10 = WT_Noise_ChannelProcessor(tdms_raw_CA[5][GROUP_NAME][CHAN_NAME]
 
 #FIX :: Solution to the BAD practice above
 
-def fir_filter(ds:np.ndarray,time:np.ndarray, fs_hz:float,
+def fir_filter(sig_r:np.ndarray,time:np.ndarray, fs_hz:float,
                 fc_hz = 0.0002, filt_order = 20):
     filt_coeff, w, h = lp_firwin(filt_order,fs_hz,fc_hz)
-    filt_data = signal.lfilter(filt_coeff, 1.0, ds)
+    filt_data = signal.lfilter(filt_coeff, 1.0, sig_r)
     warmup = filt_order-1
     uncorrupted_output = filt_data[warmup:]
     filt_sig_time_int = time[warmup:]-((warmup/2)/fs_hz)
@@ -280,29 +280,29 @@ class Fir_filter:
         #self.time_int = np.linspace(0, 7, len(self.raw))
         self.description = signals.description
         self._channel_data= signals._channel_data
-        self.fs_Hz = int (1/signals._channel_data.properties['wf_increment'])
+        self.fs_hz = int (1/signals._channel_data.properties['wf_increment'])
         self.channel_name = signals._channel_data.name
-        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_Hz), len(self.raw))
+        self.time_int = np.linspace(0, len (self.raw) / int(self.fs_hz), len(self.raw))
     
     def apply_fir(self, fc_hz):
-        filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+        filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_hz, fc_hz=fc_hz)
         return pd.Series(filtered, name=f'{self.channel_name}:filt_fc_{fc_hz}')
     
     def output_time_dur(self, fc_hz):
-        filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_Hz, fc_hz=fc_hz)
+        filtered, filt_time_int = fir_filter(self.raw,time=self.time_int, fs_hz=self.fs_hz, fc_hz=fc_hz)
         return filt_time_int
     
     def get_spect_fir_output(self, fc_hz):
-        x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz), FS= self.fs_Hz)
+        x_filt, y_filt = spect(self.apply_fir(fc_hz=fc_hz), FS= self.fs_hz)
         filt_type = 'FIR'
-        return Graph_data_container(x=x_filt,y=y_filt,
+        return Graph_data_container(_x=x_filt, _y=y_filt,
                                     label =  f'{self.description}-{self.channel_name} - filt: {filt_type}'
                                     )
 
 
 
 plot_spect_comb2([df_tdms_i1_w0.get_spectrum_raw(),
-                df_tdms_i1_w0.get_spectrum_filt(fc_Hz=2_000),
+                df_tdms_i1_w0.get_spectrum_filt(fc_hz=2_000),
                 Fir_filter(df_tdms_i1_w0).get_spect_fir_output(fc_hz=0.0002)    ],
                 title='CA ws 0 inv 1',
                 Kolmogorov_offset=1e3,
@@ -310,7 +310,7 @@ plot_spect_comb2([df_tdms_i1_w0.get_spectrum_raw(),
                 )
 
 plot_spect_comb2([df_tdms_i1_w5.get_spectrum_raw(),
-                df_tdms_i1_w5.get_spectrum_filt(fc_Hz=2_000),
+                df_tdms_i1_w5.get_spectrum_filt(fc_hz=2_000),
                 Fir_filter(df_tdms_i1_w5).get_spect_fir_output(fc_hz=0.0002)  ],
                 title='CA ws 5 inv 1',
                 Kolmogorov_offset=1e3,
@@ -318,7 +318,7 @@ plot_spect_comb2([df_tdms_i1_w5.get_spectrum_raw(),
                 )
 
 plot_spect_comb2([df_tdms_i1_w10.get_spectrum_raw(),
-                df_tdms_i1_w10.get_spectrum_filt(fc_Hz=2_000),
+                df_tdms_i1_w10.get_spectrum_filt(fc_hz=2_000),
                 Fir_filter(df_tdms_i1_w10).get_spect_fir_output(fc_hz=0.0002)  ],
                 title='CA ws 11 inv 1',
                 Kolmogorov_offset=1e3,

@@ -41,8 +41,8 @@ logging.basicConfig( level=logging.WARNING)
 #%%
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-if not FOLDER_FOR_DATA.exists():   
+FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
+if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 #%% CONSTANTS
@@ -56,7 +56,7 @@ CHAN_NAME = 'Wind2'
 
 # Dir name 
 #Constant directories and names for the .tdms file structure
-inv_meas_dir = FOLDER_FOR_DATA / 'Inverter'
+inv_meas_dir = FOLDER_FOR_DATA / 'inverter'
 
 WT_inv_1_WS_0 = 'in1_0.1'
 # contains the following channels
@@ -157,3 +157,4 @@ plot_spect_comb2([in1_0.filter(fc_Hz = 100).average(fr_Hz=100).calc_spectrum_gen
 # # %matplotlib inline
 # %matplotlib qt
 
+plt.show()

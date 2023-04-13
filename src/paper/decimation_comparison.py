@@ -32,8 +32,9 @@ logging.basicConfig( level=logging.WARNING)
 #%%
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-if not FOLDER_FOR_DATA.exists():   
+FOLDER_FOR_DATA = Path(
+    '/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
+if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 #%% CONSTANTS
@@ -171,3 +172,5 @@ def compare_timehistories(df_ni,df_wi, final_point = 100000,
 compare_timehistories(ca1_0,dec_5kHz, stitle='Time history comparison:  WS=0 m/s',fname='s1_Comp_th-ws0.png')
 
 #%%
+
+plt.show()
