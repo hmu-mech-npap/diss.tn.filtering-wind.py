@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest numpy scipy matplotlib npTDMS pluggy
+          pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
           python -m pip install -e ./pypkg/
 
       # - name: Lint with ruff
