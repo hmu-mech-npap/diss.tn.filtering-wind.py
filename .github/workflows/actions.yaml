@@ -31,7 +31,7 @@ jobs:
           pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
           python -m pip install -e ./pypkg/
 
-  test:
+  test_main_class:
     runs-on: ${{matrix.os}}
     needs: build
     strategy:
@@ -55,4 +55,30 @@ jobs:
       #     restore-keys: pros_noisefiltering
       - name: Test with pytest
         run: |
-          pytest
+          pytest -k test_WT
+
+  test_my_functions:
+    runs-on: ${{matrix.os}}
+    needs: build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          check-latest: true
+      - name: Install dependencies
+        run: |
+          pip install pytest numpy scipy matplotlib npTDMS pluggy pandas
+          python -m pip install -e ./pypkg/
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: pros_noisefiltering
+      #     key:  pros_noisefiltering-${{ matrix.targetPlatform }}
+      #     restore-keys: pros_noisefiltering
+      - name: Test with pytest
+        run: |
+          pytest -k test_functions
