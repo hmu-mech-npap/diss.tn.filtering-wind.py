@@ -1,5 +1,5 @@
+![ci tests](https://github.com/goodvibrations32/diss.tn.filtering-wind.py/actions/workflows/actions.yaml/badge.svg)
 # diss.tn.filtering-wind.py
-
 This is a dissertation repository for torosian Nikolaos for filtering.
 
 ## Naming convention
