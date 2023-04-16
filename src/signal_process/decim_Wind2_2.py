@@ -33,7 +33,7 @@ from pros_noisefiltering.gen_functions import plot_spect_comb2
 #
 
 FOLDER_FOR_DATA = Path(
-    '/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
+    '/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
 if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
