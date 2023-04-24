@@ -15,8 +15,32 @@ Same usage as iir folder but for testing `FIR` filters.
 This file is used to run tests for my functions: 
 - I test the fir factory method and assert the initial constructor
 - Also test the plotting operation with a dummy signal with `unittest.mock` using `patch` feature which allows for plot testing. 
-- 
+- Example for plotting functions testing
 ```python3
+from unittest.mock import patch
+import pytest
+
+# These functions are for constructing the object and plotting from pypkg
+from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
+                                            Fir_filter,
+                                            filt_butter_factory,
+                                            fir_factory_constructor,
+                                            plot_comparative_response)
+
+@pytest.fixture
+def example_wtncp() -> WT_NoiseChannelProc:
+    return WT_NoiseChannelProc(desc='description sample', fs_Hz=1000,
+                               # +15 seems to originate in bit flip
+                               # from 0000 -> 1111 = 15
+                               # needed to test the FIR functions with
+                               # filtering
+                               data=np.linspace(0, 100, 2000+15),
+                               channel_name='Torque',
+                               group_name='Wind Measurement',
+                               _channel_data=None,
+                               operations=['New object (init)']
+                               )
+
 @pytest.fixture
 def fir_wrapper(example_wtncp):
     obj_filt = WT_NoiseChannelProc.from_obj(example_wtncp, operation='copy')
