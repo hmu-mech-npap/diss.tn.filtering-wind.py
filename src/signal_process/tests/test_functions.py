@@ -1,7 +1,6 @@
 from unittest.mock import patch
 import pytest
 from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
-                                            Fir_filter,
                                             filt_butter_factory,
                                             fir_factory_constructor,
                                             plot_comparative_response)
