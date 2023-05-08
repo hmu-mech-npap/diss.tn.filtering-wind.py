@@ -28,8 +28,9 @@ logging.basicConfig( level=logging.WARNING)
 #%%
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path.cwd()/'measurements_12_05_22'
-if not FOLDER_FOR_DATA.exists():   
+FOLDER_FOR_DATA = Path(
+    '/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
+if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 #%% CONSTANTS
@@ -198,3 +199,5 @@ plot_spect_comb2([df_ca_i0_w10.set_desc('Inverter Off').calc_spectrum(nperseg=NP
                 markers = ['o','.','_'],
                 fname = 'S2_Comp_PS_WS10-wide')
 # %%
+
+plt.show()

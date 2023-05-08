@@ -41,8 +41,9 @@ logging.basicConfig( level=logging.WARNING)
 #%%
 
 # I use the current working directory of the file to store the folder with the data for ease (FIR_LP_filter/).
-FOLDER_FOR_DATA = Path('/mnt/data_folder')/'measurements_12_05_22/new_record_prop_channel/'
-if not FOLDER_FOR_DATA.exists():   
+FOLDER_FOR_DATA = Path(
+    '/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
+if not FOLDER_FOR_DATA.exists():
     FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
 
 
@@ -393,3 +394,4 @@ plt.savefig(f'_temp_fig/s4-PS-i1-WS10-filt{filter_Butter_200.params.get("fc_Hz")
 
 
 # %%
+plt.show()

@@ -68,7 +68,8 @@ def filt_sig (coeff:np.ndarray, order:int, FS:float, Raw:list):
         Blank.append(x)
 
     #Time interval of the samples
-    
+
+    # BUG
     TIME = np.linspace(0, 7.599998, 3_800_000)
     chunked_time = TIME[::10]
 
