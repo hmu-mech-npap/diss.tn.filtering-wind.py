@@ -4,10 +4,8 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 import scipy.signal as signal
 import numpy as np
-import pandas as pd
 
 from nptdms import TdmsFile
-# import nptdms
 
 from pros_noisefiltering.WT_NoiProc import (filt_butter_factory,
                                             fir_factory_constructor,
@@ -15,17 +13,6 @@ from pros_noisefiltering.WT_NoiProc import (filt_butter_factory,
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
 
 filter_Butter_200 = filt_butter_factory(filt_order=2, fc_Hz=100)
-
-# from pros_noisefiltering.gen_functions import (Fft_Plot_info,
-#                                                Axis_titles,
-#                                                plot_FFT,
-#                                                Signals_for_fft_plot,
-#                                                fft_calc_sig,
-#                                                fft_sig)
-
-# from pros_noisefiltering.Graph_data_container import Graph_data_container
-
-# from numpy.fft import fft, ifft
 
 logging.basicConfig(level=logging.WARNING)
 
