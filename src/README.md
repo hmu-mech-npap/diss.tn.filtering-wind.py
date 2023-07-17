@@ -9,14 +9,17 @@ This folder contains
 -  Chebyshev 
 -  Bessel  filters. 
 
+## 1.2. paper
+This folder contains some of the files used to produce a research paper on the 
+matter.
 
-## 1.2. sample GUI
+## 1.3. sample GUI
 
 This is a folder that contains an attempt for qt. 
 
 This is not complete this is just a "hello world" application for now. 
 
 
-## 1.3. **signal_process**: 
+## 1.4. **signal_process**: 
 - [Contents](signal_process/readme.md)
 
