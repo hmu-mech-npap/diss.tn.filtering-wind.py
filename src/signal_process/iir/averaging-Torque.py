@@ -41,9 +41,10 @@ from nptdms import TdmsFile
 
 # TODO Using old deprecaded class PROPABLY DELETE
 from pros_noisefiltering.gen_functions import plot_spect_comb2
-from pros_noisefiltering.WT_NoiProc import (WT_NoiseChannelProc,
-                                            filt_butter_factory,
-                                            plot_comparative_response)
+from pros_noisefiltering.filters.iir import filt_butter_factory
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
+
+from pros_noisefiltering.plotting_funcs import plot_comparative_response
 
 # Constract a butterworth default
 filter_Butter_default = filt_butter_factory(filt_order=2, fc_Hz=100)
