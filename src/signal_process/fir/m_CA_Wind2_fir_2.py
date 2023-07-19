@@ -7,10 +7,10 @@ from nptdms import TdmsFile
 import matplotlib.pyplot as plt
 
 from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
-from pros_noisefiltering.WT_NoiProc import (plot_comparative_response,
-                                            filt_butter_factory,
-                                            fir_factory_constructor)
-from pros_noisefiltering.gen_functions import plot_spect_comb2, apply_filter
+from pros_noisefiltering.filters.fir import fir_factory_constructor
+from pros_noisefiltering.filters.iir import filt_butter_factory, apply_filter
+
+from pros_noisefiltering.gen_functions import plot_spect_comb2
 
 logging.basicConfig(level=logging.WARNING)
 fc_hz = 200

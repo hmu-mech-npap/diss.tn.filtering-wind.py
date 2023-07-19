@@ -6,16 +6,13 @@
 #%%
 from pathlib import Path
 from matplotlib import pyplot as plt
-import scipy.signal as signal
-import numpy as np
-import pandas as pd
-
 from nptdms import TdmsFile
 
+from pros_noisefiltering.gen_functions import plot_spect_comb2
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
+from pros_noisefiltering.filters.iir import filt_butter_factory
 
-from pros_noisefiltering.gen_functions import spect, plot_spect_comb2
-from pros_noisefiltering.Graph_data_container import Graph_data_container
-from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc, filt_butter_factory, plot_comparative_response
+
 filter_Butter_default=filt_butter_factory(filt_order = 2, fc_Hz = 100)
 
 import logging
