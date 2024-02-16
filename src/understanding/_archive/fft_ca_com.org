@@ -1,0 +1,307 @@
+#+TITLE: CA measurements in F.D. compared on/off
+#+PROPERTY: header-args :tangle ~/Documents/dissertation/diss.tn.filtering-wind.py/src/understanding/fft_ca_com.py
+#+STARTUP: showeverything
+#+AUTHOR: Nikos Papadakis, Nikolas Torosian
+
+
+* Imports
++ Libraries and functions that will later be used for processing and plotting the results.
+
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+
+from pathlib import Path
+from matplotlib import pyplot as plt
+import scipy.signal as signal
+import numpy as np
+import pandas as pd
+
+from nptdms import TdmsFile
+import nptdms
+
+
+import pros_noisefiltering as pnf
+from pros_noisefiltering.gen_functions import (spect,plot_spect_comb2,
+                                               Fft_Plot_info,Axis_titles,
+                                               plot_FFT,Signals_for_fft_plot,
+                                               fft_calc_sig,fft_sig)
+
+from pros_noisefiltering.WT_NoiProc import WT_NoiseChannelProc
+from pros_noisefiltering.Graph_data_container import Graph_data_container
+
+from numpy.fft import fft, ifft
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+# %% [markdown]
+# This file is for comparing the spectrum of a filtered time series
+#
+#  ### The first 3 plots are a comparison between the signals with the compressed air.
+#  - Here the signals are compared with respect of the Inverter state
+#       - **on/off**
+* Extra function
++ This is used to filter the signal with a Butterworth filter
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+
+#%% Functions and classes
+def apply_filter(sig_r:np.ndarray, fs_hz:float, fc_hz = 100, filt_order = 2 ):
+                 # filter cutoff frequency
+    sos = signal.butter(filt_order , fc_hz, 'lp', fs=fs_hz, output='sos')
+    filtered = signal.sosfilt(sos, sig_r-sig_r[0])+sig_r[0]
+    return filtered
+
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+* CONSTANTS
++ Here the basic path for the data is saved for later usage.
++ Also some default folder names are defined
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+FOLDER_FOR_DATA = Path('/mnt/data_folder/measurements_12_05_22/new_record_prop_channel/')
+if not FOLDER_FOR_DATA.exists():
+    FOLDER_FOR_DATA = Path('D:/_data/WEL/WEL20220512/')
+
+#%% CONSTANTS
+FIGSIZE_STD = (6,6)
+#Constant directories and names for the .tdms file structure
+# Dir name
+TDMS_FNAME = 'Data.tdms'
+GROUP_NAME = 'Wind Measurement'
+CHAN_NAME = 'Wind2'
+
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+* Directory for Compressed Air
+
++ Here we also print the names for the channels recorded in this experiment.
+
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+#%%
+# Dir names for the Compressed air measurment
+comp_air_dir = 'compressed air'
+
+#%% preparing tdms files
+# New renamed folders for rec version information
+data_CA_inv_0_WS_0 = 'ca0_0.1'
+data_CA_inv_0_WS_5 = 'ca0_5.1'
+data_CA_inv_0_WS_11= 'ca0_10.1'
+data_CA_inv_1_WS_0 = 'ca1_0.1'
+data_CA_inv_1_WS_5 = 'ca1_5.1'
+data_CA_inv_1_WS_10= 'ca1_10.1'
+
+path_comp = FOLDER_FOR_DATA / comp_air_dir
+
+# CA stands for compressed air
+
+raw_signal_CA = [data_CA_inv_0_WS_0, data_CA_inv_0_WS_5,
+                data_CA_inv_0_WS_11, data_CA_inv_1_WS_0,
+                data_CA_inv_1_WS_5, data_CA_inv_1_WS_10 ]
+
+l_tdms_CA = []
+
+for item in raw_signal_CA:
+    x=TdmsFile( Path( f'{path_comp}/{item}' , TDMS_FNAME))
+    l_tdms_CA.append(x)
+
+#%%
+[print(x) for x in l_tdms_CA[0][GROUP_NAME].channels()]
+#+end_src
+
+#+RESULTS:
+:results:
+: <TdmsChannel with path /'Wind Measurement'/'Wind2'>
+|---|
+:end:
+
+* extracting signal info in variables
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+# %%
+GROUP_NAME = 'Wind Measurement'
+CHAN_NAME = 'Wind2'
+
+
+df_tdms_0_0 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[0][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter off, WS=0')
+df_tdms_0_5 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[1][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter off, WS=5')
+df_tdms_0_10 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[2][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter off, WS=11')
+df_tdms_1_0 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[3][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter on, WS=0')
+df_tdms_1_5 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[4][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter on, WS=5')
+df_tdms_1_10 = WT_NoiseChannelProc.from_tdms(l_tdms_CA[5][GROUP_NAME][CHAN_NAME]
+                , desc= 'Inverter on, WS=10')
+
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+* New algorithm for fft calculation and FD/TD signal plotting
+Here a new algorithm is tested and found the way to interpolate it with the project
+reference : https://www.youtube.com/watch?v=s2K1JfNR7Sc
++ This is just an example.
+  #+begin_src jupyter-python :session py :async yes :results raw drawer
+Sr = df_tdms_1_0.fs_hz
+dt = 1 / int(Sr)
+print (f"The time interval of the measurement is:\n{dt}")
+
+time_s = np.arange(0,7,dt)
+print(f"The time array is: \n {time_s}")
+
+plt.rcParams ['figure.figsize'] =[16,12]
+plt.rcParams.update ({'font.size': 18})
+
+n= len(time_s)
+fhat = fft(df_tdms_1_0.data,n)                              # compute fft
+PSD = fhat * np.conj(fhat) / n               # Power spectrum (power/freq)
+freq = (1/(dt*n)) * np.arange(n)             # create x-axis (frequencies)
+L = np.arange(1,np.floor(n/2),dtype=int)     # plot only first half (possitive
+
+print(f"This is the length of the time array and should be = 2_650_000 >< no {n}")
+fig, axs = plt.subplots(2,1)
+
+plt.sca(axs[0])
+#plt.plot(time_s,df_tdms_0_0.data)
+plt.loglog(freq,np.sqrt(PSD))
+
+plt.sca(axs[1])
+plt.plot(freq[L],abs(PSD[L]))
+#plt.xscale('log')
+plt.yscale('log')
+plt.show()
+print (df_tdms_1_0.data_as_Series, df_tdms_1_0.data)
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+0          1.620280
+1          1.618670
+2          1.616738
+3          1.616094
+4          1.619314
+             ...
+3099995    1.629619
+3099996    1.618992
+3099997    1.624788
+3099998    1.618348
+3099999    1.622534
+Name: Wind2:raw, Length: 3100000, dtype: float64 [1.62028023 1.61867018 1.61673812 ... 1.62478838 1.61834817 1.6225343 ]
+#+end_example
+
+#+RESULTS:
+[[file:./.ob-jupyter/1e83365c425da0aecdfb69701fe5ba50895d2d92.png]]
+
+#+RESULTS:
+: /usr/lib/python3.10/site-packages/matplotlib/cbook/__init__.py:1369: ComplexWarning: Casting complex values to real discards the imaginary part
+:   return np.asarray(x, float)
+
+#+RESULTS:
+: This is the length of the time array and should be = 2_650_000 >< no 3500000
+
+#+RESULTS:
+: The time interval of the measurement is:
+: 2e-06
+: The time array is:
+:  [0.000000e+00 2.000000e-06 4.000000e-06 ... 6.999994e+00 6.999996e+00
+:  6.999998e+00]
+
+#+RESULTS:
+
+#+RESULTS:
+:results:
+:end:
+
+#+RESULTS:
+#+begin_example
+0          1.620280
+1          1.618670
+2          1.616738
+3          1.616094
+4          1.619314
+             ...
+3099995    1.629619
+3099996    1.618992
+3099997    1.624788
+3099998    1.618348
+3099999    1.622534
+Name: Wind2:raw, Length: 3100000, dtype: float64 [1.62028023 1.61867018 1.61673812 ... 1.62478838 1.61834817 1.6225343 ]
+#+end_example
+
+#+RESULTS:
+[[file:./.ob-jupyter/63c50d436e5465b25ff9e63f82d6bd438e2e04f2.png]]
+
+#+RESULTS:
+: /usr/lib/python3.10/site-packages/matplotlib/cbook/__init__.py:1298: ComplexWarning: Casting complex values to real discards the imaginary part
+:   return np.asarray(x, float)
+
+#+RESULTS:
+: This is the length of the time array and should be = 2_650_000 >< no 3500000
+
+#+RESULTS:
+: The time interval of the measurement is:
+: 2e-06
+: The time array is:
+:  [0.000000e+00 2.000000e-06 4.000000e-06 ... 6.999994e+00 6.999996e+00
+:  6.999998e+00]
+
+#+RESULTS:
+
+#+RESULTS:
+:results:
+:end:
+
+* Old version of processing CA measurements
+Here my black box fft algorithm from the pkg is tested the results are more logical than the prev. alg
+
+
+#+begin_src jupyter-python :session py :async yes :results raw drawer
+f, yin,yout = fft_sig([fft_calc_sig(df_tdms_0_0.data,
+                                            df_tdms_1_0.data, label="inv off")])
+f1, yin1,yout1 = fft_sig([fft_calc_sig(df_tdms_0_5.data,
+                                            df_tdms_1_5.data, label="inv off")])
+
+f2, yin2,yout2 = fft_sig([fft_calc_sig(df_tdms_0_10.data,
+                                            df_tdms_1_10.data, label="inv off")])
+
+#some lists for fast plotting 3 plots with a for loop
+ws0 = [f,yin,yout]
+
+ws5 = [f1,yin1,yout1]
+
+ws10 = [f2,yin2,yout2]
+
+data_list = [ws0,ws5,ws10]
+
+ws_list = ['ws-0','ws-5','ws-10']
+for item,descr_sig in zip(data_list,ws_list):
+    plot_FFT([Signals_for_fft_plot(freq=item[0], sig1=item[1], sig2= item[2]),],
+
+         [Fft_Plot_info(Title="Inverter off/on (CA)",
+                       filter_type='',
+                       signal_state=f'raw-{descr_sig}-on')     ],
+
+         [Axis_titles('Frequency [Hz]', 'Amplitute [dB]')    ]
+                )
+
+
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:./.ob-jupyter/58891d65056b0c9ef9d7af46f0f14f269f50debf.png]]
+[[file:./.ob-jupyter/dabcd464fc32c9796481e30f3dd5f5c7e091cb06.png]]
+[[file:./.ob-jupyter/2329e71a2a436e627e3081f42e575d9b7642ac95.png]]
+:end:

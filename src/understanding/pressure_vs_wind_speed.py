@@ -125,3 +125,4 @@ plot_spect_comb2([df_ca_i0_w10.set_desc('Inverter Off').calc_spectrum(nperseg=NP
 # %%
 df[:1000].plot(lw=0, marker='.')
 # %%
+plt.show()
