@@ -169,7 +169,7 @@ class FftNew:
         which will be plotted in the frequency domain.
         """
         self.plt_title = title
-        self.samp_rate = sign.fs_hz
+        self.samp_rate = sign.fs_Hz
         self.sig = sign.data
         self.ind = sign.data_as_Series.index
         self.time_interv = 1 / int(self.samp_rate)
